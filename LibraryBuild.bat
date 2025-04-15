@@ -17,26 +17,25 @@
 setlocal enabledelayedexpansion
 set "pathTo=%cd%"
 
-set binaryPath=LibraryBinary/
-set sourcePath=LibrarySources/
-set commonPath=Common/
+set binaryPath=LibraryBinary
+set sourcePath=LibrarySources
+set commonPath=Common
 set filesPath=
 
 for /r "%pathTo%\%commonPath%" %%f in (*.cpp) do (
-  set comm=g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c !commonPath!%%~nxf -std=gnu++11 -o !binaryPath!%%~nf.o
-  @REM echo !comm!
-  @REM cmd /c "!comm!"
+  set crp=!pathTo!/!binaryPath!
+  set "currentPathFile=!crp:\=/!"
+  set comm=g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c !commonPath!/%%~nxf -std=gnu++11 -o !currentPathFile!/%%~nf.o
+  echo !comm!
+  cmd /c "!comm!"
 )
 
 for /r "%pathTo%\%sourcePath%" %%f in (*.cpp) do (
-  set combinedPath=!pathTo!\!sourcePath!
-  set "currentPathFile=!combinedPath:/=\!"
-  set putza=%%f
-
-  echo !currentPathFile! ---- %%f ----- !putza:%currentPathFile%\=!
-  set comm=g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c !sourcePath!%%~nxf -std=gnu++11 -o !binaryPath!%%~nf.o
+  set crp=!pathTo!/!binaryPath!
+  set "currentPathFile=!crp:\=/!"
+  set comm=g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c %%f -std=gnu++11 -o !currentPathFile!/%%~nf.o
   echo !comm!
-  @REM cmd /c "!comm!"
+  cmd /c "!comm!"
 )
 
 for /r %%f in (!binaryPath!/*.o) do (
