@@ -24,14 +24,19 @@ set filesPath=
 
 for /r "%pathTo%\%commonPath%" %%f in (*.cpp) do (
   set comm=g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c !commonPath!%%~nxf -std=gnu++11 -o !binaryPath!%%~nf.o
-  echo !comm!
-  cmd /c "!comm!"
+  @REM echo !comm!
+  @REM cmd /c "!comm!"
 )
 
 for /r "%pathTo%\%sourcePath%" %%f in (*.cpp) do (
+  set combinedPath=!pathTo!\!sourcePath!
+  set "currentPathFile=!combinedPath:/=\!"
+  set putza=%%f
+
+  echo !currentPathFile! ---- %%f ----- !putza:%currentPathFile%\=!
   set comm=g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c !sourcePath!%%~nxf -std=gnu++11 -o !binaryPath!%%~nf.o
   echo !comm!
-  cmd /c "!comm!"
+  @REM cmd /c "!comm!"
 )
 
 for /r %%f in (!binaryPath!/*.o) do (
