@@ -16,11 +16,13 @@
 @echo off
 setlocal enabledelayedexpansion
 set binaryPaths=LibraryBinary/
-set pathString=
-for %%f in (LibraryBinary/*.o) do (
-  set pathString=!pathString! !binaryPaths!%%f
+set sourcePaths=LibrarySources/
+set filesPath=
+
+for /r %%f in (!binaryPaths!/*.o) do (
+  set filesPath=!filesPath! !binaryPaths!%%~nxf
 )
 
-set toExecute=g++ -ILibrarySources/BotLogic -ILibrarySources/ -ILibrarySources/Geometry/ -shared -std=gnu++11 !pathString! -o !binaryPaths!Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
+set toExecute=g++ -ILibrarySources/BotLogic -ILibrarySources/ -ILibrarySources/Geometry/ -shared -std=gnu++11 !filesPath! -o !binaryPaths!Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
 
 echo !toExecute!
