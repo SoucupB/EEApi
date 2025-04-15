@@ -243,7 +243,7 @@ void util_Method(DWORD processID, HANDLE method, PVOID params, size_t paramsSize
 }
 
 HANDLE util_MethodAddresOffset(const char *method) {
-  HMODULE dllBase = LoadLibraryA("EmpireEarth\\Bots.dll");
+  HMODULE dllBase = LoadLibraryA("LibraryBinary\\Bots.dll");
   if (dllBase == NULL) {
     printf("Failed to load DLL!\n");
     return NULL;
@@ -338,7 +338,7 @@ bool util_LoadDLL(DWORD processID, const std::string& dllPath) {
   } else {
     std::cout << "DLL loaded at address: " << std::hex << dllBaseAddress << std::endl;
   }
-  HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, "__Z11someDllMainv");
+  HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, "_Z11someDllMainv");
   printf("Bots.dll method of someDllMain is loaded at %p\n", dllMethodAddress);
   if(!dllMethodAddress) {
     printf("Main method not found!\n");
