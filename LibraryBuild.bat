@@ -15,15 +15,30 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set binaryPaths=LibraryBinary/
-set sourcePaths=LibrarySources/
+set "pathTo=%cd%"
+
+set binaryPath=LibraryBinary/
+set sourcePath=LibrarySources/
+set commonPath=Common/
 set filesPath=
 
-for /r %%f in (!binaryPaths!/*.o) do (
-  set filesPath=!filesPath! !binaryPaths!%%~nxf
+for /r "%pathTo%\%commonPath%" %%f in (*.cpp) do (
+  set comm=g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c !commonPath!%%~nxf -std=gnu++11 -o !binaryPath!%%~nf.o
+  echo !comm!
+  cmd /c "!comm!"
 )
 
-set toExecute=g++ -ILibrarySources/BotLogic -ILibrarySources/ -ILibrarySources/Geometry/ -shared -std=gnu++11 !filesPath! -o !binaryPaths!Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
+for /r "%pathTo%\%sourcePath%" %%f in (*.cpp) do (
+  set comm=g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c !sourcePath!%%~nxf -std=gnu++11 -o !binaryPath!%%~nf.o
+  echo !comm!
+  cmd /c "!comm!"
+)
 
-echo !toExecute!
-cmd /c "!toExecute!"
+for /r %%f in (!binaryPath!/*.o) do (
+  set filesPath=!filesPath! !binaryPath!%%~nxf
+)
+
+set toExecute=g++ -ILibrarySources/BotLogic -ILibrarySources/ -ILibrarySources/Geometry/ -shared -std=gnu++11 !filesPath! -o !binaryPath!Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
+
+@REM echo !toExecute!
+@REM cmd /c "!toExecute!"
