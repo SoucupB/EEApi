@@ -1,0 +1,2 @@
+g++ -ISources/BotLogic -ISources/ -IGeometry/ -c InjectorSources/InjectUtilities32bits.cpp -std=gnu++11 -o InjectorSources/InjectUtilities32bits.o
+g++ InjectorSources/InjectUtilities32bits.o InjectorSources/InjectAOCEarth.cpp -std=gnu++11 -o InjectorSources/DllInjector32BitsExec -O9 -lPsapi -lgdi32 -luser32
