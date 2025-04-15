@@ -1,14 +1,14 @@
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/EmpireEarth.cpp -std=gnu++11 -o Sources/Sources.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/InjectUtilities32bits.cpp -std=gnu++11 -o Sources/InjectUtilities32bits.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/MethodsDefinitions.cpp -std=gnu++11 -o Sources/MethodsDefinitions.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/EETwa.cpp -std=gnu++11 -o Sources/EETwa.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/BotLogic/BotLogic.cpp -std=gnu++11 -o Sources/BotLogic/BotLogic.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/Helpers.cpp -std=gnu++11 -o Sources/Helpers.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/EETwaTypes.cpp -std=gnu++11 -o Sources/EETwaTypes.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/BotLogic/TimerHelper.cpp -std=gnu++11 -o Sources/BotLogic/TimerHelper.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/Geometry/Geometry.cpp -std=gnu++11 -o Sources/Geometry/Geometry.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/BotLogic/AttackDecision.cpp -std=gnu++11 -o Sources/BotLogic/AttackDecision.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/BotLogic/PlayerState.cpp -std=gnu++11 -o Sources/BotLogic/PlayerState.o
-g++ -ISources/BotLogic -ICommon/ -ISources/ -IGeometry/ -c Sources/BotLogic/ResourceManager.cpp -std=gnu++11 -o Sources/BotLogic/ResourceManager.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/EmpireEarth.cpp -std=gnu++11 -o LibraryBinary/Sources.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c Common/InjectUtilities32bits.cpp -std=gnu++11 -o LibraryBinary/InjectUtilities32bits.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/MethodsDefinitions.cpp -std=gnu++11 -o LibraryBinary/MethodsDefinitions.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/EETwa.cpp -std=gnu++11 -o LibraryBinary/EETwa.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/BotLogic/BotLogic.cpp -std=gnu++11 -o LibraryBinary/BotLogic.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/Helpers.cpp -std=gnu++11 -o LibraryBinary/Helpers.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/EETwaTypes.cpp -std=gnu++11 -o LibraryBinary/EETwaTypes.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/BotLogic/TimerHelper.cpp -std=gnu++11 -o LibraryBinary/TimerHelper.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/Geometry/Geometry.cpp -std=gnu++11 -o LibraryBinary/Geometry.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/BotLogic/AttackDecision.cpp -std=gnu++11 -o LibraryBinary/AttackDecision.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/BotLogic/PlayerState.cpp -std=gnu++11 -o LibraryBinary/PlayerState.o
+g++ -ILibrarySources/BotLogic -ICommon/ -ILibrarySources/ -ILibrarySources/Geometry/ -c LibrarySources/BotLogic/ResourceManager.cpp -std=gnu++11 -o LibraryBinary/ResourceManager.o
 
-g++ -ISources/BotLogic -ISources/ -IGeometry/ -shared -std=gnu++11 Sources/BotLogic/ResourceManager.o Sources/BotLogic/AttackDecision.o Sources/BotLogic/PlayerState.o Sources/Geometry/Geometry.o Sources/BotLogic/TimerHelper.o Sources/EETwaTypes.o Sources/Helpers.o Sources/BotLogic/BotLogic.o Sources/EETwa.o Sources/MethodsDefinitions.o Sources/InjectUtilities32bits.o Sources/Sources.o -o Sources/Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
+g++ -ILibrarySources/BotLogic -ILibrarySources/ -ILibrarySources/Geometry/ -shared -std=gnu++11 LibraryBinary/ResourceManager.o LibraryBinary/AttackDecision.o LibraryBinary/PlayerState.o LibraryBinary/Geometry.o LibraryBinary/TimerHelper.o LibraryBinary/EETwaTypes.o LibraryBinary/Helpers.o LibraryBinary/BotLogic.o LibraryBinary/EETwa.o LibraryBinary/MethodsDefinitions.o LibraryBinary/InjectUtilities32bits.o LibraryBinary/Sources.o -o LibraryBinary/Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
