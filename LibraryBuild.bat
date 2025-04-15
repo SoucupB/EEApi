@@ -26,3 +26,4 @@ for /r %%f in (!binaryPaths!/*.o) do (
 set toExecute=g++ -ILibrarySources/BotLogic -ILibrarySources/ -ILibrarySources/Geometry/ -shared -std=gnu++11 !filesPath! -o !binaryPaths!Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
 
 echo !toExecute!
+cmd /c "!toExecute!"
