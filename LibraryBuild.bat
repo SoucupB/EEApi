@@ -39,10 +39,10 @@ for /r "%pathTo%\%sourcePath%" %%f in (*.cpp) do (
 )
 
 for /r %%f in (!binaryPath!/*.o) do (
-  set filesPath=!filesPath! !binaryPath!%%~nxf
+  set filesPath=!filesPath! !binaryPath!/%%~nxf
 )
 
-set toExecute=g++ -ILibrarySources/BotLogic -ILibrarySources/ -ILibrarySources/Geometry/ -shared -std=gnu++11 !filesPath! -o !binaryPath!Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
+set toExecute=g++ -ILibrarySources/BotLogic -ILibrarySources/ -ILibrarySources/Geometry/ -shared -std=gnu++11 !filesPath! -o !binaryPath!/Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
 
-@REM echo !toExecute!
-@REM cmd /c "!toExecute!"
+echo !toExecute!
+cmd /c "!toExecute!"
