@@ -338,8 +338,12 @@ bool util_LoadDLL(DWORD processID, const std::string& dllPath) {
   } else {
     std::cout << "DLL loaded at address: " << std::hex << dllBaseAddress << std::endl;
   }
-  HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, "_Z11someDllMainv");
+  HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, "__Z11someDllMainv");
   printf("Bots.dll method of someDllMain is loaded at %p\n", dllMethodAddress);
+  if(!dllMethodAddress) {
+    printf("Main method not found!\n");
+  }
+
   if(dllMethodAddress) {
     util_StartMethodThread(hProcess, (HMODULE)dllMethodAddress);
     printf("Method run\n");
