@@ -31,7 +31,7 @@ DWORD_PTR util_GetBaseAddress(DWORD processID);
 LPVOID util_AllocRemote(DWORD targetProcessId, SIZE_T size, PVOID localBuffer);
 void util_CallRemoveThread(DWORD targetProcessId, PVOID methodAddress, PVOID buffer);
 void util_ChangeProtectionWrite(DWORD targetProcessId, PVOID remoteBuffer, size_t size);
-bool util_LoadDLL(DWORD processID, const std::string& dllPath);
+bool util_LoadDLL(DWORD processID, const string &dllName, const std::string& dllPath);
 DWORD util_GetLastErrorInTargetProcess(HANDLE hProcess);
 PVOID util_CopyWrittenFile(DWORD targetProcessId, const char *writtenFile);
 void util_ModifyTargetProcessCaller(uint8_t *address, SIZE_T jumpAt);

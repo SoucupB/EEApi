@@ -289,7 +289,7 @@ void util_StartMethodThread(HANDLE hProcess, HMODULE module) {
   CloseHandle(hThread);
 }
 
-bool util_LoadDLL(DWORD processID, const std::string& dllPath) {
+bool util_LoadDLL(DWORD processID, const std::string &dllName, const std::string& dllPath) {
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processID);
   if (!hProcess) {
     std::cerr << "Failed to open target process." << std::endl;
@@ -339,7 +339,7 @@ bool util_LoadDLL(DWORD processID, const std::string& dllPath) {
     std::cout << "DLL loaded at address: " << std::hex << dllBaseAddress << std::endl;
   }
   HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, "_Z11someDllMainv");
-  printf("Bots.dll method of someDllMain is loaded at %p\n", dllMethodAddress);
+  printf("%s method of someDllMain is loaded at %p\n", &dllName[0], dllMethodAddress);
   if(!dllMethodAddress) {
     printf("Main method not found!\n");
   }

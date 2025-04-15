@@ -1,2 +1,2 @@
-g++ -ICommon/ -c Common/InjectUtilities32bits.cpp -std=gnu++11 -o InjectorBinaries/InjectUtilities32bits.o
-g++ -ICommon/ InjectorBinaries/InjectUtilities32bits.o InjectorSources/InjectAOCEarth.cpp -std=gnu++11 -o InjectorBinaries/DllInjector32BitsExec -O9 -lPsapi -lgdi32 -luser32
+g++ -ICommon/ -c Common/InjectUtilities32bits.cpp -std=gnu++11 -o Common/InjectUtilities32bits.o
+g++ -ICommon/ Common/InjectUtilities32bits.o InjectorSources/InjectAOCEarth.cpp -std=gnu++11 -o InjectorBinaries/DllInjector32BitsExec -O9 -lPsapi -lgdi32 -luser32

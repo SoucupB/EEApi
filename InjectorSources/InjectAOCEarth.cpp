@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
     printf("Pid not found!\n");
     return 0;
   }
-  if(!util_LoadDLL(pid, argv[1])) {
+  if(!util_LoadDLL(pid, "Bots.dll", argv[1])) {
     printf("Bots.dll failed to load\n");
     return 0;
   }
