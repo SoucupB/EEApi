@@ -348,8 +348,7 @@ bool util_LoadDLL(DWORD processID, const std::string& dllPath) {
   VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
   CloseHandle(hRemoteThread);
   CloseHandle(hProcess);
-
-  std::cout << "DLL injected successfully." << std::endl;
+  printf("DLL injected successfully\n");
   return true;
 }
 
@@ -366,10 +365,10 @@ void util_ModifyTargetProcessCaller(uint8_t *address, SIZE_T jumpAt) {
 
 void util_MessageBox(const char *title, const char *message) {
   MessageBox(
-      NULL,                       // No parent window
-      (char *)message,            // Message content
-      (char *)title,                // MessageBox title
-      MB_OK | MB_ICONINFORMATION  // OK button with information icon
+      NULL,
+      (char *)message,
+      (char *)title,
+      MB_OK | MB_ICONINFORMATION
   );
 }
 
