@@ -1,0 +1,699 @@
+At 0056B099 the minerals are going down.
+At 0056B3D1 Condition calls to see if unit is built.
+
+Mathod at 0056B08A happends when I build a unit.
+
+0056B09E Happends when a unit is built.  (The method is called at 005F60B4).
+
+(Bronze age).
+Another method is at 005F5F97.
+The unit type is comming from the stack
+000003ED for first unit.
+00000431 for second unit.
+(Also the method is static and is defined at 004C4BD7)
+The one pointer param from the method is the address of the baracks I guess.
+(Try to make the bot create units with a command).
+
+The instructions at 0050B563 happends when I look at some building
+or unit. (building or unit).
+Baracks: 254FEB08 -> 254FEB08 
+Command center: 254FDA14 -> 254FDA14
+
+Units 254FC920.
+
+004AAE9B happends when I issue a move command.
+004A7033 Happends when bot is taking order (but on a higher ladder position).
+
+Another method is at 006138C0
+Method at 005ED532 happends again.
+Another method 005FE9BF.
+
+Finding
+Unit pointer + 13C is (x).
+Unit pointer + 140 is angle.
+Unit pointer + 14C is (y).
+0060621D at we can check where to send.
+
+006581DA This method is getting the click position.
+00658241 happending for units
+
+
+Method at 00658241 defines where the unit should got
+Unfortunatelly the response is on the stack.
+EAX is pushed as the stack.
+The method at 00658283 dictates where the unit will go.
+
+One of the parameters is actually saying if its attacking or just moving.
+The address for the unit is at 010FB917
+Here as well 00678F4D.
+
+(00419970 Happends when the element receives a new COMMAND).
+
+Another method which can be used is 00636988. (In combination with 00658283)
+Random generator at [0083733C].
+
+OnFrame 00613B6A.
+
+The unit type for rock thrower is at "EE-AOC.exe"+547974.
+
+Checks if AI can build things 00494F42.
+
+
+Method at 00494F42 happends only when AI decides to build something
+
+Method 005F5F97 is universal for unit creation.
+
+I think that method at 00495023 check if a unit can be built.
+
+[building_pointer + 0x134C] is the currently building unit.
+
+method at 005540E8 iterates to all buildings (possibly all units). (There is a possibility that esi + 0x347 incidcates if its building or not). (0 for building, 1 for unit?)
+Owner changes at 0064EB86.
+
+If the owner changes only this thing changes but the 
+method at 005BCF61 changes regardless.
+(005BD07F Happends only when teams are different).
+
+Unit team is at
+[[unit + 0x18] + 0x45C]. (The unit does not change teams, its re-created).
+
+Is unit + 0x30 a target?
+
+00639546 happends when I create a unit.
+
+###########################################################
+#I think I can find the unit type somewhere around here   #
+#005540CD                                                 #
+###########################################################
+
+
+Probably the unit type is at 
+[[unit + 2C] + 1E4]
+Is unit building (a wild guess).
+a = [[[unit + 2C]] + B8]
+if(a == 0x60FD9D) {
+  is_building
+}
+else {
+  not!
+}
+
+[ply + 9CC] might be intresting. (Also this 00409D5E)
+Address at [ply + 2C] is general information about a unit
+since most of the units of the same type point to the same 
+address.
+
+When a unit is killed a method at
+
+[[ply] + 60] is called (004C05FB)
+
+[ply + 0x3C] is hp maybe
+
+// Not neccessary
+00668B23 Iterates through all types of probably the selected building.
+Tommorow I will search for all the available units displayed on
+current building. (Or at least that should be built from).
+// End not necessary
+
+00668C08 Happends only for the units that I currently can train. (cool, right?).
+
+02BF08E0 holds indexes of all units.
+
+There is some pointer which tells me how many units are there.
+The pointer can be found on [[ply + 2C] + 30]
+
+Interesting method at 00668B4A (This methods probably checks each user if he can train some unit (epoch and upgrade dependent)).
+
+As far as I understand, here is what happends.
+There are 2 methods 
+The argument for the first methods are as follows 
+thiscall with ecx as [[ply + 18] + 9CC] and the unit type.
+at 00668B23
+
+The building checkf if its complete or not is around here 00668903.
+
+If unit building is incomplete, we can check here [ply + 34C].
+
+#### Unit position.
+At 005EC6FC somethings happends only when I issue a move command.
+At method 006067D8 there is the target unit position.
+
+
+006067D8 -> 00606647 -> 005EBF0C
+
+Next position is at 
+x = [[[ply + 0x1C8] + 0x34] + 48]
+y = [[[ply + 0x1C8] + 0x34] + 4C]
+(Unless the player is a bot).
+
+if([ply + 0x1C8] is 0) then
+  unit is idle. (This also counts for the attack).
+  (Unless the player is a bot).
+
+At 005EBDE8 pointer is created.
+
+005ED9D4 -> 004C2A3C -> 004C29E8
+
+Test this 004C2ADB, 004C2AEB. (Main method is at 004C281C)
+
+004B8F10. (Caller at 004C281C) (Only the first call is the actual movement).
+If I replace the method at 004B8F10 with null, the character will
+not move anymore.
+
+So the, method at 004B8E86 is called with an ECX value which
+is dinamically alocated. I contains the destination value.
+(As well as other things). 
+
+
+Chain 004B8E86 -> 005537BA
+The dynamic casting might happen at 00553721.
+
+The method requires a struct which probably is dinamically alocated.
+
+So far
+The struct has as follows.
+[pnt + 0x0] = 0x00838D5C. (IDK what is this).
+[pnt + 0x4] = 1 or 2
+[pnt + 0x8] = (random unknown, ex 00FEFF4D).
+[pnt + 0xD] = (random, unknown) (example 3C)
+[pnt + 0x10] = angle (I guess).
+[pnt + 0x14] = x
+[pnt + 0x18] = y
+[pnt + 0x0A] = 0xFE
+[pnt + 0x0C] = 0x22
+[pnt + 0x1D] = 0x1
+[pnt + 0x1C] = 0x1
+[pnt + 0x1F] = 0x0
+[pnt + 0x1E] = 0x0
+
+The movement pointer is set at 004C2A3C. (Somehow the unit pointer is well known before this method).
+Method at 005EDA39 retrieves the player.
+
+
+Resume searching from here 004C281C.
+Method at 004C281C does not get executed for bots.
+The method 5EBDCC gets executed when I issue a command.
+Another method at 005EBCFD (dynamic caller)
+
+Another possible method which can be used 00419970.
+
+
+004AAEBB might be recursive, idk which searches the path.
+
+After each retry to search for the path, here is the 004A7AA1.
+Another one is at 004A7033.
+Another head method is at 0062E175.
+
+Chain of calls.
+004A7033 -> 0062E175 -> 00613932 -> 005ED532 -> 005EE7D4 (for active move).
+
+[ply + 2C]
+005ED532 has 3 parameters.
+
+005FF3CE
+If I modify this at 005FF3CE, the method will not work anymore.
+
+Nulifying the method at 005EE7D4 will make the bot not moving.
+
+
+0061D0B4
+005EBF85
+
+### be careful here
+At 005EBF85 if I change the [[ecx + 68] + 20 (or 24)] to whatever the value I want
+then the unit will go there.
+I don't think I need other values, but I need to figure out
+how to actually get the unit from that.
+The unit is accessed here 00419970.
+
+Interesting mehod at 00419972.
+
+The value that is checked at 00419972 is readed only once.
+
+The unit is accessed here 005ED532.
+The ecx is set to player here 005EC6CA.
+
+005EBF85 -> 005EC6CA
+
+The value for player is at
+[[ecx + 0x24] + index * 4] (The buffer is alocated on the
+heap and each unit is on there).
+Its confirmed, the method at 005EBF85
+is moving only the selected units.
+I can maybe use it, idk.
+
+So the method here 005EE7D4 has many params.
+
+Data for ecx or "this"
+
+[ecx] = 0x00846CF8
+[ecx + 4] = 3
+[ecx + 8] = 0x1BBB2929.
+[ecx + C] = 0x254E3930.
+
+Need to decompile this argument ECX and see from what
+is created from.
+
+004C2A18 <- 005EE7D4 <- 005EDCC0 <- 004C2AD2
+
+[ecx + 0x6C] = 0x1F40
+The ecx pointer size is 0xB8, 
+Method at 004C2A27 might deep copy methods.
+004C2A3C At is set which units are selected.
+Method at 004C2A18 is setting the data for the previously inserted
+pointer.
+The base pointer address is at "EE-AOC.exe"+530DB8
+arg1 = "EE-AOC.exe"+530DB8
+int32_t fill(void *self, int32_t arg1);
+
+Between 004C2A18 and 004C2AD2 there are the parameter setters.
+00419972 This method gets executed for bot as well.
+Another one 4AB9DC.
+
+
+Continue tommorow from 0062E175
+
+[ply + 0x2C] is the argument for 0062E175
+The movement method is at [[[ply + 0x2C]] + 0xD4]
+
+The copy for the destination buffer is at 005EC5F3.
+Back to 5EE7D4.
+
+This value needs to have
+[esi + B6] = 1
+[[esi + 0x24] + index * 4] needs to be set to the units.
+[[esi + 0x68] + 0x20] = x
+[[esi + 0x68] + 0x24] = y
+[[esi + 0x68] + 0x28] = angle
+
+
+004A7AA1 happends for bots when they change directions.
+004A7AA1 -> 004A78C1 -> 004A7038 -> 4A6E88
+
+1f0 is also used.
+[unit + 1ec] changes for for both bots and player
+Destination is 
+[[unit + 1ec] + 20] = x
+[[unit + 1ec] + 24] = y
+when something is not idle.
+
+Continuing from this 0062E175.
+New method for when the character move 5FE863
+
+this at 005FE9E8 gets set only once.
+
+there is a method at [unit + 1e8] when the player is moving.
+If the method is modified then the unit will stop and just revolve
+around itself.
+
+If I modify the address at 005FA246, then the unit will change direction.
+
+Pengus call 298c1be0 297b7750 00000000 00000002 -> 
+00000004 != 00000001 at 00000004 Idk what is this but is the number of units + 1
+00000001 != 00000000 at 0000001C
+294C2E10 != 00000000 at 00000024
+294C2E1C != 00000000 at 00000028
+294C2E1C != 00000000 at 0000002C
+29659240 != 263C6548 at 00000034
+00023C02 != 00000000 at 00000038
+3F19999A != 00000000 at 00000070
+3F19999A != 00000000 at 00000074
+3F19999A != 7F7FFFFF at 00000078
+40000000 != 00000000 at 0000007C
+40000000 != 00000000 at 00000080
+40000000 != 7F7FFFFF at 00000084
+415F66F3 != 00000000 at 00000088
+415F66F3 != 00000000 at 0000008C
+415F66F3 != 7F7FFFFF at 00000090
+41437A15 != 00000000 at 00000094
+41437A15 != 00000000 at 00000098
+41437A15 != 7F7FFFFF at 0000009C
+3FD55555 != 00000000 at 000000A0
+3F000000 != 00000000 at 000000A4
+3D92AD5D != 00000000 at 000000A8
+3DA7A18E != 00000000 at 000000AC
+
+
+004C2A18
+
+Attack
+Pengus call 27749110 261f8648 00000000 00000002 -> 
+00846CF8 != 00000000 at 00000000 Set by master method.
+00000002 != 00000000 at 00000004 Set by master method.
+00002B2B != 00000000 at 00000008 Set by master method.
+2AF73AF0 != 00000000 at 0000000C Set by master method.
+00002B2B != 00000000 at 00000014 Set by master method.
+2AF73C10 != 00000000 at 00000018 Set by master method.
+00000001 != 00000000 at 0000001C 
+0000002B != 00000000 at 00000020 Set by master method.
+25EA92E8 != 00000000 at 00000024 (Array of players). This can be injected
+25EA92EC != 00000000 at 00000028 (End Array of players). This can be injected
+25EA92EC != 00000000 at 0000002C (End Array of players). This can be injected
+2B331840 != 00000000 at 00000030 Set by master method.
+25F61548 != 00000000 at 00000034 Set by master method.
+00023C02 != 00000000 at 00000038 Constant
+00002B2B != 00000000 at 0000003C Set by master method.
+2B31E468 != 00000000 at 00000040 Set by master method.
+0000002B != 00000000 at 00000048 Set by master method.
+0000002B != 00000000 at 00000058 Set by master method.
+257CE808 != 00000000 at 00000068 (Position setter).
+00001F40 != 00000000 at 0000006C Set at the end to (0x1F40).
+3DA7A18E != 00000000 at 000000AC
+40000000 != 00000000 at 000000B0 Set by master method.
+
+38 and 34 still unknown.
+
+At (ecx + 68)
+------------
+008478A0 != 00000000 at 00000000 Constant (008478A0)
+00000101 != 00000000 at 00000004 Const
+00001388 != 00000000 at 00000008 The old 0000006C.
+00000000 != 00000000 at 0000000C previously unknown.
+0002155B != 00000000 at 00000010
+00000005 != 00000000 at 00000014 Dynamic (random).
+00000000 != 00000000 at 00000018 previously unknown.
+00000001 != 00000000 at 0000001C Const 
+4272C0F8 != 00000000 at 00000020 x
+428FF386 != 00000000 at 00000024 y
+BFB969E4 != 00000000 at 0000002C
+00000101 != 00000000 at 00000030 Const (100 for attacking and 101 for moving).
+00000000 != 00000000 at 00000034 previously unknown.
+00000000 != 00000000 at 00000038 previously unknown.
+
+
+After the caller 004C2A27
+Pengus call 25852398 26186a38 00000000 00000002 -> 
+00846CF8 != 00846CF8 at 00000000
+00000001 != 00000001 at 00000004
+00002626 != 00002626 at 00000008
+255BAA90 != 255BAA90 at 0000000C
+00002626 != 00002626 at 00000014
+255BB630 != 255BB630 at 00000018
+00000026 != 00000026 at 00000020
+2623D5D8 != 2623D5D8 at 00000030
+263DA018 != 263DA018 at 00000034
+00002626 != 00002626 at 0000003C
+254C4050 != 254C4050 at 00000040
+00000026 != 00000026 at 00000048
+00000026 != 00000026 at 00000058
+00001388 != 00001388 at 0000006C
+7F7FFFFF != 7F7FFFFF at 00000078
+7F7FFFFF != 7F7FFFFF at 00000084
+7F7FFFFF != 7F7FFFFF at 00000090
+7F7FFFFF != 7F7FFFFF at 0000009C
+40000000 != 40000000 at 000000B0
+
+### Between 004C2A18 and 004C2AD2 there are the parameter setters. ###
+
+
+For the magic method at 004C2A3C
+(Only changes by that method).
+00000003 != 00000001 at 00000004 Dynamic sz(units) + 1
+00000002 != 00000000 at 0000001C Dynamic sz(units)
+29355420 != 00000000 at 00000024
+29355428 != 00000000 at 00000028
+29355428 != 00000000 at 0000002C
+1D069B38 != 263D58D8 at 00000034 This should be investigated to see where it comes from.
+00023C02 != 00000000 at 00000038
+3F333334 != 00000000 at 00000070
+3F4CCCCD != 00000000 at 00000074
+3F19999A != 7F7FFFFF at 00000078
+3FE00000 != 00000000 at 0000007C
+40000000 != 00000000 at 00000080
+3FC00000 != 7F7FFFFF at 00000084
+4121F770 != 00000000 at 00000088
+415F66F3 != 00000000 at 0000008C
+40C90FDB != 7F7FFFFF at 00000090
+41140101 != 00000000 at 00000094
+41437A15 != 00000000 at 00000098
+40C90FDB != 7F7FFFFF at 0000009C
+3FB6DB6D != 00000000 at 000000A0
+3F124925 != 00000000 at 000000A4
+3DCA5039 != 00000000 at 000000A8
+3DDD6648 != 00000000 at 000000AC
+
+Full data 
+00846CF8 != 00000000 at 00000000
+00000002 != 00000000 at 00000004
+00002626 != 00000000 at 00000008
+25CEDBF8 != 00000000 at 0000000C
+00002626 != 00000000 at 00000014
+25CEDBB8 != 00000000 at 00000018
+00000001 != 00000000 at 0000001C
+00000026 != 00000000 at 00000020
+299EF178 != 00000000 at 00000024
+299EF17C != 00000000 at 00000028
+299EF17C != 00000000 at 0000002C
+2624D5B8 != 00000000 at 00000030
+25C08900 != 00000000 at 00000034
+00023002 != 00000000 at 00000038
+00002626 != 00000000 at 0000003C
+2925C428 != 00000000 at 00000040
+00000026 != 00000000 at 00000048
+00000026 != 00000000 at 00000058
+29AB7D08 != 00000000 at 00000068
+00001F40 != 00000000 at 0000006C
+3F4CCCCD != 00000000 at 00000070
+3F4CCCCD != 00000000 at 00000074
+3F4CCCCD != 00000000 at 00000078
+3FC00000 != 00000000 at 0000007C
+3FC00000 != 00000000 at 00000080
+3FC00000 != 00000000 at 00000084
+40C90FDB != 00000000 at 00000088
+40C90FDB != 00000000 at 0000008C
+40C90FDB != 00000000 at 00000090
+40C90FDB != 00000000 at 00000094
+40C90FDB != 00000000 at 00000098
+40C90FDB != 00000000 at 0000009C
+3FA00000 != 00000000 at 000000A0
+3F2AAAAB != 00000000 at 000000A4
+3E22F983 != 00000000 at 000000A8
+3E22F983 != 00000000 at 000000AC
+40000000 != 00000000 at 000000B0
+
+My struct
+00846CF8 != 00000000 at 00000000
+00000002 != 00000000 at 00000004
+00002929 != 00000000 at 00000008
+25CFF1B8 != 00000000 at 0000000C
+00002929 != 00000000 at 00000014
+25CFF0F8 != 00000000 at 00000018
+00000001 != 00000000 at 0000001C
+00000029 != 00000000 at 00000020
+1CC20EB8 != 00000000 at 00000024
+1CC20EBC != 00000000 at 00000028
+1CC20EBC != 00000000 at 0000002C
+29214008 != 00000000 at 00000030
+263CCFD0 != 00000000 at 00000034
+00023002 != 00000000 at 00000038
+00002929 != 00000000 at 0000003C
+25EA7698 != 00000000 at 00000040
+00000029 != 00000000 at 00000048
+00000029 != 00000000 at 00000058
+2603A748 != 00000000 at 00000068
+00001F40 != 00000000 at 0000006C
+3F4CCCCD != 00000000 at 00000070
+3F4CCCCD != 00000000 at 00000074
+3F4CCCCD != 00000000 at 00000078
+3FC00000 != 00000000 at 0000007C
+3FC00000 != 00000000 at 00000080
+3FC00000 != 00000000 at 00000084
+40C90FDB != 00000000 at 00000088
+40C90FDB != 00000000 at 0000008C
+40C90FDB != 00000000 at 00000090
+40C90FDB != 00000000 at 00000094
+40C90FDB != 00000000 at 00000098
+40C90FDB != 00000000 at 0000009C
+3FA00000 != 00000000 at 000000A0
+3F2AAAAB != 00000000 at 000000A4
+3E22F983 != 00000000 at 000000A8
+3E22F983 != 00000000 at 000000AC
+40000000 != 00000000 at 000000B0
+
+00606F0D is writing that ominous pointer.
+
+
+005EE7D4 Throws the error.
+
+For flying units.
+Perseus call 27754840
+008478A0 != 00000000 at 00000000
+00000101 != 00000000 at 00000004
+00001388 != 00000000 at 00000008
+0002195A != 00000000 at 00000010
+00000003 != 00000000 at 00000014
+00000001 != 00000000 at 0000001C
+4282C180 != 00000000 at 00000020
+425FB983 != 00000000 at 00000024
+C02730BD != 00000000 at 0000002C
+00000101 != 00000000 at 00000030
+
+For ground units.
+008478A0 != 00000000 at 00000000 Constant (008478A0)
+00000101 != 00000000 at 00000004 Const
+00001388 != 00000000 at 00000008 The old 0000006C.
+00000000 != 00000000 at 0000000C previously unknown.
+0002155B != 00000000 at 00000010
+00000005 != 00000000 at 00000014 Dynamic (random).
+00000000 != 00000000 at 00000018 previously unknown.
+00000001 != 00000000 at 0000001C Const 
+4272C0F8 != 00000000 at 00000020 x
+428FF386 != 00000000 at 00000024 y
+BFB969E4 != 00000000 at 0000002C
+00000101 != 00000000 at 00000030 Const (100 for attacking and 101 for moving).
+00000000 != 00000000 at 00000034 previously unknown.
+00000000 != 00000000 at 00000038 previously unknown.
+
+
+Units die at 
+0053B8AE -> 0053B8CF
+
+################ Always clean the buffer before playing a match. ######################
+Sometimes when there are planes or flying units in general, the game crashes.
+
+[esi + 0x68] for when a boat chases a fish.
+Perseus call 25c37b00
+
+------------
+008475A8 != 00000000 at 00000000
+00000601 != 00000000 at 00000004
+00001388 != 00000000 at 00000008
+00005BE2 != 00000000 at 00000010
+00000005 != 00000000 at 00000014
+00000001 != 00000000 at 0000001C
+423E0000 != 00000000 at 00000020
+423A0000 != 00000000 at 00000024
+C058AD01 != 00000000 at 00000028
+423E0000 != 00000000 at 0000002C
+423A0000 != 00000000 at 00000030
+C058AD01 != 00000000 at 00000034
+
+
+
+[esi]
+Perseus call 2580e378
+
+------------
+00846CF8 != 00000000 at 00000000
+00000002 != 00000000 at 00000004
+1C912626 != 00000000 at 00000008
+258138F8 != 00000000 at 0000000C
+00002626 != 00000000 at 00000014
+25813A38 != 00000000 at 00000018
+00000001 != 00000000 at 0000001C
+00000026 != 00000000 at 00000020
+25760F88 != 00000000 at 00000024
+25760F8C != 00000000 at 00000028
+25760F8C != 00000000 at 0000002C
+263D7388 != 00000000 at 00000030
+25F50FE0 != 00000000 at 00000034
+00000040 != 00000000 at 00000038
+00002626 != 00000000 at 0000003C
+02B7A1D0 != 00000000 at 00000040
+00000026 != 00000000 at 00000048
+00000026 != 00000000 at 00000058
+2580E378 != 00000000 at 00000068
+00000FA4 != 00000000 at 0000006C
+3F333333 != 00000000 at 00000070
+3F333333 != 00000000 at 00000074
+3F333333 != 00000000 at 00000078
+3F800000 != 00000000 at 0000007C
+3F800000 != 00000000 at 00000080
+3F800000 != 00000000 at 00000084
+3F9C61AA != 00000000 at 00000088
+3F9C61AA != 00000000 at 0000008C
+3F9C61AA != 00000000 at 00000090
+3FDF66F3 != 00000000 at 00000094
+3FDF66F3 != 00000000 at 00000098
+3FDF66F3 != 00000000 at 0000009C
+3FB6DB6E != 00000000 at 000000A0
+3F800000 != 00000000 at 000000A4
+3F5189F2 != 00000000 at 000000A8
+3F12AD5D != 00000000 at 000000AC
+40000000 != 00000000 at 000000B0
+
+
+005EDFD7 happends when I want to farm something
+005EDFD7 -> 004BF1B2
+
+
+0056B3C3 -> Yolo resources.
+The price is somewhere here 0056B3B7.
+
+To test the error make planes never leave the plane. (since they can probably never come back.)
+
+Every time a plane is down for energy, it will be 
+recreated, meaning that old units will still
+be registered. (I suppose this is also what's happening with
+transports?)
+
+
+It got to a segmenetation fault at 
+
+"""
+Thread 25 received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 6208.0x2b34]
+0x006166e4 in ?? ()
+or 
+0x002771a90.
+"""
+
+Population control
+00562BC0
+
+Population of a unit 
+([[unit + 2C]] + 6C]([unit + 2C])
+
+Debugging gdb -p 14736.
+
+Here I can find the total pop. 00563A93.
+
+The game also runs as windows 8.
+
+######################
+00641728 happends when I follow an ally unit.
+004EA120 happends when I click or follow but not when
+I would attack.
+004E9F76 <- 004EA120 <- 00641728
+
+Soooo. are on the same team.
+
+ecx = [plyIndex*4 + 00930DB4]
+
+[ecx+edx*4+000009DC]
+edx is the player index.
+if 1, its enemy, if 0, its ally.
+
+0x027d1a90 An exception has been triggered here.
+
+I need to scrape this method tommorow. 004C2A3C
+Init the missing param here 004C284F.
+
+
+Method at 004C284F sets the missing param in the method at 004C2A3C
+
+
+[ECX + 68] for when I select a unit.
+008475A8 != 00000000 at 00000000
+00000601 != 00000000 at 00000004
+00001388 != 00000000 at 00000008
+00008FD2 != 00000000 at 00000010
+00000005 != 00000000 at 00000014
+00000001 != 00000000 at 0000001C
+423E0000 != 00000000 at 00000020
+423A0000 != 00000000 at 00000024
+C058AD01 != 00000000 at 00000028
+423E0000 != 00000000 at 0000002C
+423A0000 != 00000000 at 00000030
+C058AD01 != 00000000 at 00000034
+254AEC20 != 00000000 at 00000038
+3F800000 != 00000000 at 00000040
+
+
+Resources are decrease at at 004C4BD7
+The method here 0056B3B7 gets the value for the current resource (which is a param).
+Intresting method at 005CEB1B.
+
+Easy strategy, modify this address at 0056B3C3
+to decrease the resource use only when I call the method
+from the bot.
