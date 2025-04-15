@@ -1,4 +1,4 @@
-g++ -ISources/BotLogic -ISources/ -IGeometry/ -c Sources/Sources.cpp -std=gnu++11 -o Sources/Sources.o
+g++ -ISources/BotLogic -ISources/ -IGeometry/ -c Sources/EmpireEarth.cpp -std=gnu++11 -o Sources/Sources.o
 g++ -ISources/BotLogic -ISources/ -IGeometry/ -c Sources/InjectUtilities32bits.cpp -std=gnu++11 -o Sources/InjectUtilities32bits.o
 g++ -ISources/BotLogic -ISources/ -IGeometry/ -c Sources/MethodsDefinitions.cpp -std=gnu++11 -o Sources/MethodsDefinitions.o
 g++ -ISources/BotLogic -ISources/ -IGeometry/ -c Sources/EETwa.cpp -std=gnu++11 -o Sources/EETwa.o
