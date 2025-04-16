@@ -68,7 +68,7 @@ void att_AddDamagedUnits(PVOID unit) {
   attackedUnits[make_pair(pos.x, pos.y)] = 1;
 }
 
-void att_AttackTransportWithNavals(vector<PVOID> &units) {
+void att_AttackTransportWithNavals(vector<Unit> &units) {
   vector<PVOID> filteredUnits = eeTa_Filter(units, navalAttackFilter);
 
   for(uint32_t i = 0, c = min(6, filteredUnits.size()); i < c; i++) {
@@ -91,7 +91,7 @@ void att_AttackTransportWithNavals(vector<PVOID> &units) {
   }
 }
 
-void att_AttackEnemiesWithPlanes(vector<PVOID> &units) {
+void att_AttackEnemiesWithPlanes(vector<Unit> &units) {
   vector<PVOID> filteredUnits = eeTa_Filter(units, airAttackFilter);
 
   for(uint32_t i = 0, c = min(6, filteredUnits.size()); i < c; i++) {
@@ -151,7 +151,7 @@ uint8_t att_ScanAndAttack(vector<PVOID> &selfUnits) {
   return 0;
 }
 
-void att_PatrolRandomPositions_t(vector<PVOID> &selfUnits, uint8_t (*checker)(PVOID), int32_t maxCommands) {
+void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(PVOID), int32_t maxCommands) {
   vector<PVOID> filteredUnits = eeTa_Filter(selfUnits, checker);
   if(!filteredUnits.size()) {
     return ;
@@ -176,7 +176,7 @@ uint8_t att_IsUnitCarrier(PVOID unit) {
          def == UNIT_SPACE_SPACE_CARRIER;
 }
 
-void att_PatrolRandomPositions(vector<PVOID> &selfUnits) {
+void att_PatrolRandomPositions(vector<Unit> &selfUnits) {
   att_PatrolRandomPositions_t(selfUnits, idleAirUnits, 6);
   att_PatrolRandomPositions_t(selfUnits, idleGroundUnits, 7);
   att_PatrolRandomPositions_t(selfUnits, idleWaterUnits, 3);

@@ -25,7 +25,7 @@ void fishTheFishes(PVOID fishBoat) {
 }
 
 void res_MoveResourceBoats() {
-  vector<PVOID> units = eeTa_Units(eeTa_SelfPlayer());
+  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
   vector<PVOID> fishBoats = eeTa_Filter(units, fishBoatsFilter);
 
   int32_t maxSearches = 5;

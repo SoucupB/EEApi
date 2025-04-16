@@ -61,11 +61,13 @@ int8_t eeTa_AllPlayers() {
   return all_players;
 }
 
-vector<PVOID> eeTa_Units(int8_t player) {
-  vector<PVOID> units;
+vector<Unit> eeTa_Units(int8_t player) {
+  vector<Unit> units;
   for(auto &it : unitPresence[player]) {
     if(!eeTa_IsUnitDead(it.first) && eeTa_IsUnit((PVOID)it.first)) {
-      units.push_back((PVOID)it.first);
+      units.push_back((Unit) {
+        ._payload = (PVOID)it.first
+      });
     }
   }
   return units;
@@ -141,11 +143,11 @@ int8_t eeTa_AreAllies(uint8_t plySrc, uint8_t plyDst) {
   return !*_2;
 }
 
-vector<PVOID> eeTa_Filter(vector<PVOID> &units, uint8_t (*method)(PVOID)) {
+vector<PVOID> eeTa_Filter(vector<Unit> &units, uint8_t (*method)(PVOID)) {
   vector<PVOID> filteredUnits;
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(method(units[i])) {
-      filteredUnits.push_back(units[i]);
+    if(method(units[i]._payload)) {
+      filteredUnits.push_back(units[i]._payload);
     }
   }
   return filteredUnits;
@@ -178,11 +180,13 @@ int8_t eeTa_IsIdle(PVOID building) {
   return eeTa_CurrentlyBuilding(building) == IDLE;
 }
 
-vector<PVOID> eeTa_IdleBuildings(int8_t player) {
-  vector<PVOID> buildingsPointer;
+vector<Unit> eeTa_IdleBuildings(int8_t player) {
+  vector<Unit> buildingsPointer;
   for(auto &it : unitPresence[player]) {
     if(!eeTa_IsUnitDead(it.first) && eeTa_IsBuildingComplete(it.first) && eeTa_IsBuilding(it.first) && eeTa_IsIdle(it.first)) {
-      buildingsPointer.push_back(it.first);
+      buildingsPointer.push_back((Unit) {
+        ._payload = it.first
+      });
     }
   }
   return buildingsPointer;
@@ -346,12 +350,12 @@ int8_t eeTa_IsUnitIdle(PVOID unit) {
 }
 
 PVOID eeTa_Unit_Sample(int8_t player) {
-  vector<PVOID> units = eeTa_Units(player);
+  vector<Unit> units = eeTa_Units(player);
   if(!units.size()) {
     return NULL;
   }
 
-  return units[rand() % units.size()];
+  return units[rand() % units.size()]._payload;
 }
 
 int8_t eeTa_Player(PVOID unit) {
