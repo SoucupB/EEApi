@@ -41,20 +41,20 @@ void eeTa_Printf(const char *format, ...) {
   va_end(args);
 }
 
-void __cdecl eeTa_OnUnitFrame(PVOID unit) {
-  int8_t playerTeam = eeTa_Player(unit);
+void __cdecl eeTa_OnUnitFrame(Unit unit) {
+  int8_t playerTeam = eeTa_Player(unit._payload);
   if(playerTeam < 0 || playerTeam >= 24) {
     return ;
   }
-  if(eeTa_IsUnitDead(unit)) {
-    unitPresence[playerTeam].erase(unit);
-    unitPresence[all_players].erase(unit);
-    bt_OnUnitDestroy(unit);
+  if(eeTa_IsUnitDead(unit._payload)) {
+    unitPresence[playerTeam].erase(unit._payload);
+    unitPresence[all_players].erase(unit._payload);
+    bt_OnUnitDestroy(unit._payload);
     return ;
   }
-  unitPresence[playerTeam][unit] = 1;
-  unitPresence[all_players][unit] = 1;
-  bt_OnUnitIteration(unit);
+  unitPresence[playerTeam][unit._payload] = 1;
+  unitPresence[all_players][unit._payload] = 1;
+  bt_OnUnitIteration(unit._payload);
 }
 
 int8_t eeTa_AllPlayers() {
@@ -192,7 +192,7 @@ int8_t eeTa_SelfPlayer() {
   return playerIndex;
 }
 
-vector<PVOID> eeTa_UnitTypes(PVOID building) {
+vector<PVOID> eeTa_UnitTypes(Unit building) {
   return vector<PVOID>();
 }
 

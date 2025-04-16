@@ -12,8 +12,8 @@ typedef struct Unit_t {
 } Unit;
 
 vector<PVOID> eeTa_Buildings(int8_t player);
-vector<PVOID> eeTa_UnitTypes(PVOID building);
-void __cdecl eeTa_OnUnitFrame(PVOID unit);
+vector<PVOID> eeTa_UnitTypes(Unit building);
+void __cdecl eeTa_OnUnitFrame(Unit unit);
 vector<PVOID> eeTa_Units(int8_t player);
 void eeTa_Clean();
 void eeTa_OnFrame();
