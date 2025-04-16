@@ -16,7 +16,9 @@ extern "C" {
       return 0;
     }
     int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x1540DC);
-    eeTa_OnUnitFrame(self);
+    eeTa_OnUnitFrame((Unit) {
+      ._payload = self
+    });
     return method(self);
   }
 
