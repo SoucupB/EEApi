@@ -16,7 +16,9 @@ extern "C" {
       return 0;
     }
     int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x1540DC);
-    eeTa_OnUnitFrame(self);
+    eeTa_OnUnitFrame((Unit) {
+      ._payload = self
+    });
     return method(self);
   }
 
@@ -41,7 +43,9 @@ extern "C" {
       return 0;
     }
     int32_t __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)hModule + 0x22975A);
-    eeTa_OnUnitDeath(self);
+    eeTa_OnUnitDeath((Unit) {
+      ._payload = self
+    });
     return method(self, _a, _b, _c);
   }
 
@@ -51,7 +55,9 @@ extern "C" {
       return 0;
     }
     int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x1FDAF3);
-    eeTa_OnUnitDeath(self);
+    eeTa_OnUnitDeath((Unit) {
+      ._payload = self
+    });
     return method(self);
   }
 
@@ -61,7 +67,9 @@ extern "C" {
       return 0;
     }
     int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)hModule + 0x1DB4);
-    eeTa_OnUnitDeath(self);
+    eeTa_OnUnitDeath((Unit) {
+      ._payload = self
+    });
     return method(self);
   }
 

@@ -24,7 +24,7 @@ uint8_t eeTa_NeutralPlayer() {
   return neutralPlayer;
 }
 
-uint8_t eeTa_IsNeutral(PVOID unit) {
+uint8_t eeTa_IsNeutral(Unit unit) {
   return eeTa_Player(unit) == neutralPlayer;
 }
 
@@ -41,19 +41,19 @@ void eeTa_Printf(const char *format, ...) {
   va_end(args);
 }
 
-void __cdecl eeTa_OnUnitFrame(PVOID unit) {
+void __cdecl eeTa_OnUnitFrame(Unit unit) {
   int8_t playerTeam = eeTa_Player(unit);
   if(playerTeam < 0 || playerTeam >= 24) {
     return ;
   }
   if(eeTa_IsUnitDead(unit)) {
-    unitPresence[playerTeam].erase(unit);
-    unitPresence[all_players].erase(unit);
+    unitPresence[playerTeam].erase(unit._payload);
+    unitPresence[all_players].erase(unit._payload);
     bt_OnUnitDestroy(unit);
     return ;
   }
-  unitPresence[playerTeam][unit] = 1;
-  unitPresence[all_players][unit] = 1;
+  unitPresence[playerTeam][unit._payload] = 1;
+  unitPresence[all_players][unit._payload] = 1;
   bt_OnUnitIteration(unit);
 }
 
@@ -61,24 +61,30 @@ int8_t eeTa_AllPlayers() {
   return all_players;
 }
 
-vector<PVOID> eeTa_Units(int8_t player) {
-  vector<PVOID> units;
+vector<Unit> eeTa_Units(int8_t player) {
+  vector<Unit> units;
   for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead(it.first) && eeTa_IsUnit((PVOID)it.first)) {
-      units.push_back((PVOID)it.first);
+    if(!eeTa_IsUnitDead((Unit) {
+      ._payload = it.first
+    }) && eeTa_IsUnit((Unit) {
+      ._payload = (PVOID)it.first
+    })) {
+      units.push_back((Unit) {
+        ._payload = (PVOID)it.first
+      });
     }
   }
   return units;
 }
 
-void __cdecl eeTa_OnUnitDeath(PVOID unit) {
+void __cdecl eeTa_OnUnitDeath(Unit unit) {
   for(int8_t i = 0; i < 24; i++) {
-    unitPresence[i].erase(unit);
+    unitPresence[i].erase(unit._payload);
   }
   bt_OnUnitDestroy(unit);
 }
 
-void eeTa_BuildUnit(PVOID building, PVOID unitType) {
+void eeTa_BuildUnit(Unit building, PVOID unitType) {
   HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
   if(!hModule) {
     return ;
@@ -88,12 +94,12 @@ void eeTa_BuildUnit(PVOID building, PVOID unitType) {
   }
   int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)hModule + 0x1F5F97);
   shouldCostBeReduced = 1;
-  method(building, unitType, 0);
+  method(building._payload, unitType, 0);
   shouldCostBeReduced = 0;
 }
 
-int32_t eeTa_UnitPopulation(PVOID unit) {
-  PVOID unitTypeStruct = util_Pointer(unit, 0x2C, POINTER_TYPE);
+int32_t eeTa_UnitPopulation(Unit unit) {
+  PVOID unitTypeStruct = util_Pointer(unit._payload, 0x2C, POINTER_TYPE);
   PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
   PVOID callee = util_Pointer(callerMethods, 0x6C, POINTER_TYPE);
   int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callee);
@@ -141,8 +147,8 @@ int8_t eeTa_AreAllies(uint8_t plySrc, uint8_t plyDst) {
   return !*_2;
 }
 
-vector<PVOID> eeTa_Filter(vector<PVOID> &units, uint8_t (*method)(PVOID)) {
-  vector<PVOID> filteredUnits;
+vector<Unit> eeTa_Filter(vector<Unit> &units, uint8_t (*method)(Unit)) {
+  vector<Unit> filteredUnits;
   for(size_t i = 0, c = units.size(); i < c; i++) {
     if(method(units[i])) {
       filteredUnits.push_back(units[i]);
@@ -167,22 +173,36 @@ int32_t eeTa_TotalPop() {
 vector<PVOID> eeTa_Buildings(int8_t player) {
   vector<PVOID> buildingsPointer;
   for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead(it.first) && eeTa_IsBuilding(it.first)) {
+    if(!eeTa_IsUnitDead((Unit) {
+      ._payload = it.first
+    }) && eeTa_IsBuilding((Unit) {
+      ._payload = it.first
+    })) {
       buildingsPointer.push_back(it.first);
     }
   }
   return buildingsPointer;
 }
 
-int8_t eeTa_IsIdle(PVOID building) {
+int8_t eeTa_IsIdle(Unit building) {
   return eeTa_CurrentlyBuilding(building) == IDLE;
 }
 
-vector<PVOID> eeTa_IdleBuildings(int8_t player) {
-  vector<PVOID> buildingsPointer;
+vector<Unit> eeTa_IdleBuildings(int8_t player) {
+  vector<Unit> buildingsPointer;
   for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead(it.first) && eeTa_IsBuildingComplete(it.first) && eeTa_IsBuilding(it.first) && eeTa_IsIdle(it.first)) {
-      buildingsPointer.push_back(it.first);
+    if(!eeTa_IsUnitDead((Unit) {
+      ._payload = it.first
+    }) && eeTa_IsBuildingComplete((Unit) {
+      ._payload = it.first
+    }) && eeTa_IsBuilding((Unit) {
+      ._payload = it.first
+    }) && eeTa_IsIdle((Unit) {
+      ._payload = it.first
+    })) {
+      buildingsPointer.push_back((Unit) {
+        ._payload = it.first
+      });
     }
   }
   return buildingsPointer;
@@ -192,7 +212,7 @@ int8_t eeTa_SelfPlayer() {
   return playerIndex;
 }
 
-vector<PVOID> eeTa_UnitTypes(PVOID building) {
+vector<PVOID> eeTa_UnitTypes(Unit building) {
   return vector<PVOID>();
 }
 
@@ -208,18 +228,18 @@ PVOID _eeTa_EpochStruct(PVOID building, PVOID unitType) {
   return method((PVOID)epochStruct, unitType);
 }
 
-int32_t eeTa_Buildables(PVOID unit) {
+int32_t eeTa_Buildables(Unit unit) {
   HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
   if(!hModule) {
     return 0;
   }
-  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit, 0x2C, POINTER_TYPE);
+  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
   int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x196DFF);
   return method(typeMetaPointer);
 }
 
-vector<int32_t> eeTa_AllBuildableTypes(PVOID unit) {
-  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit, 0x2C, POINTER_TYPE);
+vector<int32_t> eeTa_AllBuildableTypes(Unit unit) {
+  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
   size_t *buildableTypes = (size_t *)util_Pointer((PVOID)typeMetaPointer, 0x30, POINTER_TYPE);
   vector<int32_t> types;
   if(!buildableTypes) {
@@ -236,14 +256,14 @@ vector<int32_t> eeTa_AllBuildableTypes(PVOID unit) {
   return types;
 }
 
-int8_t eeTa_IsBuildingComplete(PVOID unit) {
-  int8_t *isBuildingRef = (int8_t *)util_Pointer((PVOID)unit, 0x34C, INT8_T_TYPE);
+int8_t eeTa_IsBuildingComplete(Unit unit) {
+  int8_t *isBuildingRef = (int8_t *)util_Pointer((PVOID)unit._payload, 0x34C, INT8_T_TYPE);
   
   return *isBuildingRef;
 }
 
-__declspec(dllexport) uint8_t eeTa_CanBuild(PVOID building, PVOID type) {
-  size_t *epochStruct = (size_t *)_eeTa_EpochStruct(building, type);
+__declspec(dllexport) uint8_t eeTa_CanBuild(Unit building, PVOID type) {
+  size_t *epochStruct = (size_t *)_eeTa_EpochStruct(building._payload, type);
   if(!epochStruct) {
     return 0;
   }
@@ -260,8 +280,8 @@ void eeTa_OnInit() {
   bt_OnInit();
 }
 
-UnitTypeDef eeTa_UnitType(PVOID unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit, 0x2C, POINTER_TYPE);
+UnitTypeDef eeTa_UnitType(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
 
   return (UnitTypeDef)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
 }
@@ -275,8 +295,8 @@ void eeTa_AddFrameMethod(TimeAtom atom) {
   tmrs_AddMethod(timers, atom);
 }
 
-int8_t eeTa_IsBuilding(PVOID unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit, 0x2C, POINTER_TYPE);
+int8_t eeTa_IsBuilding(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
   size_t *callerStruct = (size_t *)util_Pointer((PVOID)unitMetaData[0], 0xB8, POINTER_TYPE);
 
   return (size_t)callerStruct == (size_t)GetModuleHandleA("EE-AOC.exe") + 0x20FD9D;
@@ -295,12 +315,12 @@ PVOID eeTa_SetPlayers(PVOID unit) {
   return selectedUnits;
 }
 
-int8_t eeTa_IsUnit(PVOID unit) {
+int8_t eeTa_IsUnit(Unit unit) {
   return !eeTa_IsBuilding(unit);
 }
 
-Point eeTa_GetDestinationCommand(PVOID unit) {
-  PVOID commandPointer = util_Pointer(unit, 0x1C8, POINTER_TYPE);
+Point eeTa_GetDestinationCommand(Unit unit) {
+  PVOID commandPointer = util_Pointer(unit._payload, 0x1C8, POINTER_TYPE);
   if(!commandPointer) {
     return (Point) {
       .x = -1.0f,
@@ -316,15 +336,15 @@ Point eeTa_GetDestinationCommand(PVOID unit) {
   };
 }
 
-int32_t eeTa_CurrentlyBuilding(PVOID building) {
-  return *(int32_t *)util_Pointer((PVOID)building, 0x260, INT32_T_TYPE);
+int32_t eeTa_CurrentlyBuilding(Unit building) {
+  return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
 }
 
-int32_t eeTa_CurrentHp(PVOID unit) {
-  return *(int32_t *)util_Pointer((PVOID)unit, 0x3C, INT32_T_TYPE);
+int32_t eeTa_CurrentHp(Unit unit) {
+  return *(int32_t *)util_Pointer((PVOID)unit._payload, 0x3C, INT32_T_TYPE);
 }
 
-int8_t eeTa_IsUnitDead(PVOID unit) {
+int8_t eeTa_IsUnitDead(Unit unit) {
   return !eeTa_CurrentHp(unit);
 }
 
@@ -332,29 +352,29 @@ int64_t eeTa_CurrentFrame() {
   return frames;
 }
 
-Point eeTa_CurrentPosition(PVOID unit) {
-  float *x = (float *)util_Pointer(unit, 0x13C, FLOAT_TYPE);
-  float *y = (float *)util_Pointer(unit, 0x14C, FLOAT_TYPE);
+Point eeTa_CurrentPosition(Unit unit) {
+  float *x = (float *)util_Pointer(unit._payload, 0x13C, FLOAT_TYPE);
+  float *y = (float *)util_Pointer(unit._payload, 0x14C, FLOAT_TYPE);
   return (Point) {
     .x = *x,
     .y = *y
   };
 }
 
-int8_t eeTa_IsUnitIdle(PVOID unit) {
-  return !util_Pointer(unit, 0x1F0, POINTER_TYPE);
+int8_t eeTa_IsUnitIdle(Unit unit) {
+  return !util_Pointer(unit._payload, 0x1F0, POINTER_TYPE);
 }
 
 PVOID eeTa_Unit_Sample(int8_t player) {
-  vector<PVOID> units = eeTa_Units(player);
+  vector<Unit> units = eeTa_Units(player);
   if(!units.size()) {
     return NULL;
   }
 
-  return units[rand() % units.size()];
+  return units[rand() % units.size()]._payload;
 }
 
-int8_t eeTa_Player(PVOID unit) {
-  PVOID nextStruct = util_Pointer((PVOID)unit, 0x18, POINTER_TYPE);
+int8_t eeTa_Player(Unit unit) {
+  PVOID nextStruct = util_Pointer((PVOID)unit._payload, 0x18, POINTER_TYPE);
   return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
 }

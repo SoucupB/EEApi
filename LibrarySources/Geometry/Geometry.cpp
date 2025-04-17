@@ -11,10 +11,11 @@ float distanceEuclidf(Point a, Point b) {
   return sqrtf((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
-PVOID geom_GetClosestUnitFrom(PVOID unit, int8_t player, uint8_t (*filter)(PVOID)) {
-  vector<PVOID> units = eeTa_Units(player);
+Unit geom_GetClosestUnitFrom(Unit unit, int8_t player, uint8_t (*filter)(Unit)) {
+  vector<Unit> units = eeTa_Units(player);
   float minDist = FLT_MAX;
-  PVOID selectedUnit = NULL;
+  Unit selectedUnit;
+  selectedUnit._payload = NULL;
   Point unitPos = eeTa_CurrentPosition(unit);
   for(size_t i = 0, c = units.size(); i < c; i++) {
     if(!filter(units[i])) {
