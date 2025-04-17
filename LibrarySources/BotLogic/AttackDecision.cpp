@@ -14,7 +14,7 @@ size_t min(size_t a, size_t b) {
 
 uint8_t navalAttackFilter(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
-  return eeTypes_IsWater(def) && !eeTypes_IsTransport(def) && !att_IsUnitCarrier(unit._payload) && !eeTypes_IsFishBoat(def) &&
+  return eeTypes_IsWater(def) && !eeTypes_IsTransport(def) && !att_IsUnitCarrier(unit) && !eeTypes_IsFishBoat(def) &&
          eeTa_Player(unit) == eeTa_SelfPlayer();
 }
 
@@ -52,23 +52,19 @@ uint8_t idleAirUnits(Unit unit) {
 
 uint8_t idleWaterUnits(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
-  return eeTa_IsUnitIdle(unit) && !att_IsUnitCarrier(unit._payload) && !eeTypes_IsFishBoat(def) && !eeTypes_IsTransport(def) && eeTypes_IsWater(def);
+  return eeTa_IsUnitIdle(unit) && !att_IsUnitCarrier(unit) && !eeTypes_IsFishBoat(def) && !eeTypes_IsTransport(def) && eeTypes_IsWater(def);
 }
 
-void att_AddDamagedUnits(PVOID unit) {
-  if(eeTa_Player((Unit) {
-    ._payload = unit
-   }) != eeTa_SelfPlayer()) {
+void att_AddDamagedUnits(Unit unit) {
+  if(eeTa_Player(unit) != eeTa_SelfPlayer()) {
     return ;
   }
-  UnitTypeDef def = eeTa_UnitType((Unit) {._payload = unit});
-  if(!eeTa_IsBuilding((Unit) {
-    ._payload = unit
-  }) && !eeTypes_IsWorker(def)) {
+  UnitTypeDef def = eeTa_UnitType(unit);
+  if(!eeTa_IsBuilding(unit) && !eeTypes_IsWorker(def)) {
     return ;
   }
   
-  Point pos = eeTa_CurrentPosition((Unit) {._payload = unit});
+  Point pos = eeTa_CurrentPosition(unit);
   attackedUnits[make_pair(pos.x, pos.y)] = 1;
 }
 
@@ -173,8 +169,8 @@ void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(Uni
   }
 }
 
-uint8_t att_IsUnitCarrier(PVOID unit) {
-  UnitTypeDef def = eeTa_UnitType((Unit) {._payload = unit});
+uint8_t att_IsUnitCarrier(Unit unit) {
+  UnitTypeDef def = eeTa_UnitType(unit);
   return def == UNIT_WW2_CARRIER || def == UNIT_WWM_CARRIER ||
          def == UNIT_DIGITAL_PORT_NAVAL || def == UNIT_NANO_PORT_NAVAL ||
          def == UNIT_SPACE_SPACE_CARRIER;

@@ -37,16 +37,16 @@ void pls_ProcessHealth(PVOID unit) {
   unitsHealth[unit].isBeingAttacked = 0;
 }
 
-int8_t pls_IsUnitAttacked(PVOID unit) {
-  return unitsHealth[unit].isBeingAttacked;
+int8_t pls_IsUnitAttacked(Unit unit) {
+  return unitsHealth[unit._payload].isBeingAttacked;
 }
 
-void pls_OnUnitIteration(PVOID unit) {
-  pls_ProcessHealth(unit);
+void pls_OnUnitIteration(Unit unit) {
+  pls_ProcessHealth(unit._payload);
 }
 
-void pls_OnUnitDestory(PVOID unit) {
-  unitsHealth.erase(unit);
+void pls_OnUnitDestory(Unit unit) {
+  unitsHealth.erase(unit._payload);
 }
 
 void pls_OnInit(PVOID remoteMethod) {

@@ -49,12 +49,12 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
   if(eeTa_IsUnitDead(unit)) {
     unitPresence[playerTeam].erase(unit._payload);
     unitPresence[all_players].erase(unit._payload);
-    bt_OnUnitDestroy(unit._payload);
+    bt_OnUnitDestroy(unit);
     return ;
   }
   unitPresence[playerTeam][unit._payload] = 1;
   unitPresence[all_players][unit._payload] = 1;
-  bt_OnUnitIteration(unit._payload);
+  bt_OnUnitIteration(unit);
 }
 
 int8_t eeTa_AllPlayers() {
@@ -81,7 +81,7 @@ void __cdecl eeTa_OnUnitDeath(Unit unit) {
   for(int8_t i = 0; i < 24; i++) {
     unitPresence[i].erase(unit._payload);
   }
-  bt_OnUnitDestroy(unit._payload);
+  bt_OnUnitDestroy(unit);
 }
 
 void eeTa_BuildUnit(Unit building, PVOID unitType) {

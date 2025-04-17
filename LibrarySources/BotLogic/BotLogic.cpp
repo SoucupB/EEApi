@@ -54,7 +54,7 @@ int8_t shouldBuildWorkers() {
 }
 
 uint8_t navalAirCarrierFilter(Unit unit) {
-  return att_IsUnitCarrier(unit._payload);
+  return att_IsUnitCarrier(unit);
 }
 
 void buildUnit_t(PVOID attr) {
@@ -316,11 +316,11 @@ void bt_InitFisherBoats() {
   eeTa_AddFrameMethod(atom);
 }
 
-void bt_OnUnitIteration(PVOID unit) {
+void bt_OnUnitIteration(Unit unit) {
   pls_OnUnitIteration(unit);
 }
 
-void bt_OnUnitDestroy(PVOID unit) {
+void bt_OnUnitDestroy(Unit unit) {
   pls_OnUnitDestory(unit);
 }
 

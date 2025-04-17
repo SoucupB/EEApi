@@ -10,18 +10,18 @@ uint8_t fishBoatsFilter(Unit unit) {
   return eeTypes_IsFishBoat(def);
 }
 
-uint8_t fishFilter(PVOID unit) {
-  UnitTypeDef def = eeTa_UnitType((Unit) {._payload = unit});
+uint8_t fishFilter(Unit unit) {
+  UnitTypeDef def = eeTa_UnitType(unit);
   return def == IDLE; // Fishes don't have a type for some reason.
 }
 
 void fishTheFishes(PVOID fishBoat) {
-  PVOID unit = geom_GetClosestUnitFrom(fishBoat, eeTa_NeutralPlayer(), fishFilter);
-  if(!unit) {
+  Unit unit = geom_GetClosestUnitFrom((Unit) {._payload = fishBoat}, eeTa_NeutralPlayer(), fishFilter);
+  if(!unit._payload) {
     return ;
   }
 
-  help_MoveToTarget(fishBoat, unit);
+  help_MoveToTarget(fishBoat, unit._payload);
 }
 
 void res_MoveResourceBoats() {
