@@ -176,14 +176,16 @@ vector<PVOID> eeTa_Buildings(int8_t player) {
   return buildingsPointer;
 }
 
-int8_t eeTa_IsIdle(PVOID building) {
+int8_t eeTa_IsIdle(Unit building) {
   return eeTa_CurrentlyBuilding(building) == IDLE;
 }
 
 vector<Unit> eeTa_IdleBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
   for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead(it.first) && eeTa_IsBuildingComplete(it.first) && eeTa_IsBuilding(it.first) && eeTa_IsIdle(it.first)) {
+    if(!eeTa_IsUnitDead(it.first) && eeTa_IsBuildingComplete(it.first) && eeTa_IsBuilding(it.first) && eeTa_IsIdle((Unit) {
+      ._payload = it.first
+    })) {
       buildingsPointer.push_back((Unit) {
         ._payload = it.first
       });
@@ -320,8 +322,8 @@ Point eeTa_GetDestinationCommand(PVOID unit) {
   };
 }
 
-int32_t eeTa_CurrentlyBuilding(PVOID building) {
-  return *(int32_t *)util_Pointer((PVOID)building, 0x260, INT32_T_TYPE);
+int32_t eeTa_CurrentlyBuilding(Unit building) {
+  return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
 }
 
 int32_t eeTa_CurrentHp(PVOID unit) {

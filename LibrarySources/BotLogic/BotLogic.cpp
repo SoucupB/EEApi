@@ -88,7 +88,9 @@ void buildAirCarrierUnits(PVOID attr) {
   vector<PVOID> filteredUnits = eeTa_Filter(units, navalAirCarrierFilter);
   for(int32_t i = 0, c = filteredUnits.size(); i < c; i++) {
     PVOID naval = filteredUnits[i];
-    if(!eeTa_IsIdle(naval)) {
+    if(!eeTa_IsIdle((Unit) {
+      ._payload = naval
+    })) {
       continue;
     }
     vector<int32_t> types = eeTa_AllBuildableTypes(naval);
