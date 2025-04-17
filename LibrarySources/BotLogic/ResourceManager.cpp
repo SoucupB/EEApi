@@ -5,13 +5,13 @@
 
 using namespace std;
 
-uint8_t fishBoatsFilter(PVOID unit) {
+uint8_t fishBoatsFilter(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
   return eeTypes_IsFishBoat(def);
 }
 
 uint8_t fishFilter(PVOID unit) {
-  UnitTypeDef def = eeTa_UnitType(unit);
+  UnitTypeDef def = eeTa_UnitType((Unit) {._payload = unit});
   return def == IDLE; // Fishes don't have a type for some reason.
 }
 
@@ -26,14 +26,14 @@ void fishTheFishes(PVOID fishBoat) {
 
 void res_MoveResourceBoats() {
   vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
-  vector<PVOID> fishBoats = eeTa_Filter(units, fishBoatsFilter);
+  vector<Unit> fishBoats = eeTa_Filter(units, fishBoatsFilter);
 
   int32_t maxSearches = 5;
 
   for(size_t i = 0, c = fishBoats.size(); i < c; i++) {
-    PVOID unit = fishBoats[i];
+    Unit unit = fishBoats[i];
     if(eeTa_IsUnitIdle(unit)) {
-      fishTheFishes(unit);
+      fishTheFishes(unit._payload);
       maxSearches--;
     }
     if(!maxSearches) {

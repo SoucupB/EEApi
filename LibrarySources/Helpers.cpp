@@ -383,7 +383,7 @@ void help_FillData_Air(PVOID buffer) {
 
 
 MoveActionUnit *help_GetActionUnit(PVOID parent, PVOID unit) {
-  Point pos = eeTa_CurrentPosition(unit);
+  Point pos = eeTa_CurrentPosition((Unit) {._payload = unit});
   MoveActionUnit *self = (MoveActionUnit *)help_New(0x44);
   self->methodsBundle = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + 0x4475A8); // 8478A0
   self->_const_1 = (PVOID)0x601;

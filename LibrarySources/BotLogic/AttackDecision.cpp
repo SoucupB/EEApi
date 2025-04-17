@@ -12,19 +12,19 @@ size_t min(size_t a, size_t b) {
   return a < b ? a : b;
 }
 
-uint8_t navalAttackFilter(PVOID unit) {
+uint8_t navalAttackFilter(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
-  return eeTypes_IsWater(def) && !eeTypes_IsTransport(def) && !att_IsUnitCarrier(unit) && !eeTypes_IsFishBoat(def) &&
+  return eeTypes_IsWater(def) && !eeTypes_IsTransport(def) && !att_IsUnitCarrier(unit._payload) && !eeTypes_IsFishBoat(def) &&
          eeTa_Player(unit) == eeTa_SelfPlayer();
 }
 
-uint8_t airAttackFilter(PVOID unit) {
+uint8_t airAttackFilter(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
   return eeTypes_IsAir(def) && !eeTypes_IsTransport(def) &&
          eeTa_Player(unit) == eeTa_SelfPlayer();
 }
 
-uint8_t enemyTransporters(PVOID unit) {
+uint8_t enemyTransporters(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
   int8_t unitPlayer = eeTa_Player(unit);
   int8_t playerTeam = eeTa_SelfPlayer();
@@ -32,7 +32,7 @@ uint8_t enemyTransporters(PVOID unit) {
          unitPlayer != playerTeam && !eeTa_AreAllies(unitPlayer, playerTeam);
 }
 
-uint8_t enemyUnits(PVOID unit) {
+uint8_t enemyUnits(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
   int8_t unitPlayer = eeTa_Player(unit);
   int8_t playerTeam = eeTa_SelfPlayer();
@@ -40,39 +40,43 @@ uint8_t enemyUnits(PVOID unit) {
          !eeTa_IsNeutral(unit);
 }
 
-uint8_t idleGroundUnits(PVOID unit) {
+uint8_t idleGroundUnits(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
   return eeTa_IsUnitIdle(unit) && !eeTypes_IsWorker(def) && !eeTypes_IsTransport(def) && eeTypes_IsGround(def);
 }
 
-uint8_t idleAirUnits(PVOID unit) {
+uint8_t idleAirUnits(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
   return eeTa_IsUnitIdle(unit) && !eeTypes_IsTransport(def) && eeTypes_IsAir(def);
 }
 
-uint8_t idleWaterUnits(PVOID unit) {
+uint8_t idleWaterUnits(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
-  return eeTa_IsUnitIdle(unit) && !att_IsUnitCarrier(unit) && !eeTypes_IsFishBoat(def) && !eeTypes_IsTransport(def) && eeTypes_IsWater(def);
+  return eeTa_IsUnitIdle(unit) && !att_IsUnitCarrier(unit._payload) && !eeTypes_IsFishBoat(def) && !eeTypes_IsTransport(def) && eeTypes_IsWater(def);
 }
 
 void att_AddDamagedUnits(PVOID unit) {
-  if(eeTa_Player(unit) != eeTa_SelfPlayer()) {
+  if(eeTa_Player((Unit) {
+    ._payload = unit
+   }) != eeTa_SelfPlayer()) {
     return ;
   }
-  UnitTypeDef def = eeTa_UnitType(unit);
-  if(!eeTa_IsBuilding(unit) && !eeTypes_IsWorker(def)) {
+  UnitTypeDef def = eeTa_UnitType((Unit) {._payload = unit});
+  if(!eeTa_IsBuilding((Unit) {
+    ._payload = unit
+  }) && !eeTypes_IsWorker(def)) {
     return ;
   }
   
-  Point pos = eeTa_CurrentPosition(unit);
+  Point pos = eeTa_CurrentPosition((Unit) {._payload = unit});
   attackedUnits[make_pair(pos.x, pos.y)] = 1;
 }
 
 void att_AttackTransportWithNavals(vector<Unit> &units) {
-  vector<PVOID> filteredUnits = eeTa_Filter(units, navalAttackFilter);
+  vector<Unit> filteredUnits = eeTa_Filter(units, navalAttackFilter);
 
   for(uint32_t i = 0, c = min(6, filteredUnits.size()); i < c; i++) {
-    vector<PVOID> enemyTransports = eeTa_Filter(units, enemyTransporters);
+    vector<Unit> enemyTransports = eeTa_Filter(units, enemyTransporters);
 
     for(uint32_t j = 0, p = enemyTransports.size(); j < p; j++) {
       Point currPos = eeTa_CurrentPosition(filteredUnits[i]);
@@ -84,7 +88,7 @@ void att_AttackTransportWithNavals(vector<Unit> &units) {
       };
 
       if(geom_IsPointInCircle(enemyPos, circle)) {
-        help_UnitMove(filteredUnits[i], enemyPos, UNIT_ATTACK);
+        help_UnitMove(filteredUnits[i]._payload, enemyPos, UNIT_ATTACK);
         break;
       }
     }
@@ -92,10 +96,10 @@ void att_AttackTransportWithNavals(vector<Unit> &units) {
 }
 
 void att_AttackEnemiesWithPlanes(vector<Unit> &units) {
-  vector<PVOID> filteredUnits = eeTa_Filter(units, airAttackFilter);
+  vector<Unit> filteredUnits = eeTa_Filter(units, airAttackFilter);
 
   for(uint32_t i = 0, c = min(6, filteredUnits.size()); i < c; i++) {
-    vector<PVOID> enemyTransports = eeTa_Filter(units, enemyUnits);
+    vector<Unit> enemyTransports = eeTa_Filter(units, enemyUnits);
 
     for(uint32_t j = 0, p = enemyTransports.size(); j < p; j++) {
       Point currPos = eeTa_CurrentPosition(filteredUnits[i]);
@@ -107,7 +111,7 @@ void att_AttackEnemiesWithPlanes(vector<Unit> &units) {
       };
 
       if(geom_IsPointInCircle(enemyPos, circle)) {
-        help_UnitMove(filteredUnits[i], enemyPos, UNIT_ATTACK);
+        help_UnitMove(filteredUnits[i]._payload, enemyPos, UNIT_ATTACK);
         break;
       }
     }
@@ -115,13 +119,13 @@ void att_AttackEnemiesWithPlanes(vector<Unit> &units) {
 }
 
 Point att_RandomMove(PVOID unit) {
-  Point currentPosition = eeTa_CurrentPosition(unit);
+  Point currentPosition = eeTa_CurrentPosition((Unit) {._payload = unit});
   currentPosition.x += sinf(rand()) * 20.0f;
   currentPosition.y += sinf(rand()) * 20.0f;
   return currentPosition;
 }
 
-uint8_t att_ScanAndAttack(vector<PVOID> &selfUnits) {
+uint8_t att_ScanAndAttack(vector<Unit> &selfUnits) {
   if(!attackedUnits.size()) {
     return 0;
   }
@@ -140,7 +144,7 @@ uint8_t att_ScanAndAttack(vector<PVOID> &selfUnits) {
         .x = it.first.first,
         .y = it.first.second
       };
-      help_UnitMove(selfUnits[i], p, UNIT_ATTACK);
+      help_UnitMove(selfUnits[i]._payload, p, UNIT_ATTACK);
       if(!maxCommands) {
         return 1;
       }
@@ -151,18 +155,18 @@ uint8_t att_ScanAndAttack(vector<PVOID> &selfUnits) {
   return 0;
 }
 
-void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(PVOID), int32_t maxCommands) {
-  vector<PVOID> filteredUnits = eeTa_Filter(selfUnits, checker);
+void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(Unit), int32_t maxCommands) {
+  vector<Unit> filteredUnits = eeTa_Filter(selfUnits, checker);
   if(!filteredUnits.size()) {
     return ;
   }
   if(att_ScanAndAttack(filteredUnits)) {
     return ;
   }
-  Point randomPos = att_RandomMove(filteredUnits[0]);
+  Point randomPos = att_RandomMove(filteredUnits[0]._payload);
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
     maxCommands--;
-    help_UnitMove(filteredUnits[i], randomPos, UNIT_ATTACK);
+    help_UnitMove(filteredUnits[i]._payload, randomPos, UNIT_ATTACK);
     if(!maxCommands) {
       return ;
     }
@@ -170,7 +174,7 @@ void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(PVO
 }
 
 uint8_t att_IsUnitCarrier(PVOID unit) {
-  UnitTypeDef def = eeTa_UnitType(unit);
+  UnitTypeDef def = eeTa_UnitType((Unit) {._payload = unit});
   return def == UNIT_WW2_CARRIER || def == UNIT_WWM_CARRIER ||
          def == UNIT_DIGITAL_PORT_NAVAL || def == UNIT_NANO_PORT_NAVAL ||
          def == UNIT_SPACE_SPACE_CARRIER;

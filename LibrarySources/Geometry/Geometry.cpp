@@ -15,12 +15,12 @@ PVOID geom_GetClosestUnitFrom(PVOID unit, int8_t player, uint8_t (*filter)(PVOID
   vector<Unit> units = eeTa_Units(player);
   float minDist = FLT_MAX;
   PVOID selectedUnit = NULL;
-  Point unitPos = eeTa_CurrentPosition(unit);
+  Point unitPos = eeTa_CurrentPosition((Unit) {._payload = unit});
   for(size_t i = 0, c = units.size(); i < c; i++) {
     if(!filter(units[i]._payload)) {
       continue;
     }
-    Point currentPosition = eeTa_CurrentPosition(units[i]._payload);
+    Point currentPosition = eeTa_CurrentPosition(units[i]);
     float distance = distancef(currentPosition, unitPos);
     if(minDist > distance) {
       minDist = distance;

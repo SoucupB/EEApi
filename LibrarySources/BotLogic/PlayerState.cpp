@@ -20,7 +20,7 @@ void pls_AddMethod(PVOID unit) {
 }
 
 void pls_ProcessHealth(PVOID unit) {
-  int32_t health = eeTa_CurrentHp(unit);
+  int32_t health = eeTa_CurrentHp((Unit) {._payload = unit});
   if(unitsHealth.find(unit) == unitsHealth.end()) {
     unitsHealth[unit] = (Player) {
       .isBeingAttacked = 0,
