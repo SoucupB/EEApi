@@ -697,3 +697,31 @@ Intresting method at 005CEB1B.
 Easy strategy, modify this address at 0056B3C3
 to decrease the resource use only when I call the method
 from the bot.
+
+Computer vs Computer aggression in map editor is editted
+here 0x02C0D471.
+
+At 0058C57D -> 00583003 the address is read and probably set somewhere.
+[EEAOC.exe + 0018C57D].
+[esi + 0x110] stores the computer vs computer aggression (maybe).
+
+The main ESI pointer is also asigned here. 005B4E2A
+
+
+"EE-AOC.exe"+531864(931864) holds the pointer to that struct.
+
+
+esi = [0x0931864]
+eax = [esi + 0x108]
+final_ecx = [eax + 0x1 * 0x4]
+
+Another intresting address 005C172E.
+At this address, all the aggression states gets broadcasted to the 
+bots I suppose.
+
+I think the [edi+00000BF0] is the actual bot aggression address.
+
+The bots are at [eax*4+00930DB4] where eax is the player index.
+The aggression is probably at [[eax*4+00930DB4]+00000BF0].
+
+At 0067C1D2 -> 0067C2D4 the bot iterates through the players?

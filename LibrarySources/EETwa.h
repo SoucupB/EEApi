@@ -44,6 +44,7 @@ int32_t eeTa_UnitPopulation(Unit unit);
 int32_t eeTa_CurrentPopulation();
 int32_t eeTa_TotalPop();
 int8_t eeTa_AreAllies(uint8_t plySrc, uint8_t plyDst);
+void eeTa_SetCvCAggression(uint8_t botIndex, float aggression);
 void eeTa_OnInit();
 void eeTa_AddFrameMethod(TimeAtom atom);
 vector<Unit> eeTa_Filter(vector<Unit> &units, uint8_t (*method)(Unit));
@@ -52,3 +53,8 @@ int8_t eeTa_IsIdle(Unit building);
 uint8_t eeTa_NeutralPlayer();
 PVOID eeTa_GetPlayer();
 int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double));
+int8_t eeTa_PlayerCount();
+int8_t *eeTa_PlayerIDs(); // 30 elements max
+int8_t eeTa_PlayerIndex(); // needs to be fixed.
+
+uint8_t eeTa_ShouldOnInitExecute();

@@ -216,7 +216,6 @@ void buildRandomUnit() {
     }
     PVOID targetUnit = eeTa_Unit_Sample(0);
     help_UnitMove(unit, eeTa_CurrentPosition((Unit) {._payload = targetUnit}), UNIT_ATTACK);
-    eeTa_Printf("Pizdon %d\n", eeTa_UnitPopulation((Unit) {._payload = unit}));
     Beep (400, 250);
   }
 }
@@ -324,6 +323,28 @@ void bt_OnUnitDestroy(Unit unit) {
   pls_OnUnitDestory(unit);
 }
 
+void bt_InitAggresiveness() {
+  // eeTa_SetCvCAggression(2, 100.0f);
+  // eeTa_Printf("ZUGA %d", eeTa_PlayerCount());
+  int8_t *playerIndexes = eeTa_PlayerIDs();
+  // int8_t playerInd = eeTa_PlayerIndex();
+  for(size_t i = 0; i < 20; i++) {
+    if(i != 1 && playerIndexes[i]) {
+      eeTa_SetCvCAggression(i, 90.0f);
+    }
+  }
+
+  // for(size_t i = 2, c = eeTa_PlayerCount(); i <= c; i++) {
+  //   eeTa_SetCvCAggression(i, 100.0f);
+  // }
+  // int32_t zr = 0;
+  // int8_t *cnt = eeTa_PlayerIDs();
+  // for(size_t i = 0; i < 16; i++) {
+  //   if(cnt[i]) {
+  //     zr++;
+  //   }
+  // }
+}
 
 void bt_OnInit() {
   bt_InitUnitMovement();
@@ -332,6 +353,7 @@ void bt_OnInit() {
   bt_InitWorkerCreators();
   bt_InitPortNaval();
   bt_InitFisherBoats();
+  bt_InitAggresiveness();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();
 }

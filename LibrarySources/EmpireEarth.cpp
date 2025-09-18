@@ -27,11 +27,14 @@ extern "C" {
     if(!hModule) {
       return 0;
     }
+    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x15401E);
     if(!onInitFlag) {
+      if(!eeTa_ShouldOnInitExecute()) {
+        return method(self);
+      }
       eeTa_OnInit();
       onInitFlag = 1;
     }
-    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x15401E);
     bt_OnFrame();
     eeTa_OnFrame();
     return method(self);

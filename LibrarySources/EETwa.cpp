@@ -12,6 +12,7 @@ static int8_t all_players = 20;
 static int8_t playerIndex = 1;
 static int8_t neutralPlayer = 0;
 static int8_t shouldCostBeReduced = 0;
+static int8_t playerPresence[30];
 __declspec(dllexport) char outputBuffer[2048];
 
 void eeTa_Clean() {
@@ -46,6 +47,7 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
   if(playerTeam < 0 || playerTeam >= 24) {
     return ;
   }
+  playerPresence[playerTeam] = 1;
   if(eeTa_IsUnitDead(unit)) {
     unitPresence[playerTeam].erase(unit._payload);
     unitPresence[all_players].erase(unit._payload);
@@ -146,6 +148,19 @@ int8_t eeTa_AreAllies(uint8_t plySrc, uint8_t plyDst) {
 
   return !*_2;
 }
+
+void eeTa_SetCvCAggression(uint8_t botIndex, float aggression) {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return ;
+  }
+  PVOID _1 = util_Pointer(hModule, 0x530DB4 + 0x4 * botIndex, POINTER_TYPE);
+  if(!_1) {
+    return ;
+  }
+  float *_2 = (float *)util_Pointer(_1, 0xBF0, FLOAT_TYPE);
+  *_2 = aggression;
+} 
 
 vector<Unit> eeTa_Filter(vector<Unit> &units, uint8_t (*method)(Unit)) {
   vector<Unit> filteredUnits;
@@ -274,6 +289,20 @@ __declspec(dllexport) uint8_t eeTa_CanBuild(Unit building, PVOID type) {
   return method((PVOID)epochStruct);
 }
 
+int8_t *eeTa_PlayerIDs() {
+  return playerPresence;
+}
+
+int8_t eeTa_PlayerCount() {
+  int8_t total = 0;
+  for(size_t i = 0; i < 20; i++) {
+    if(playerPresence[i]) {
+      total++;
+    }
+  }
+  return total;
+}
+
 void eeTa_OnInit() {
   eeTypes_OnInit();
   timers = tmr_Init();
@@ -282,7 +311,6 @@ void eeTa_OnInit() {
 
 UnitTypeDef eeTa_UnitType(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-
   return (UnitTypeDef)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
 }
 
@@ -372,6 +400,18 @@ PVOID eeTa_Unit_Sample(int8_t player) {
   }
 
   return units[rand() % units.size()]._payload;
+}
+
+int8_t eeTa_PlayerIndex() {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  return *(uint32_t *)util_Pointer(hModule, 0x5318C4, POINTER_TYPE);
+}
+
+uint8_t eeTa_ShouldOnInitExecute() {
+  return eeTa_PlayerCount() != 0;
 }
 
 int8_t eeTa_Player(Unit unit) {
