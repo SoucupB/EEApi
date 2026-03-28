@@ -12,4 +12,4 @@ void __cdecl help_Delete(PVOID pointer);
 void help_UnitMove(PVOID unit, Point point, UnitAction currentAction);
 PVOID __thiscall help_Checker_4C2A3C(PVOID self, PVOID _1, PVOID _2, PVOID _3);
 void __cdecl help_MoveToTarget(PVOID unit, PVOID target);
-
+void __cdecl help_ConvertTarget(PVOID unit, PVOID target);

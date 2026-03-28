@@ -24,6 +24,18 @@ uint8_t airAttackFilter(Unit unit) {
          eeTa_Player(unit) == eeTa_SelfPlayer();
 }
 
+uint8_t priestsFilters(Unit unit) {
+  UnitTypeDef def = eeTa_UnitType(unit);
+  return eeTypes_IsPriest(def);
+}
+
+uint8_t enemyFilter(Unit unit) {
+  uint8_t target = eeTa_Player(unit);
+  uint8_t self = eeTa_SelfPlayer();
+
+  return target != self && !eeTa_AreAllies(target, self);
+}
+
 uint8_t enemyTransporters(Unit unit) {
   UnitTypeDef def = eeTa_UnitType(unit);
   int8_t unitPlayer = eeTa_Player(unit);
@@ -111,6 +123,17 @@ void att_AttackEnemiesWithPlanes(vector<Unit> &units) {
         break;
       }
     }
+  }
+}
+
+void att_ConvertIfNecessary(vector<Unit> &units) {
+  vector<Unit> filteredPriests = eeTa_Filter(units, priestsFilters);
+  for(size_t i = 0; i < filteredPriests.size(); i++) {
+    Unit enemy = geom_GetClosestUnitFrom(filteredPriests[i], eeTa_AllPlayers(), enemyFilter);
+    if(!enemy._payload) {
+      continue;
+    }
+    help_ConvertTarget(filteredPriests[i]._payload, enemy._payload);
   }
 }
 

@@ -407,7 +407,7 @@ int8_t eeTa_PlayerIndex() {
   if(!hModule) {
     return 0;
   }
-  return *(uint32_t *)util_Pointer(hModule, 0x5318C4, POINTER_TYPE);
+  return *(int8_t *)util_Pointer(hModule, 0x5318C4, POINTER_TYPE);
 }
 
 uint8_t eeTa_ShouldOnInitExecute() {

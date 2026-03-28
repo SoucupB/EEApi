@@ -235,3 +235,7 @@ uint8_t eeTypes_CanProduceWorkers(UnitTypeDef type) {
   return type == CAPITOL ||
          type == TOWN_CENTER;
 }
+
+uint8_t eeTypes_IsPriest(UnitTypeDef type) {
+  return type == UNIT_PREHISTORIC_PRIEST; // The code does not change.
+}

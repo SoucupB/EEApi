@@ -244,3 +244,4 @@ uint8_t eeTypes_IsAir(UnitTypeDef type);
 uint8_t eeTypes_IsWater(UnitTypeDef type);
 uint8_t eeTypes_IsGround(UnitTypeDef type);
 uint8_t eeTypes_IsFishBoat(UnitTypeDef type);
+uint8_t eeTypes_IsPriest(UnitTypeDef type);

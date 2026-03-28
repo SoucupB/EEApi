@@ -12,3 +12,4 @@ void att_AttackEnemiesWithPlanes(vector<Unit> &units);
 void att_PatrolRandomPositions(vector<Unit> &selfUnits);
 void att_AddDamagedUnits(Unit unit);
 uint8_t att_IsUnitCarrier(Unit unit);
+void att_ConvertIfNecessary(vector<Unit> &units);

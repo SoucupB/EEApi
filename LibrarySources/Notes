@@ -725,3 +725,17 @@ The bots are at [eax*4+00930DB4] where eax is the player index.
 The aggression is probably at [[eax*4+00930DB4]+00000BF0].
 
 At 0067C1D2 -> 0067C2D4 the bot iterates through the players?
+
+Resuming 004C2AD2 to find out what how to use abilities.
+The earthquake is not happening at ****004C2AD2****.
+This method 005EDCC0 doesn't get called at all.
+This is a weird design choice.
+
+Here is the energy decreasing 00620C0C.
+Unit pointer is at [unit + 0x2D4]
+At 00419970 happends the request to cast a spell.
+
+The method that calls the 005EDCC0 convert method is at 004BB9DB.
+The method that iterates through units is at 5540DC
+
+00838F18 Is the method that executes when a priest wants to convert.

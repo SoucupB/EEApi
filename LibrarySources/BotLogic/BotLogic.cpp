@@ -208,6 +208,14 @@ void iterateTroughExistingUnits(PVOID attr) {
   }
 }
 
+void convert() {
+  if(GetAsyncKeyState('P') & 0x8000) {
+    vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+    att_ConvertIfNecessary(units);
+    Beep(400, 250);
+  }
+}
+
 void buildRandomUnit() {
   if(GetAsyncKeyState('K') & 0x8000) {
     PVOID unit = eeTa_Unit_Sample(eeTa_SelfPlayer());
@@ -246,7 +254,10 @@ void bt_HuntWithPlanes(PVOID attributes) {
   att_AttackEnemiesWithPlanes(units);
 }
 
+void convert();
+
 void bt_OnFrame() {
+  // convert();
   // addListeners();
 }
 
@@ -324,26 +335,12 @@ void bt_OnUnitDestroy(Unit unit) {
 }
 
 void bt_InitAggresiveness() {
-  // eeTa_SetCvCAggression(2, 100.0f);
-  // eeTa_Printf("ZUGA %d", eeTa_PlayerCount());
   int8_t *playerIndexes = eeTa_PlayerIDs();
-  // int8_t playerInd = eeTa_PlayerIndex();
   for(size_t i = 0; i < 20; i++) {
     if(i != 1 && playerIndexes[i]) {
-      eeTa_SetCvCAggression(i, 90.0f);
+      eeTa_SetCvCAggression(i, 50.0f);
     }
   }
-
-  // for(size_t i = 2, c = eeTa_PlayerCount(); i <= c; i++) {
-  //   eeTa_SetCvCAggression(i, 100.0f);
-  // }
-  // int32_t zr = 0;
-  // int8_t *cnt = eeTa_PlayerIDs();
-  // for(size_t i = 0; i < 16; i++) {
-  //   if(cnt[i]) {
-  //     zr++;
-  //   }
-  // }
 }
 
 void bt_OnInit() {

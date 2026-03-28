@@ -16,7 +16,6 @@ PVOID __cdecl help_New(size_t size) {
     return NULL;
   }
   memset(response, 0, size);
-  // memoryMap[response] = size;
   return response;
 }
 
@@ -54,11 +53,11 @@ PVOID __thiscall help_FillSelectedUnits(PVOID self, size_t _a, size_t _b, size_t
   size_t bufferSize = 0xB8;
   PVOID deepCopy = _snapshot(self, bufferSize);
   PVOID rsp = method(self, _a, _b, _c);
-  if(_c == 1) {
-    // cleanSlate(self);
-    string response = help_DisplayDiff(self, deepCopy, bufferSize);
-    eeTa_Printf("Pengus call %p %p %p %p -> \n%s", self, _a, _b, _c, &response[0]);
-  }
+  // if(_c == 1) {
+  //   // cleanSlate(self);
+  //   string response = help_DisplayDiff(self, deepCopy, bufferSize);
+  //   eeTa_Printf("Pengus call %p %p %p %p -> \n%s", self, _a, _b, _c, &response[0]);
+  // }
   free(deepCopy);
   return rsp;
 }
@@ -98,13 +97,11 @@ __declspec(dllexport) void help_AddSelectedUnitToBuffer(PVOID self, PVOID unit) 
 
 void help_SetActionPointer(PVOID self, Point pos, UnitAction action) {
   MoveAction *actionPointer = help_GetAction(self, pos, action);
-  // eeTa_Printf("Pengus call %p %p %p %p\n -> \n%s", actionPointer, &actionPointer->pos.x, &actionPointer->pos.y, &actionPointer->pos.y - (size_t)actionPointer);
   memcpy((PVOID)((size_t)self + 0x68), &actionPointer, sizeof(PVOID));
 }
 
 void help_SetActionPointerUnit(PVOID self, PVOID unit) {
   MoveActionUnit *actionPointer = help_GetActionUnit(self, unit);
-  // eeTa_Printf("Pengus call %p %p %p %p\n -> \n%s", actionPointer, &actionPointer->pos.x, &actionPointer->pos.y, &actionPointer->pos.y - (size_t)actionPointer);
   memcpy((PVOID)((size_t)self + 0x68), &actionPointer, sizeof(PVOID));
 }
 
@@ -132,10 +129,9 @@ void help_SetActionPointerTset(PVOID self, Point pos, UnitAction action) {
 __declspec(dllexport)  PVOID __fastcall help_SearchUnits(PVOID self) {
   PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x1EDCC0);
   string response;
-  addPositionDiff((PVOID)(*(uint32_t *)((size_t)self + 0x68)), response, 0x44);
+  // addPositionDiff((PVOID)(*(uint32_t *)((size_t)self + 0x68)), response, 0x44);
   // string s = searchDiffsDracu((PVOID)(*(uint32_t *)((size_t)self + 0x68)));
   // addPositionDiff(self, response, 0xB8);
-  eeTa_Printf("Perseus call\n%s\n", &response[0]);
   // // help_Delete((PVOID)((size_t)self + 0x68));
   // // changeSelectedUnits(self, eeTa_Unit_Sample(eeTa_SelfPlayer()));
   // help_SetActionPointerTset(self, (Point) {
@@ -183,6 +179,11 @@ void __fastcall help_FillMetaParameters(PVOID tempStruct) {
 
 void help_AddMagicFlag(ActionBuffer self) {
   size_t specialNumber = 0x1F40;
+  memcpy(&self.buffer[0x6C], &specialNumber, sizeof(size_t));
+}
+
+void help_AddConvertMagicFlag(ActionBuffer self) {
+  size_t specialNumber = 0x7D1;
   memcpy(&self.buffer[0x6C], &specialNumber, sizeof(size_t));
 }
 
@@ -380,8 +381,6 @@ void help_FillData_Air(PVOID buffer) {
   }
 }
 
-
-
 MoveActionUnit *help_GetActionUnit(PVOID parent, PVOID unit) {
   Point pos = eeTa_CurrentPosition((Unit) {._payload = unit});
   MoveActionUnit *self = (MoveActionUnit *)help_New(0x44);
@@ -425,6 +424,30 @@ void __cdecl help_MoveToTarget(PVOID unit, PVOID target) {
     help_RunMethod_4C2AAD(self.buffer);
     help_RunMethod_4BB02A(self.buffer);
     help_AddMagicFlagToTarget(self);
+    help_SetActionPointerUnit(self.buffer, target);
+    help_SearchUnits(self.buffer);
+  }
+}
+
+void __cdecl help_ConvertTarget(PVOID unit, PVOID target) {
+  ActionBuffer self = {0};
+  self.validAddress = 1;
+  for(int32_t i = 1; i <= 1; i++) {
+    self.buffer = (uint8_t *)help_New(ACTION_BUFFER_SIZE);
+    if(!self.buffer) {
+      self.validAddress = 0;
+      return ;
+    }
+    help_FillMetaParameters(self.buffer);
+    help_AddSelectedUnitToBuffer(self.buffer, unit);
+    if(help_DerefCounter(self.buffer) <= 0) {
+      derefPointer(self.buffer);
+      continue;
+    }
+    help_RunMethod_4C2A67(self.buffer);
+    help_RunMethod_4C2AAD(self.buffer);
+    help_RunMethod_4BB02A(self.buffer);
+    help_AddConvertMagicFlag(self);
     help_SetActionPointerUnit(self.buffer, target);
     help_SearchUnits(self.buffer);
   }
