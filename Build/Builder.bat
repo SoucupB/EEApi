@@ -1,0 +1,1 @@
+g++ -std=gnu++11 -IHeaders/ -c Sources/*.cpp -O9 lib/ -lPsapi -lgdi32 -luser32
