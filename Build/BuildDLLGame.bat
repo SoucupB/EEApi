@@ -1,0 +1,1 @@
+g++ -std=gnu++11 -IHeaders/ lib/Engine.a Local/Runner.cpp -shared -o lib/Bots.dll -O9 -lPsapi -lgdi32 -luser32
