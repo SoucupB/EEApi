@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include "InjectUtilities.h"
 #include "MethodsDefinitions.h"
-#include "BotLogic.h"
+// #include "BotLogic.h"
 #include "EETwa.h"
 #include "Helpers.h"
 
@@ -35,7 +35,7 @@ extern "C" {
       eeTa_OnInit();
       onInitFlag = 1;
     }
-    bt_OnFrame();
+    // bt_OnFrame();
     eeTa_OnFrame();
     return method(self);
   }

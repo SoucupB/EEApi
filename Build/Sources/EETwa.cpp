@@ -1,9 +1,14 @@
 #include "EETwa.h"
 #include <unordered_map>
 #include <vector>
-#include "BotLogic.h"
+#include "PlayerState.h"
+// #include "BotLogic.h"
 
 static PTimerHelper timers;
+
+void bt_OnUnitDestroy(Unit unit);
+void bt_OnInit();
+void onFrame();
 
 using namespace std;
 static unordered_map<PVOID, uint8_t> unitPresence[24];
@@ -56,7 +61,7 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
   }
   unitPresence[playerTeam][unit._payload] = 1;
   unitPresence[all_players][unit._payload] = 1;
-  bt_OnUnitIteration(unit);
+  pls_ProcessHealth(unit._payload);
 }
 
 int8_t eeTa_AllPlayers() {
