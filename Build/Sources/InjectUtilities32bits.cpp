@@ -242,8 +242,8 @@ void util_Method(DWORD processID, HANDLE method, PVOID params, size_t paramsSize
   CloseHandle(hProcess);
 }
 
-HANDLE util_MethodAddresOffset(const char *method) {
-  HMODULE dllBase = LoadLibraryA("LibraryBinary\\Bots.dll");
+HANDLE util_MethodAddresOffset(const char *method, const string &dllPath) {
+  HMODULE dllBase = LoadLibraryA(dllPath.c_str());
   if (dllBase == NULL) {
     printf("Failed to load DLL!\n");
     return NULL;
@@ -256,7 +256,7 @@ HANDLE util_MethodAddresOffset(const char *method) {
   return (HANDLE)((size_t)methodsAddress - (size_t)dllBase);
 }
 
-HANDLE util_RunRemoteThreadMethod(HANDLE hProcess, const char *methodsName) {
+HANDLE util_RunRemoteThreadMethod(HANDLE hProcess, const string &dllName, const string &dllPath, const char *methodsName) {
   HMODULE hModules[1024];
   DWORD cbNeeded;
   if (!EnumProcessModules(hProcess, hModules, sizeof(hModules), &cbNeeded)) {
@@ -265,8 +265,8 @@ HANDLE util_RunRemoteThreadMethod(HANDLE hProcess, const char *methodsName) {
   for (unsigned int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
     char szModName[MAX_PATH] = {0};
     if (GetModuleBaseNameA(hProcess, hModules[i], szModName, sizeof(szModName))) {
-      if (_stricmp(szModName, "Bots.dll") == 0) { // To do
-        HANDLE methodsAddressOffset = util_MethodAddresOffset(methodsName);
+      if (_stricmp(szModName, dllName.c_str()) == 0) { // To do
+        HANDLE methodsAddressOffset = util_MethodAddresOffset(methodsName, dllPath);
         if(!methodsAddressOffset) {
           return NULL;
         }
@@ -338,7 +338,7 @@ bool util_LoadDLL(DWORD processID, const std::string &dllName, const std::string
   } else {
     std::cout << "DLL loaded at address: " << std::hex << dllBaseAddress << std::endl;
   }
-  HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, "_Z11someDllMainv");
+  HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, dllName, dllPath, "_Z11someDllMainv");
   printf("%s method of someDllMain is loaded at %p\n", &dllName[0], dllMethodAddress);
   if(!dllMethodAddress) {
     printf("Main method not found!\n");

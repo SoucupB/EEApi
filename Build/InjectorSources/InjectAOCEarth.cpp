@@ -53,14 +53,10 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
   printf("PID of the process is %d\n", pid);
-  // DWORD pid = util_FindProcID("EE-AOC.exe");
-  // if(!pid) {
-  //   printf("Pid not found!\n");
-  //   return 0;
-  // }
+  Sleep(2000);
   string fullDLLPath = *reader->dllPath + "\\" + *reader->dllName;
   if(!util_LoadDLL(pid, *reader->dllName, fullDLLPath)) {
-    printf("Bots.dll failed to load\n");
+    printf("'%s' failed to load\n", reader->dllName->c_str());
     return 0;
   }
   printf("Successfull insert!\n");
