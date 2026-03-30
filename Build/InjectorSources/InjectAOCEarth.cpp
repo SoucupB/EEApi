@@ -8,7 +8,9 @@ typedef struct Reader_t {
   string *gamePath;
   string *dllPath;
   string *gameName;
+  string *dllName;
 } Reader;
+
 typedef Reader *PReader;
 
 PReader path_Create(string filePath);
@@ -42,7 +44,7 @@ DWORD startGame(PReader reader) {
 int main(int argc, char *argv[]) {
   PReader reader = path_Create("Config.txt");
   if(!reader) {
-    printf("Config not found or either game_path/dll_path/game_name are missing!\n");
+    printf("Config not found or either game_path/dll_path/game_name/dll_name are missing!\n");
     exit(1);
   }
   DWORD pid = startGame(reader);
@@ -56,10 +58,10 @@ int main(int argc, char *argv[]) {
   //   printf("Pid not found!\n");
   //   return 0;
   // }
-
-  // if(!util_LoadDLL(pid, "Bots.dll", argv[1])) {
-  //   printf("Bots.dll failed to load\n");
-  //   return 0;
-  // }
+  string fullDLLPath = *reader->dllPath + "\\" + *reader->dllName;
+  if(!util_LoadDLL(pid, *reader->dllName, fullDLLPath)) {
+    printf("Bots.dll failed to load\n");
+    return 0;
+  }
   printf("Successfull insert!\n");
 }
