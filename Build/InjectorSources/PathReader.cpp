@@ -10,6 +10,7 @@ typedef struct Reader_t {
   string *configPath;
   string *gamePath;
   string *dllPath;
+  string *gameName;
 } Reader;
 
 typedef Reader *PReader;
@@ -90,6 +91,8 @@ void path_ProcessLine(PReader reader, string &line) {
     reader->gamePath = new string(currentLine[1]);
   } else if(currentLine[0] == "dll_path") {
     reader->dllPath = new string(currentLine[1]);
+  } else if(currentLine[0] == "game_name") {
+    reader->gameName = new string(currentLine[1]);
   }
 }
 
@@ -101,7 +104,7 @@ uint8_t path_Parse(PReader reader) {
   for(int32_t i = 0, c = line.size(); i < c; i++) {
     path_ProcessLine(reader, line[i]);
   }
-  if(!reader->dllPath || !reader->gamePath) {
+  if(!reader->dllPath || !reader->gamePath || !reader->gameName) {
     return 0;
   }
   return 1;
