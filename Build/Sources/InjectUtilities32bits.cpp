@@ -338,7 +338,7 @@ bool util_LoadDLL(DWORD processID, const std::string &dllName, const std::string
   } else {
     std::cout << "DLL loaded at address: " << std::hex << dllBaseAddress << std::endl;
   }
-  HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, dllName, dllPath, "_Z11someDllMainv");
+  HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, dllName, dllPath, "someDllMain");
   printf("%s method of someDllMain is loaded at %p\n", &dllName[0], dllMethodAddress);
   if(!dllMethodAddress) {
     printf("Main method not found!\n");

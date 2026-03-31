@@ -6,4 +6,5 @@ g++ -std=gnu++11 -IHeaders/ -c Sources/Helpers.cpp -O9 -lPsapi -lgdi32 -luser32 
 g++ -std=gnu++11 -IHeaders/ -c Sources/PlayerState.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/PlayerState.o
 g++ -std=gnu++11 -IHeaders/ -c Sources/InjectUtilities32bits.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/InjectUtilities32bits.o
 g++ -std=gnu++11 -IHeaders/ -c Sources/TimerHelper.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/TimerHelper.o
+g++ -std=gnu++11 -IHeaders/ -c Sources/MethodsDefinitions.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/MethodsDefinitions.o
 ar rcs lib/Engine.a lib/*.o
