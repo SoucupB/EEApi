@@ -1,4 +1,3 @@
-#include "BotLogic.h"
 #include <math.h>
 #include "AttackDecision.h"
 #include "PlayerState.h"
@@ -104,7 +103,7 @@ uint8_t capitolFilter(Unit unit) {
   return eeTypes_CanProduceWorkers(def);
 }
 
-void bt_BuildWorkers(PVOID attr) {
+__declspec(dllexport) void bt_BuildWorkers(PVOID attr) {
   if(!shouldBuildWorkers()) {
     return ;
   }
@@ -352,5 +351,7 @@ void bt_OnInit() {
   bt_InitFisherBoats();
   bt_InitAggresiveness();
   pls_OnInit((PVOID)att_AddDamagedUnits);
+
+
   // bt_InitPlaneHunters();
 }

@@ -94,7 +94,7 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
 }
 
-__declspec(dllexport) void __cdecl someDllMain() {
+extern "C" __declspec(dllexport) void __cdecl someDllMain() {
   addBotMethodsHooks();
 
   // Testing checker.
