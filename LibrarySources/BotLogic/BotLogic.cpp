@@ -344,13 +344,15 @@ void bt_InitAggresiveness() {
 }
 
 void bt_OnInit() {
-  bt_InitUnitMovement();
+  // bt_InitUnitMovement();
   bt_InitBuildingCreation();
-  bt_InitTransportHunting();
-  bt_InitWorkerCreators();
-  bt_InitPortNaval();
-  bt_InitFisherBoats();
-  bt_InitAggresiveness();
-  pls_OnInit((PVOID)att_AddDamagedUnits);
+  // bt_InitTransportHunting();
+  // bt_InitWorkerCreators();
+  // bt_InitPortNaval();
+  // bt_InitFisherBoats();
+  // bt_InitAggresiveness();
+  // pls_OnInit((PVOID)att_AddDamagedUnits);
+
+
   // bt_InitPlaneHunters();
 }

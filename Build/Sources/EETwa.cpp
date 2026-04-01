@@ -184,9 +184,9 @@ int32_t eeTa_TotalPop() {
   PVOID unitTypeStruct = util_Pointer(hModule, 0x530DB8, POINTER_TYPE);
   PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
   PVOID popMethod = util_Pointer(callerMethods, 0x7C, POINTER_TYPE);
-  int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)popMethod);
+  int32_t __fastcall (*method)(PVOID, PVOID, PVOID) = (int32_t __fastcall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)popMethod);
 
-  return method(unitTypeStruct);
+  return method(unitTypeStruct, NULL, NULL);
 }
 
 vector<PVOID> eeTa_Buildings(int8_t player) {

@@ -351,7 +351,5 @@ void bt_OnInit() {
   bt_InitFisherBoats();
   bt_InitAggresiveness();
   pls_OnInit((PVOID)att_AddDamagedUnits);
-
-
   // bt_InitPlaneHunters();
 }
