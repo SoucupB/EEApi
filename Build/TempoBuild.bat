@@ -8,8 +8,8 @@ g++ -std=gnu++11 -IHeaders/ -c Sources/InjectUtilities32bits.cpp -O9 -lPsapi -lg
 g++ -std=gnu++11 -IHeaders/ -c Sources/TimerHelper.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/TimerHelper.o
 g++ -std=gnu++11 -IHeaders/ -c Sources/MethodsDefinitions.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/MethodsDefinitions.o
 
-g++ -c -std=gnu++11 -IHeaders/ -ILocal/Sources/ Local/Sources/ResourceManager.cpp -o lib/ResourceManager.o
-g++ -c -std=gnu++11 -IHeaders/ -ILocal/Sources/ Local/Sources/AttackDecision.cpp -o lib/AttackDecision.o
-g++ -c -std=gnu++11 -IHeaders/ -ILocal/Sources/ Local/Runner.cpp -o lib/Runner.o
+g++ -c -std=gnu++11 -IHeaders/ -ILocal/Sources/ Local/Sources/ResourceManager.cpp -o lib/ResourceManager.o -O9
+g++ -c -std=gnu++11 -IHeaders/ -ILocal/Sources/ Local/Sources/AttackDecision.cpp -o lib/AttackDecision.o -O9
+g++ -c -std=gnu++11 -IHeaders/ -ILocal/Sources/ Local/Runner.cpp -o lib/Runner.o -O9
 
 g++ -IHeaders/ -ILocal/Sources/ lib/*.o -shared -std=gnu++11 -o lib/Bots.dll -O9 -lPsapi -lgdi32 -luser32 -lmsvcrt
