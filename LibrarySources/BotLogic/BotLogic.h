@@ -8,5 +8,5 @@
 
 void bt_OnFrame();
 void bt_OnInit();
-void bt_OnUnitIteration(PVOID unit);
-void bt_OnUnitDestroy(PVOID unit);
+void bt_OnUnitIteration(Unit unit);
+void bt_OnUnitDestroy(Unit unit);

@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include "InjectUtilities.h"
 #include "MethodsDefinitions.h"
-#include "BotLogic.h"
+// #include "BotLogic.h"
 #include "EETwa.h"
 #include "Helpers.h"
 
@@ -35,7 +35,7 @@ extern "C" {
       eeTa_OnInit();
       onInitFlag = 1;
     }
-    bt_OnFrame();
+    // bt_OnFrame();
     eeTa_OnFrame();
     return method(self);
   }
@@ -94,17 +94,6 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
 }
 
-extern "C" __declspec(dllexport) void __cdecl someDllMain() {
+extern "C"  __declspec(dllexport) void __cdecl someDllMain() {
   addBotMethodsHooks();
-
-  // Testing checker.
-  // builder_Definition((PVOID)0xC2A18, (PVOID)help_New);
-  // builder_Definition((PVOID)0xC2A6E, (PVOID)help_New);
-  // builder_Definition((PVOID)0xC2A3C, (PVOID)help_FillSelectedUnits);
-  // builder_Definition((PVOID)0xBF1B2, (PVOID)help_SearchUnits);
-
-
-  // builder_Definition((PVOID)0xC2AD2, (PVOID)help_SearchUnits);
-  // builder_Definition((PVOID)0xBF1B2, (PVOID)help_SearchUnits);
-  // builder_Definition((PVOID)0xBF1B2, (PVOID)help_Checker_4C2A3C);
 }

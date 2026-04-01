@@ -1,5 +1,5 @@
 #include "AttackDecision.h"
-#include "Geometry/Geometry.h"
+#include "Geometry.h"
 #include "EETwa.h"
 #include "EETwaTypes.h"
 #include "PlayerState.h"

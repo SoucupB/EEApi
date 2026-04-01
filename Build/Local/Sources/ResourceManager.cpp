@@ -1,7 +1,7 @@
 #include "ResourceManager.h"
 #include "EETwa.h"
 #include <vector>
-#include "../Geometry/Geometry.h"
+#include "Geometry.h"
 
 using namespace std;
 

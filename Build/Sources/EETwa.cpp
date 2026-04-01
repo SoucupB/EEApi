@@ -1,9 +1,13 @@
 #include "EETwa.h"
 #include <unordered_map>
 #include <vector>
-#include "BotLogic.h"
+#include "PlayerState.h"
 
 static PTimerHelper timers;
+
+void bt_OnUnitDestroy(Unit unit);
+void bt_OnInit();
+void onFrame();
 
 using namespace std;
 static unordered_map<PVOID, uint8_t> unitPresence[24];
@@ -56,7 +60,7 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
   }
   unitPresence[playerTeam][unit._payload] = 1;
   unitPresence[all_players][unit._payload] = 1;
-  bt_OnUnitIteration(unit);
+  pls_ProcessHealth(unit._payload);
 }
 
 int8_t eeTa_AllPlayers() {
@@ -180,9 +184,9 @@ int32_t eeTa_TotalPop() {
   PVOID unitTypeStruct = util_Pointer(hModule, 0x530DB8, POINTER_TYPE);
   PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
   PVOID popMethod = util_Pointer(callerMethods, 0x7C, POINTER_TYPE);
-  int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)popMethod);
+  int32_t __fastcall (*method)(PVOID, PVOID, PVOID) = (int32_t __fastcall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)popMethod);
 
-  return method(unitTypeStruct);
+  return method(unitTypeStruct, NULL, NULL);
 }
 
 vector<PVOID> eeTa_Buildings(int8_t player) {
