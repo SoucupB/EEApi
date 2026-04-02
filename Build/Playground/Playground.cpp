@@ -3,13 +3,46 @@
 #include "PlayerState.h"
 #include "ResourceManager.h"
 
-__declspec(dllexport) PVOID fakeStdin;
+void test_PrintUnits();
 
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
-    eeTa_FilePrintf("PULAS NIGA\n");
+    test_PrintUnits();
     Beep (300, 250);
   }
+}
+
+void test_PrintUnits() {
+  vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
+  if(units.size()) {
+    for(int32_t i = 0; i < units.size(); i++) {
+      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d\n", units[i]._payload, eeTa_UnitType(units[i]), eeTa_Player(units[i]));
+    }
+  }
+}
+
+Unit getPriest() {
+  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTa_UnitType(units[i]) == UNIT_PREHISTORIC_PRIEST) {
+      return units[i];
+    }
+  }
+  return eeTa_EmptyUnit();
+}
+
+Unit getEnemy() {
+  vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTa_Player(units[i]) != eeTa_SelfPlayer()) {
+      return units[i];
+    }
+  }
+  return eeTa_EmptyUnit();
+}
+
+void test_ConvertEnemy() {
+
 }
 
 void bt_OnInit() {

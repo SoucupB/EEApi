@@ -26,6 +26,7 @@ void eeTa_OnUnitDeath(Unit unit);
 int8_t eeTa_Player(Unit unit);
 UnitTypeDef eeTa_UnitType(Unit unit);
 int32_t eeTa_CurrentHp(Unit unit);
+Unit eeTa_EmptyUnit();
 int8_t eeTa_IsUnitDead(Unit unit);
 int8_t eeTa_IsUnit(Unit unit);
 void eeTa_Printf(const char *format, ...);

@@ -9,6 +9,7 @@ static PTimerHelper timers;
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
 void bt_OnFrame();
+void eeta_FileClean();
 
 using namespace std;
 static unordered_map<PVOID, uint8_t> unitPresence[24];
@@ -24,6 +25,12 @@ void eeTa_Clean() {
   for(uint8_t i = 0; i < 24; i++) {
     unitPresence[i].clear();
   }
+}
+
+Unit eeTa_EmptyUnit() {
+  return (Unit) {
+    ._payload = NULL
+  };
 }
 
 uint8_t eeTa_NeutralPlayer() {
@@ -208,6 +215,11 @@ int8_t eeTa_IsIdle(Unit building) {
   return eeTa_CurrentlyBuilding(building) == IDLE;
 }
 
+void eeta_FileClean() {
+  FILE* f = fopen("EETWa.log", "w");
+  fclose(f);
+}
+
 void eeTa_FilePrintf(const char *format, ...) {
   FILE* f = fopen("EETWa.log", "a");
   if (!f) return;
@@ -321,6 +333,7 @@ int8_t eeTa_PlayerCount() {
 }
 
 void eeTa_OnInit() {
+  eeta_FileClean();
   eeTypes_OnInit();
   timers = tmr_Init();
   bt_OnInit();
