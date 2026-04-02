@@ -1,5 +1,8 @@
 #include "MethodsDefinitions.h"
 #include "EETwa.h"
+#include <map>
+
+std::map<size_t, std::pair<size_t, std::vector<size_t> > > storeBuilder;
 
 void builder_Definition(PVOID remoteAddress, PVOID localAddress) {
   HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
@@ -21,6 +24,31 @@ void builder_PrintMemoryLayout(PVOID ref, size_t sz) {
   eeTa_FilePrintf("-------\n");
   for(size_t i = 0; i < sz; i += sizeof(size_t)) {
     eeTa_FilePrintf("Address %p, value: %p\n", i, *(size_t *)(bff + i));
+  }
+  eeTa_FilePrintf("+++++++\n");
+}
+
+void builder_Store(PVOID ref, size_t sz) {
+  uint8_t *bff = (uint8_t *)ref;
+  storeBuilder[(size_t)ref].first = sz;
+  for(size_t i = 0; i < sz; i += sizeof(size_t)) {
+    storeBuilder[(size_t)ref].second.push_back(*(size_t *)(bff + i));
+  }
+}
+
+void builder_CheckChanges(PVOID ref) {
+  std::pair<size_t, std::vector<size_t> > response = storeBuilder[(size_t)ref];
+  if(!response.second.size()) {
+    return ;
+  }
+  uint8_t *bff = (uint8_t *)ref;
+  eeTa_FilePrintf("-------\n");
+  eeTa_FilePrintf("For ref %p size is %p\n", ref, response.first);
+  for(size_t i = 0, p = 0, c = response.second.size(); p < c; p++, i += sizeof(size_t)) {
+    size_t currentValue = *(size_t *)(bff + i);
+    if(currentValue != response.second[p]) {
+      printf("Difference at %p then: %p, now: %p\n", i, response.second[i], currentValue);
+    }
   }
   eeTa_FilePrintf("+++++++\n");
 }
