@@ -2,6 +2,7 @@
 #include "AttackDecision.h"
 #include "PlayerState.h"
 #include "ResourceManager.h"
+#include "MethodsDefinitions.h"
 
 void test_PrintUnits();
 void test_ConvertEnemy();
@@ -53,7 +54,19 @@ void test_ConvertEnemy() {
   eeTa_MoveTo(priest, enemy);
 }
 
+PVOID __fastcall moveTest(PVOID movingStructure) {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  builder_PrintMemoryLayout(movingStructure, 0xB8);
+  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x1EDCC0);
+  return method(movingStructure);
+}
+
 void bt_OnInit() {
+  eeTa_FilePrintf("Changing at %p\n", (size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0xBB9D8);
+  builder_Definition((PVOID)0xBB9DB, (PVOID)moveTest);
 }
 
 void bt_OnFrame() {
