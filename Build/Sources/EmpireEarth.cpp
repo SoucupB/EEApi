@@ -35,7 +35,6 @@ extern "C" {
       eeTa_OnInit();
       onInitFlag = 1;
     }
-    // bt_OnFrame();
     eeTa_OnFrame();
     return method(self);
   }

@@ -7,7 +7,7 @@ static PTimerHelper timers;
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
-void onFrame();
+void bt_OnFrame();
 
 using namespace std;
 static unordered_map<PVOID, uint8_t> unitPresence[24];
@@ -319,6 +319,7 @@ UnitTypeDef eeTa_UnitType(Unit unit) {
 }
 
 void eeTa_OnFrame() {
+  bt_OnFrame();
   tmr_OnFrame(timers);
   frames++;
 }

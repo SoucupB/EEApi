@@ -739,3 +739,9 @@ The method that calls the 005EDCC0 convert method is at 004BB9DB.
 The method that iterates through units is at 5540DC
 
 00838F18 Is the method that executes when a priest wants to convert.
+
+64187D happends only once I try to convert, idk.
+
+
+The method at 005EDCC0 is called for conversion as well
+but not from the same source.
