@@ -1,6 +1,7 @@
 #include "EETwa.h"
 #include <unordered_map>
 #include <vector>
+#include <stdarg.h>
 #include "PlayerState.h"
 
 static PTimerHelper timers;
@@ -205,6 +206,18 @@ vector<PVOID> eeTa_Buildings(int8_t player) {
 
 int8_t eeTa_IsIdle(Unit building) {
   return eeTa_CurrentlyBuilding(building) == IDLE;
+}
+
+void eeTa_FilePrintf(const char *format, ...) {
+  FILE* f = fopen("EETWa.log", "a");
+  if (!f) return;
+
+  va_list args;
+  va_start(args, format);
+  vfprintf(f, format, args);
+  va_end(args);
+
+  fclose(f);
 }
 
 vector<Unit> eeTa_IdleBuildings(int8_t player) {
