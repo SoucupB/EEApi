@@ -27,10 +27,18 @@ void eeTa_Clean() {
   }
 }
 
+void eeTa_MoveTo(Unit src, Unit dst) {
+  help_MoveToTarget(eeTa_Reference(src), eeTa_Reference(dst));
+}
+
 Unit eeTa_EmptyUnit() {
   return (Unit) {
     ._payload = NULL
   };
+}
+
+PVOID eeTa_Reference(Unit unit) {
+  return unit._payload;
 }
 
 uint8_t eeTa_NeutralPlayer() {

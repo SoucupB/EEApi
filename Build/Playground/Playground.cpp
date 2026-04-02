@@ -4,10 +4,15 @@
 #include "ResourceManager.h"
 
 void test_PrintUnits();
+void test_ConvertEnemy();
 
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
     test_PrintUnits();
+    Beep (300, 250);
+  }
+  if(GetAsyncKeyState('P') & 0x8000) {
+    test_ConvertEnemy();
     Beep (300, 250);
   }
 }
@@ -42,7 +47,10 @@ Unit getEnemy() {
 }
 
 void test_ConvertEnemy() {
-
+  Unit priest = getPriest();
+  Unit enemy = getEnemy();
+  eeTa_FilePrintf("Unit pointer: %p, is converting %p\n", eeTa_Reference(priest), eeTa_Reference(enemy));
+  eeTa_MoveTo(priest, enemy);
 }
 
 void bt_OnInit() {
