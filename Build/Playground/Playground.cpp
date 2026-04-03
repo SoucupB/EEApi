@@ -227,6 +227,7 @@ void replace_AnchorMethods() {
   // eeTa_FilePrintf("Base class %p\n", test_FindSuperClass_BB884());
 }
 
+// Fixed nigga
 void test_Convert(Unit src, Unit dst) {
   PVOID actionMove = help_New(0xB8);
   PVOID secondary = help_New(0x44);
@@ -237,6 +238,7 @@ void test_Convert(Unit src, Unit dst) {
   test_Convert_Fill(actionMove, secondary, src);
   builder_FillValue(actionMove, 0x68, (size_t)secondary);
   test_Convert_Secondary(secondary, src, dst);
+  builder_FillValue(actionMove, 0x6C, (size_t)0x7D1);
   test_MoveToUnit(actionMove);
   // builder_CheckChanges(actionMove);
   // builder_CheckChanges(secondary);
