@@ -28,6 +28,11 @@ void builder_PrintMemoryLayout(PVOID ref, size_t sz) {
   eeTa_FilePrintf("+++++++\n");
 }
 
+void builder_FillValue(PVOID ref, size_t offset, size_t value) {
+  PVOID address = (PVOID)((size_t)ref + offset);
+  memcpy(address, &value, sizeof(size_t));
+}
+
 void builder_Store(PVOID ref, size_t sz) {
   uint8_t *bff = (uint8_t *)ref;
   storeBuilder[(size_t)ref].first = sz;
