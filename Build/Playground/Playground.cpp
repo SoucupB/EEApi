@@ -6,19 +6,9 @@
 
 void test_PrintUnits();
 void test_ConvertEnemy();
-
-typedef struct ConvertActionUnit_t {
-  PVOID constants[0xB8];
-} ConvertActionUnit;
-
-typedef struct TemporaryActionUnit_t {
-  PVOID constants[0x44];
-} TemporaryActionUnit;
-
-typedef ConvertActionUnit *PConvertActionUnit;
-typedef TemporaryActionUnit *PTemporaryActionUnit;
-
+void test_Convert(Unit src, Unit dst);
 void test_Move();
+
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
     test_PrintUnits();
@@ -28,10 +18,10 @@ void execDataPengus() {
     test_ConvertEnemy();
     Beep (300, 250);
   }
-  if(GetAsyncKeyState('Z') & 0x8000) {
-    test_Move();
-    Beep (300, 250);
-  }
+  // if(GetAsyncKeyState('Z') & 0x8000) {
+  //   test_Move();
+  //   Beep (300, 250);
+  // }
 }
 
 void test_PrintUnits() {
@@ -66,8 +56,9 @@ Unit getEnemy() {
 void test_ConvertEnemy() {
   Unit priest = getPriest();
   Unit enemy = getEnemy();
+  test_Convert(priest, enemy);
   eeTa_FilePrintf("Unit pointer: %p, is converting %p\n", eeTa_Reference(priest), eeTa_Reference(enemy));
-  eeTa_MoveTo(priest, enemy);
+  // eeTa_MoveTo(priest, enemy);
 }
 
 PVOID __fastcall test_MoveToUnit(PVOID movingStructure) {
@@ -77,6 +68,8 @@ PVOID __fastcall test_MoveToUnit(PVOID movingStructure) {
   }
   builder_PrintMemoryLayout(movingStructure, 0xB8);
   PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)hModule + 0x1EDCC0);
+  PVOID zrr = util_Pointer(movingStructure, 0x68, POINTER_TYPE);
+  builder_PrintMemoryLayout(zrr, 0x44);
   return method(movingStructure);
 }
 
@@ -200,7 +193,23 @@ void test_Convert_FillConstants(PVOID mem, Unit currentUnit) {
   builder_FillValue(mem, 0xAC, 0x3D96DE33);
 }
 
-__declspec(dllexport) void test_Convert_Fill(PVOID mem, PVOID unitAction, Unit unit) {
+void test_Convert_Secondary(PVOID unitAction, Unit src, Unit dst) {
+  PVOID classNameRef = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0x447380);
+  builder_FillValue(unitAction, 0x0, (size_t)classNameRef);
+  builder_FillValue(unitAction, 0x4, 0x201);
+  builder_FillValue(unitAction, 0x8, 0x1388);
+  builder_FillValue(unitAction, 0x10, 0x5FE);
+  builder_FillValue(unitAction, 0x14, 0x3);
+  builder_FillValue(unitAction, 0x1C, 0x1);
+  builder_FillValue(unitAction, 0x20, 0x424A0000);
+  builder_FillValue(unitAction, 0x24, 0x424A0000);
+  builder_FillValue(unitAction, 0x2C, (size_t)eeTa_Reference(src));
+  builder_FillValue(unitAction, 0x30, (size_t)eeTa_Reference(dst));
+  builder_FillValue(unitAction, 0x34, 0x32);
+  builder_FillValue(unitAction, 0x38, 0x31);
+}
+
+void test_Convert_Fill(PVOID mem, PVOID unitAction, Unit unit) {
   PVOID baseAddres = test_FindSuperClass_BB884();
   test_Fill_BB8FD(mem, baseAddres);
   test_Convert_FillConstants(mem, unit);
@@ -209,9 +218,9 @@ __declspec(dllexport) void test_Convert_Fill(PVOID mem, PVOID unitAction, Unit u
 
 void replace_AnchorMethods() {
   builder_Definition((PVOID)0xBB9DB, (PVOID)test_MoveToUnit);
-  builder_Definition((PVOID)0xBB912, (PVOID)test_Fill_BB912);
+  // builder_Definition((PVOID)0xBB912, (PVOID)test_Fill_BB912);
   // builder_Definition((PVOID)0xBB8FD, (PVOID)test_Method_BB8FD);
-  builder_Definition((PVOID)0xBB8F0, (PVOID)test_Method_BB8F0);
+  // builder_Definition((PVOID)0xBB8F0, (PVOID)test_Method_BB8F0);
   // builder_Definition((PVOID)0xBB94D, (PVOID)test_Method_BB94D);
   // builder_Definition((PVOID)0xBB9CD, (PVOID)test_Method_BB9CD);
 
@@ -220,9 +229,17 @@ void replace_AnchorMethods() {
 
 void test_Convert(Unit src, Unit dst) {
   PVOID actionMove = help_New(0xB8);
-  builder_Store(actionMove, 0xB8);
-  test_Convert_Fill(actionMove, help_New(0x44), src);
-  builder_CheckChanges(actionMove);
+  PVOID secondary = help_New(0x44);
+  memset(actionMove, 0x0, 0xB8);
+  memset(secondary, 0x0, 0x44);
+  // builder_Store(actionMove, 0xB8);
+  // builder_Store(secondary, 0x44);
+  test_Convert_Fill(actionMove, secondary, src);
+  builder_FillValue(actionMove, 0x68, (size_t)secondary);
+  test_Convert_Secondary(secondary, src, dst);
+  test_MoveToUnit(actionMove);
+  // builder_CheckChanges(actionMove);
+  // builder_CheckChanges(secondary);
 }
 
 void test_Move() {
