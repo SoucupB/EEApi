@@ -54,19 +54,62 @@ void test_ConvertEnemy() {
   eeTa_MoveTo(priest, enemy);
 }
 
-PVOID __fastcall moveTest(PVOID movingStructure) {
+PVOID __fastcall test_MoveToUnit(PVOID movingStructure) {
   HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
   if(!hModule) {
     return 0;
   }
   builder_PrintMemoryLayout(movingStructure, 0xB8);
-  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x1EDCC0);
+  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)hModule + 0x1EDCC0);
   return method(movingStructure);
+}
+
+PVOID pnt;
+
+PVOID __thiscall test_Method_BB8FD(PVOID movingStructure) {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  builder_PrintMemoryLayout(movingStructure, 0xB8);
+  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x1EBC86);
+  return method(movingStructure);;
+}
+
+PVOID __cdecl test_Method_BB8F0(PVOID movingStructure) {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  PVOID __cdecl (*method)(PVOID) = (PVOID __cdecl (*)(PVOID)) ((uint8_t *)hModule + 0x29D178);
+  pnt = method(movingStructure);
+  eeTa_FilePrintf("Alocated memory at %p\n", pnt);
+  return pnt;
+}
+
+PVOID __thiscall test_Method_BB9CD(PVOID movingStructure, PVOID _a, PVOID _b) {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)hModule + 0x1EDC93);
+  builder_Store(movingStructure, 0xB8);
+  pnt = method(movingStructure, _a, _b);
+  builder_CheckChanges(movingStructure);
+  eeTa_FilePrintf("Spoc Method %p - %p - %p\n", movingStructure, _a, _b);
+  return pnt;
+}
+
+void replace_AnchorMethods() {
+  builder_Definition((PVOID)0xBB9DB, (PVOID)test_MoveToUnit);
+  // builder_Definition((PVOID)0xBB8FD, (PVOID)test_Method_BB8FD);
+  builder_Definition((PVOID)0xBB8F0, (PVOID)test_Method_BB8F0);
+  builder_Definition((PVOID)0xBB9CD, (PVOID)test_Method_BB9CD);
 }
 
 void bt_OnInit() {
   eeTa_FilePrintf("Changing at %p\n", (size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0xBB9D8);
-  builder_Definition((PVOID)0xBB9DB, (PVOID)moveTest);
+  replace_AnchorMethods();
 }
 
 void bt_OnFrame() {
