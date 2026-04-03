@@ -7,6 +7,17 @@
 void test_PrintUnits();
 void test_ConvertEnemy();
 
+typedef struct ConvertActionUnit_t {
+  PVOID constants[0xB8];
+} ConvertActionUnit;
+
+typedef struct TemporaryActionUnit_t {
+  PVOID constants[0x44];
+} TemporaryActionUnit;
+
+typedef ConvertActionUnit *PConvertActionUnit;
+typedef TemporaryActionUnit *PTemporaryActionUnit;
+
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
     test_PrintUnits();
@@ -93,23 +104,71 @@ PVOID __thiscall test_Method_BB9CD(PVOID movingStructure, PVOID _a, PVOID _b) {
     return 0;
   }
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)hModule + 0x1EDC93);
-  builder_Store(movingStructure, 0xB8);
+  builder_Store(pnt, 0xB8);
   pnt = method(movingStructure, _a, _b);
-  builder_CheckChanges(movingStructure);
+  builder_CheckChanges(pnt);
   eeTa_FilePrintf("Spoc Method %p - %p - %p\n", movingStructure, _a, _b);
   return pnt;
+}
+
+PVOID __thiscall test_Method_BB94D(PVOID movingStructure, PVOID _a, PVOID _b, PVOID _c) {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)hModule + 0x1EECB2);
+  PVOID response = method(movingStructure, _a, _b, _c);
+  return response;
+}
+
+
+PVOID test_FindSuperClass_BB884() {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  PVOID param = (PVOID)((size_t)hModule + (size_t)0x530D40);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x139670);
+  return method(param, (PVOID)0xFE);
+}
+
+PVOID test_Fill_BB8FD(PVOID moveAction, PVOID baseClass) {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x1EBC86);
+  return method(moveAction, baseClass);
+}
+
+void test_Convert_Fill(PVOID actionStruct, PVOID unitAction) {
+  PVOID baseClass = test_FindSuperClass_BB884();
+  test_Fill_BB8FD(actionStruct, baseClass);
+  // Add some filling methods.
+  // test_Method_BB9CD(actionStruct, unitAction, 0);
 }
 
 void replace_AnchorMethods() {
   builder_Definition((PVOID)0xBB9DB, (PVOID)test_MoveToUnit);
   // builder_Definition((PVOID)0xBB8FD, (PVOID)test_Method_BB8FD);
-  builder_Definition((PVOID)0xBB8F0, (PVOID)test_Method_BB8F0);
-  builder_Definition((PVOID)0xBB9CD, (PVOID)test_Method_BB9CD);
+  // builder_Definition((PVOID)0xBB8F0, (PVOID)test_Method_BB8F0);
+  // builder_Definition((PVOID)0xBB94D, (PVOID)test_Method_BB94D);
+  // builder_Definition((PVOID)0xBB9CD, (PVOID)test_Method_BB9CD);
+
+  // eeTa_FilePrintf("Base class %p\n", test_FindSuperClass_BB884());
+}
+
+void test_Convert(Unit src, Unit dst) {
+  PVOID actionMove = help_New(0xB8);
+  builder_Store(actionMove, 0xB8);
+  test_Convert_Fill(actionMove, help_New(0x44));
+  builder_CheckChanges(actionMove);
 }
 
 void bt_OnInit() {
   eeTa_FilePrintf("Changing at %p\n", (size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0xBB9D8);
   replace_AnchorMethods();
+  test_Convert(eeTa_EmptyUnit(), eeTa_EmptyUnit());
 }
 
 void bt_OnFrame() {
