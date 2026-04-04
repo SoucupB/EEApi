@@ -841,3 +841,9 @@ Difference at 000000A8 then: 00000000, now: 3D84026D
 Difference at 000000AC then: 00000000, now: 3D96DE33
 Equal at 000000B0 - 40000000 - 40000000
 Equal at 000000B4 - 00000000 - 00000000
+
+
+004BC744 is a method which checks the energy of the unit.
+004BC483 is the method which gets called for the ability.
+
+005537BA might be usefull.

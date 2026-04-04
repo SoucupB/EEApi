@@ -93,6 +93,11 @@ void eeTa_ConvertUnit(Unit src, Unit dst) {
   helper_Convert(eeTa_Reference(src), eeTa_Reference(dst));
 }
 
+uint8_t eeTa_CurrentEnergy(Unit unit) {
+  uint8_t *energyPointer = (uint8_t *)util_Pointer(eeTa_Reference(unit), 0x2D4, INT8_T_TYPE);
+  return *energyPointer;
+}
+
 vector<Unit> eeTa_Units(int8_t player) {
   vector<Unit> units;
   for(auto &it : unitPresence[player]) {
