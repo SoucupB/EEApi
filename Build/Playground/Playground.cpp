@@ -66,10 +66,7 @@ PVOID __fastcall test_MoveToUnit(PVOID movingStructure) {
   if(!hModule) {
     return 0;
   }
-  builder_PrintMemoryLayout(movingStructure, 0xB8);
   PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)hModule + 0x1EDCC0);
-  PVOID zrr = util_Pointer(movingStructure, 0x68, POINTER_TYPE);
-  builder_PrintMemoryLayout(zrr, 0x44);
   return method(movingStructure);
 }
 
