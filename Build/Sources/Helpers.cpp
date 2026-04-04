@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <Windows.h>
 #include "EETwaTypes.h"
+#include "MethodsDefinitions.h"
 
 #define ACTION_BUFFER_SIZE 0xB8
 
@@ -51,6 +52,9 @@ PVOID __fastcall help_SearchUnits(PVOID self);
 MoveAction *help_GetAction(PVOID parent, Point pos, UnitAction action);
 void __cdecl help_Delete(PVOID pointer);
 PVOID __thiscall help_Checker_4C2A3C(PVOID self, PVOID _1, PVOID _2, PVOID _3);
+void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit);
+void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst);
+PVOID __fastcall helper_ConvertUnit(PVOID movingStructure);
 
 static unordered_map<PVOID, size_t> memoryMap;
 
@@ -68,9 +72,103 @@ PVOID __cdecl help_New(size_t size) {
   return response;
 }
 
+void helper_Convert_FillConstants(PVOID mem, PVOID currentUnit) {
+  PVOID unitBuffer = help_New(0x8);
+  builder_FillValue(unitBuffer, 0x0, (size_t)currentUnit);
+  builder_FillValue(mem, 0x4, 0x2);
+  builder_FillValue(mem, 0x1C, 0x1);
+  builder_FillValue(mem, 0x24, (size_t)unitBuffer);
+  builder_FillValue(mem, 0x28, (size_t)unitBuffer + 0x4);
+  builder_FillValue(mem, 0x2C, (size_t)unitBuffer + 0x4);
+  builder_FillValue(mem, 0x38, 0x23C04);
+  builder_FillValue(mem, 0x70, 0x3F000000);
+  builder_FillValue(mem, 0x74, 0x3F000000);
+  builder_FillValue(mem, 0x78, 0x3F000000);
+  builder_FillValue(mem, 0x7C, 0x400E38E4);
+  builder_FillValue(mem, 0x80, 0x400E38E4);
+  builder_FillValue(mem, 0x84, 0x400E38E4);
+  builder_FillValue(mem, 0x88, 0x41783980);
+  builder_FillValue(mem, 0x8C, 0x41783980);
+  builder_FillValue(mem, 0x90, 0x41783980);
+  builder_FillValue(mem, 0x94, 0x41593251);
+  builder_FillValue(mem, 0x98, 0x41593251);
+  builder_FillValue(mem, 0x9C, 0x41593251);
+  builder_FillValue(mem, 0xA0, 0x40000000);
+  builder_FillValue(mem, 0xA4, 0x3EE66666);
+  builder_FillValue(mem, 0xA8, 0x3D84026D);
+  builder_FillValue(mem, 0xAC, 0x3D96DE33);
+}
+
+void helper_Convert(PVOID src, PVOID dst) {
+  PVOID actionMove = help_New(0xB8);
+  PVOID secondary = help_New(0x44);
+  memset(actionMove, 0x0, 0xB8);
+  memset(secondary, 0x0, 0x44);
+  helper_Convert_Fill(actionMove, secondary, src);
+  builder_FillValue(actionMove, 0x68, (size_t)secondary);
+  helper_Convert_Secondary(secondary, src, dst);
+  builder_FillValue(actionMove, 0x6C, (size_t)0x7D1);
+  helper_ConvertUnit(actionMove);
+}
+
+void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst) {
+  PVOID classNameRef = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0x447380);
+  builder_FillValue(unitAction, 0x0, (size_t)classNameRef);
+  builder_FillValue(unitAction, 0x4, 0x201);
+  builder_FillValue(unitAction, 0x8, 0x1388);
+  builder_FillValue(unitAction, 0x10, 0x5FE);
+  builder_FillValue(unitAction, 0x14, 0x3);
+  builder_FillValue(unitAction, 0x1C, 0x1);
+  builder_FillValue(unitAction, 0x20, 0x424A0000);
+  builder_FillValue(unitAction, 0x24, 0x424A0000);
+  builder_FillValue(unitAction, 0x2C, (size_t)src);
+  builder_FillValue(unitAction, 0x30, (size_t)dst);
+  builder_FillValue(unitAction, 0x34, 0x32);
+  builder_FillValue(unitAction, 0x38, 0x31);
+}
+
+PVOID helper_FindSuperClass_BB884() {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  PVOID param = (PVOID)((size_t)hModule + (size_t)0x530D40);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x139670);
+  return method(param, (PVOID)0xFE);
+}
+
+PVOID helper_Fill_BB8FD(PVOID moveAction, PVOID baseClass) {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x1EBC86);
+  return method(moveAction, baseClass);
+}
+
+void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit) {
+  PVOID baseAddres = helper_FindSuperClass_BB884();
+  helper_Fill_BB8FD(mem, baseAddres);
+  helper_Convert_FillConstants(mem, unit);
+  // test_FillMemCheck(actionStruct, baseAddres);
+}
+
+PVOID __fastcall helper_ConvertUnit(PVOID movingStructure) {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return 0;
+  }
+  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)hModule + 0x1EDCC0);
+  return method(movingStructure);
+}
+
 void __cdecl help_Delete(PVOID pointer) {
   PVOID __cdecl (*method)(PVOID) = (PVOID __cdecl (*)(PVOID)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x29D150);
   method(pointer);
+}
+
+void help_Convert(PVOID src, PVOID dst) {
+
 }
 
 string help_DisplayDiff(PVOID src, PVOID dst, size_t sz) {

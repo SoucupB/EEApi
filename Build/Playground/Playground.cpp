@@ -56,7 +56,8 @@ Unit getEnemy() {
 void test_ConvertEnemy() {
   Unit priest = getPriest();
   Unit enemy = getEnemy();
-  test_Convert(priest, enemy);
+  // test_Convert(priest, enemy);
+  eeTa_ConvertUnit(priest, enemy);
   eeTa_FilePrintf("Unit pointer: %p, is converting %p\n", eeTa_Reference(priest), eeTa_Reference(enemy));
   // eeTa_MoveTo(priest, enemy);
 }

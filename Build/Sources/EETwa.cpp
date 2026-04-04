@@ -83,6 +83,16 @@ int8_t eeTa_AllPlayers() {
   return all_players;
 }
 
+void eeTa_ConvertUnit(Unit src, Unit dst) {
+  if(!eeTypes_IsPriest(eeTa_UnitType(src))) {
+    return ;
+  }
+  if(eeTa_IsBuilding(dst) || eeTa_IsUnitDead(dst)) {
+    return ;
+  }
+  helper_Convert(eeTa_Reference(src), eeTa_Reference(dst));
+}
+
 vector<Unit> eeTa_Units(int8_t player) {
   vector<Unit> units;
   for(auto &it : unitPresence[player]) {
