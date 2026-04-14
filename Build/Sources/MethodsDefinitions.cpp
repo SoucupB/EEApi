@@ -1,8 +1,13 @@
 #include "MethodsDefinitions.h"
 #include "EETwa.h"
+// #include "Helpers.h"
 #include <map>
 
 std::map<size_t, std::pair<size_t, std::vector<size_t> > > storeBuilder;
+static size_t old_NewHandle;
+static size_t old_FreeHandle;
+PVOID _cdecl builder_EnchantedNew(const size_t memSize);
+PVOID _cdecl builder_EnchantedFree(const PVOID buffer);
 
 void builder_Definition(PVOID remoteAddress, PVOID localAddress) {
   HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
@@ -59,4 +64,52 @@ void builder_CheckChanges(PVOID ref) {
     eeTa_FilePrintf("Equal at %p - %p - %p\n", i, response.second[p], currentValue);
   }
   eeTa_FilePrintf("+++++++\n");
+}
+
+void builder_AllowRules(PVOID handle, size_t sz) {
+  DWORD oldProtect;
+  if (!VirtualProtect((void *)handle, sz, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+    eeTa_FilePrintf("Couldn't modify method at %p\n", handle);
+    return;
+  }
+}
+
+void builder_ReplaceNew() {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return ;
+  }
+  size_t newModule = (size_t)hModule + 0x4386DC;
+  old_NewHandle = *(size_t *)newModule;
+  size_t *comp = (size_t *)builder_EnchantedNew;
+  builder_AllowRules((PVOID)newModule, sizeof(size_t) * 2);
+  memcpy((PVOID)newModule, (PVOID)&comp, sizeof(size_t));
+}
+
+void builder_ReplaceFree() {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return ;
+  }
+  size_t freeModule = (size_t)hModule + 0x4386E4;
+  old_FreeHandle = *(size_t *)freeModule;
+  size_t *comp = (size_t *)builder_EnchantedFree;
+  // eeTa_FilePrintf("New address is %p -- %p -> %p\n", old_NewHandle, newModule, (PVOID)comp);
+  builder_AllowRules((PVOID)freeModule, sizeof(size_t) * 2);
+  memcpy((PVOID)freeModule, (PVOID)&comp, sizeof(size_t));
+}
+
+PVOID _cdecl builder_EnchantedNew(const size_t memSize) {
+  PVOID _cdecl (*method)(size_t) = (PVOID _cdecl (*)(size_t))old_NewHandle;
+  return method(memSize);
+}
+
+PVOID _cdecl builder_EnchantedFree(const PVOID buffer) {
+  PVOID _cdecl (*method)(PVOID) = (PVOID _cdecl (*)(PVOID))old_FreeHandle;
+  return method(buffer);
+}
+
+void builder_ReplaceMMUMethods() {
+  builder_ReplaceNew();
+  builder_ReplaceFree();
 }

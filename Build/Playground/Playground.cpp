@@ -6,6 +6,7 @@
 
 void test_PrintUnits();
 void test_ConvertEnemy();
+void printPositions();
 
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
@@ -16,10 +17,10 @@ void execDataPengus() {
     test_ConvertEnemy();
     Beep (300, 250);
   }
-  // if(GetAsyncKeyState('Z') & 0x8000) {
-  //   test_Move();
-  //   Beep (300, 250);
-  // }
+  if(GetAsyncKeyState('L') & 0x8000) {
+    // printPositions();
+    Beep (300, 250);
+  }
 }
 
 void test_PrintUnits() {
@@ -51,9 +52,23 @@ Unit getEnemy() {
   return eeTa_EmptyUnit();
 }
 
+void printPositions() {
+  vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
+  for(size_t i = 0; i < units.size(); i++) {
+    Point pnt = eeTa_GetDestinationCommand(units[i]);
+    if(pnt.x != -1) {
+      eeTa_FilePrintf("Position for %p is X: %f, Y: %f\n", eeTa_Reference(units[i]), pnt.x, pnt.y);
+    }
+  }
+}
+
 void test_ConvertEnemy() {
   Unit priest = getPriest();
   Unit enemy = getEnemy();
+  if(!eeTa_Reference(priest) || !eeTa_Reference(enemy)) {
+    eeTa_FilePrintf("Not found\n");
+    return ;
+  }
   // test_Convert(priest, enemy);
   eeTa_ConvertUnit(priest, enemy);
   eeTa_FilePrintf("Rombububico\n");

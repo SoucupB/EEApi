@@ -847,3 +847,35 @@ Equal at 000000B4 - 00000000 - 00000000
 004BC483 is the method which gets called for the ability.
 
 005537BA might be usefull.
+
+At 004B8F10 The priest casting the ability is in [EDI + 58]
+
+
+00620C0C is where the energy is set.
+
+004BC483 is the method that if I return, abilities will not be casted
+by the prophet.
+
+
+The method that creates the address here 004BC696 is the same NEW which
+creates the order to create a move command.
+At 004BC696 [esp + 2C] is probably the ability ID
+ID:3 is for earthquake
+ID:8 is for malarya.
+
+#### Some ability progress.
+At 004BC4FA the ability is held in [esi + 20] Modify this value to change
+the current ability.
+3FA earthquake.
+3F8 malaria.
+3FE Tornado.
+
+At 004BC483 there is ECX register. This register holds the information 
+about the ability which should be casted.
+[ECX + 20] is the ability
+3FA earthquake.
+3F8 malaria.
+3FE Tornado.
+
+This method is also interesting 005537BA.
+005537AC is the copy method which will copy the data.

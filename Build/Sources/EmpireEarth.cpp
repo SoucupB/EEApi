@@ -91,6 +91,7 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)0x13B8CF, (PVOID)onUnitDelete);
   builder_Definition((PVOID)0x1F5E09, (PVOID)onPlanePark);
   builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
+  builder_ReplaceMMUMethods();
 }
 
 extern "C"  __declspec(dllexport) void __cdecl someDllMain() {
