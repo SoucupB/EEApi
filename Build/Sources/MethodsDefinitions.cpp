@@ -4,10 +4,17 @@
 #include <map>
 
 std::map<size_t, std::pair<size_t, std::vector<size_t> > > storeBuilder;
+uint8_t isMemoryValid(PVOID addr);
 static size_t old_NewHandle;
 static size_t old_FreeHandle;
+static uint8_t magicKey[] = {0xCC, 0xFF, 0xAA, 0x00, 0xBB, 0x12, 0x43, 0x27, 0x19, 0x91, 0x01, 0x02};
 PVOID _cdecl builder_EnchantedNew(const size_t memSize);
 PVOID _cdecl builder_EnchantedFree(const PVOID buffer);
+
+typedef struct MMUHeader_t {
+  uint8_t magicKey[0xC];
+  size_t bufferSize;
+} MMUHeader;
 
 void builder_Definition(PVOID remoteAddress, PVOID localAddress) {
   HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
@@ -94,18 +101,39 @@ void builder_ReplaceFree() {
   size_t freeModule = (size_t)hModule + 0x4386E4;
   old_FreeHandle = *(size_t *)freeModule;
   size_t *comp = (size_t *)builder_EnchantedFree;
-  // eeTa_FilePrintf("New address is %p -- %p -> %p\n", old_NewHandle, newModule, (PVOID)comp);
   builder_AllowRules((PVOID)freeModule, sizeof(size_t) * 2);
   memcpy((PVOID)freeModule, (PVOID)&comp, sizeof(size_t));
 }
 
 PVOID _cdecl builder_EnchantedNew(const size_t memSize) {
   PVOID _cdecl (*method)(size_t) = (PVOID _cdecl (*)(size_t))old_NewHandle;
-  return method(memSize);
+  const size_t newSize = memSize + sizeof(MMUHeader);
+  PVOID buffer = method(newSize);
+  memcpy(buffer, magicKey, sizeof(magicKey));
+  memcpy((PVOID)((size_t)buffer + sizeof(magicKey)), &memSize, sizeof(size_t));
+  return (PVOID)((size_t)buffer + sizeof(MMUHeader));
+}
+
+uint8_t isMemoryValid(PVOID addr) {
+  MEMORY_BASIC_INFORMATION mbi;
+  SIZE_T result = VirtualQuery(addr, &mbi, sizeof(mbi));
+  if (result == 0) {
+    return 0;
+  }
+  return (mbi.State == MEM_COMMIT) &&
+    !(mbi.Protect & PAGE_NOACCESS) &&
+    !(mbi.Protect & PAGE_EXECUTE);
 }
 
 PVOID _cdecl builder_EnchantedFree(const PVOID buffer) {
   PVOID _cdecl (*method)(PVOID) = (PVOID _cdecl (*)(PVOID))old_FreeHandle;
+  PVOID offsetBuffer = (PVOID)((size_t)buffer - sizeof(MMUHeader));
+  if(!isMemoryValid(offsetBuffer)) {
+    return method(buffer);
+  }
+  if(!memcmp(offsetBuffer, magicKey, sizeof(magicKey))) {
+    return method(offsetBuffer);
+  }
   return method(buffer);
 }
 
