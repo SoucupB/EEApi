@@ -879,3 +879,17 @@ about the ability which should be casted.
 
 This method is also interesting 005537BA.
 005537AC is the copy method which will copy the data.
+
+Need to study this method 004BC6AC more
+Probably check where the prophet is and where the caller is.
+
+The structure seems to be same like before but more retarted.
+Now, the 0xB8 buffer gets set very late in the process for some reason
+
+both 
+[buffer + 0x24] gets set to a pointer
+[buffer + 0x28] gets set to the last pointer of the Array
+[buffer + 0x2C] same as above.
+
+[unit + 1EC] controlls what ability does (fck, idk what to do with this).
+Re-aproach this with the method at 005FE9E8.

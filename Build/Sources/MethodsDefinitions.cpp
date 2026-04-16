@@ -7,6 +7,7 @@ std::map<size_t, std::pair<size_t, std::vector<size_t> > > storeBuilder;
 uint8_t isMemoryValid(PVOID addr);
 static size_t old_NewHandle;
 static size_t old_FreeHandle;
+static uint8_t mmu_Replaced;
 static uint8_t magicKey[] = {0xCC, 0xFF, 0xAA, 0x00, 0xBB, 0x12, 0x43, 0x27, 0x19, 0x91, 0x01, 0x02};
 PVOID _cdecl builder_EnchantedNew(const size_t memSize);
 PVOID _cdecl builder_EnchantedFree(const PVOID buffer);
@@ -125,6 +126,18 @@ uint8_t isMemoryValid(PVOID addr) {
     !(mbi.Protect & PAGE_EXECUTE);
 }
 
+size_t bufferSize(PVOID buffer) {
+  return ((size_t *)((size_t)buffer - sizeof(size_t)))[0];
+}
+
+uint8_t hasBeenAllocked(PVOID buffer) {
+  PVOID offsetBuffer = (PVOID)((size_t)buffer - sizeof(MMUHeader));
+  if(!isMemoryValid(offsetBuffer)) {
+    return 0;
+  }
+  return memcmp(offsetBuffer, magicKey, sizeof(magicKey)) == 0;
+}
+
 PVOID _cdecl builder_EnchantedFree(const PVOID buffer) {
   PVOID _cdecl (*method)(PVOID) = (PVOID _cdecl (*)(PVOID))old_FreeHandle;
   PVOID offsetBuffer = (PVOID)((size_t)buffer - sizeof(MMUHeader));
@@ -137,7 +150,34 @@ PVOID _cdecl builder_EnchantedFree(const PVOID buffer) {
   return method(buffer);
 }
 
+void builder_PrintMemoryTree_t(PVOID mem, uint8_t offset, std::map<size_t, uint8_t > &memory) {
+  if(offset > 2) {
+    return ;
+  }
+  if(!hasBeenAllocked(mem) || (memory.find((size_t)mem) != memory.end())) {
+    return ;
+  }
+  memory[(size_t)mem] = 1;
+  for(size_t i = 0, c = bufferSize(mem); i < c; i += sizeof(size_t)) {
+    PVOID pntBuffer = (PVOID)*(size_t *)((size_t)mem + i);
+    if(!pntBuffer) {
+      continue;
+    }
+    for(size_t p = 0; p < offset; p++) {
+      eeTa_FilePrintf(" ");
+    }
+    eeTa_FilePrintf("%p - %p\n", i, pntBuffer);
+    builder_PrintMemoryTree_t(pntBuffer, offset + 2, memory);
+  }
+}
+
+void builder_PrintMemoryTree(PVOID mem) {
+  std::map<size_t, uint8_t > memory;
+  builder_PrintMemoryTree_t(mem, 0, memory);
+}
+
 void builder_ReplaceMMUMethods() {
   builder_ReplaceNew();
   builder_ReplaceFree();
+  mmu_Replaced = 1;
 }
