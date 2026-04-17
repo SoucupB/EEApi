@@ -55,6 +55,7 @@ PVOID __thiscall help_Checker_4C2A3C(PVOID self, PVOID _1, PVOID _2, PVOID _3);
 void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit);
 void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst);
 PVOID __fastcall helper_ConvertUnit(PVOID movingStructure);
+void helper_CastPoint(PVOID unit, Point target, Ability ability);
 
 static unordered_map<PVOID, size_t> memoryMap;
 
@@ -272,6 +273,31 @@ void help_SetActionPointerTset(PVOID self, Point pos, UnitAction action) {
   memcpy((PVOID)((size_t)self + 0x68), &actionPointer, sizeof(PVOID));
 }
 
+void helper_ReplaceOrder(PVOID unit, Point target, Ability ability) {
+  PVOID unitBuffer = help_New(0x34);
+  int32_t valX = (int32_t)target.x;
+  int32_t valY = (int32_t)target.y;
+  builder_FillValue(unitBuffer, 0x0, 0x0084748C);
+  builder_FillValue(unitBuffer, 0x4, 2817);
+  builder_FillValue(unitBuffer, 0x8, 5000);
+  builder_FillValue(unitBuffer, 0xc, 0x10235);
+  builder_FillValue(unitBuffer, 0x10, 0x39ED);
+  builder_FillValue(unitBuffer, 0x14, 4);
+  builder_FillValue(unitBuffer, 0x18, 2);
+  builder_FillValue(unitBuffer, 0x1C, 257);
+  builder_FillValue(unitBuffer, 0x20, (size_t)unit);
+  builder_FillValue(unitBuffer, 0x24, 0);
+  builder_FillValue(unitBuffer, 0x28, valX);
+  builder_FillValue(unitBuffer, 0x2C, valY);
+  builder_FillValue(unitBuffer, 0x30, ability);
+  memcpy((PVOID)((size_t)unit + 0x1EC), &unitBuffer, sizeof(size_t));
+  memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
+}
+
+void helper_CastPoint(PVOID unit, Point target, Ability ability) {
+  help_UnitMove(unit, target, UNIT_ATTACK);
+  helper_ReplaceOrder(unit, target, ability);
+}
 
 __declspec(dllexport)  PVOID __fastcall help_SearchUnits(PVOID self) {
   PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x1EDCC0);

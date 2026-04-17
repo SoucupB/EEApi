@@ -61,5 +61,6 @@ int8_t *eeTa_PlayerIDs(); // 30 elements max
 int8_t eeTa_PlayerIndex(); // needs to be fixed.
 void eeTa_FilePrintf(const char *format, ...);
 void eeTa_ConvertUnit(Unit src, Unit dst);
+void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability);
 
 uint8_t eeTa_ShouldOnInitExecute();

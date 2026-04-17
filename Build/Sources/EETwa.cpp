@@ -83,6 +83,10 @@ int8_t eeTa_AllPlayers() {
   return all_players;
 }
 
+void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability) {
+  helper_CastPoint(eeTa_Reference(src), target, ability);
+}
+
 void eeTa_ConvertUnit(Unit src, Unit dst) {
   if(!eeTypes_IsPriest(eeTa_UnitType(src))) {
     return ;
