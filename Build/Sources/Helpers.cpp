@@ -428,37 +428,6 @@ int32_t derefPointer(PVOID ecx) {
   return method(ecx);
 }
 
-// __declspec(dllexport) ActionBuffer help_ActionBuffer(PVOID unit, Point point, UnitAction action) {
-//   ActionBuffer self = {0};
-//   self.validAddress = 1;
-//   for(int32_t i = 1; i <= 6; i++) {
-//     self.buffer = (uint8_t *)help_New(ACTION_BUFFER_SIZE);
-//     if(!self.buffer) {
-//       self.validAddress = 0;
-//       return self;
-//     }
-//     help_FillMetaParameters(self.buffer);
-//     if(!changeSelectedUnits(self.buffer, unit)) {
-//       help_Delete(self.buffer);
-//       self.validAddress = 0;
-//       return self;
-//     }
-//     if(help_DerefCounter(self.buffer) <= 0) {
-//       derefPointer(self.buffer);
-//       continue;
-//     }
-//     // help_RunMethod_4C2A60(self.buffer);
-//     help_RunMethod_4C2A67(self.buffer);
-//     help_RunMethod_4C2AAD(self.buffer);
-//     help_RunMethod_4BB02A(self.buffer);
-//     help_AddMagicFlag(self);
-//     help_SetActionPointer(self.buffer, point, action);
-//     return self;
-//   }
-//   // help_SetPlayerActionPointer(unit, self.buffer);
-//   return self;
-// }
-
 void help_ActionBuffer(PVOID unit, Point point, UnitAction action) {
   ActionBuffer self = {0};
   self.validAddress = 1;
@@ -485,21 +454,11 @@ void help_ActionBuffer(PVOID unit, Point point, UnitAction action) {
   // help_SetPlayerActionPointer(unit, self.buffer);
 }
 
-void printString(PVOID buffer) {
-  string s = searchDiffs(buffer);
-  eeTa_Printf("Pengus mengus \n%s\n", &s[0]);
-}
-
 void help_UnitMove(PVOID unit, Point point, UnitAction currentAction) {
   if(!unit) {
     return ;
   }
   help_ActionBuffer(unit, point, currentAction);
-  // ActionBuffer action = help_ActionBuffer(unit, point, currentAction);
-  // if(!action.validAddress) {
-  //   return ;
-  // }
-  // help_SearchUnits(action.buffer);
 }
 
 void help_FillData_NonAir(PVOID buffer) {

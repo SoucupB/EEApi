@@ -145,6 +145,7 @@ PVOID _cdecl builder_EnchantedFree(const PVOID buffer) {
     return method(buffer);
   }
   if(!memcmp(offsetBuffer, magicKey, sizeof(magicKey))) {
+    memset(offsetBuffer, 0, sizeof(MMUHeader));
     return method(offsetBuffer);
   }
   return method(buffer);
