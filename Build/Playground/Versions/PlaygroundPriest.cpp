@@ -40,7 +40,7 @@ Unit getPriest() {
       return units[i];
     }
   }
-  return eeTa_EmptyUnit();
+  return eeTa_Unit_Null();
 }
 
 Unit getEnemy() {
@@ -50,15 +50,15 @@ Unit getEnemy() {
       return units[i];
     }
   }
-  return eeTa_EmptyUnit();
+  return eeTa_Unit_Null();
 }
 
 void test_ConvertEnemy() {
   Unit priest = getPriest();
   Unit enemy = getEnemy();
   // test_Convert(priest, enemy);
-  eeTa_ConvertUnit(priest, enemy);
-  eeTa_FilePrintf("Unit pointer: %p, is converting %p\n", eeTa_Reference(priest), eeTa_Reference(enemy));
+  eeTa_Unit_Convert(priest, enemy);
+  eeTa_FilePrintf("Unit pointer: %p, is converting %p\n", eeTa_Unit_Reference(priest), eeTa_Unit_Reference(enemy));
   // eeTa_MoveTo(priest, enemy);
 }
 
@@ -166,7 +166,7 @@ void test_FillMemCheck(PVOID mem, PVOID baseAddres) {
 
 void test_Convert_FillConstants(PVOID mem, Unit currentUnit) {
   PVOID unitBuffer = help_New(0x8);
-  builder_FillValue(unitBuffer, 0x0, (size_t)eeTa_Reference(currentUnit));
+  builder_FillValue(unitBuffer, 0x0, (size_t)eeTa_Unit_Reference(currentUnit));
   builder_FillValue(mem, 0x4, 0x2);
   builder_FillValue(mem, 0x1C, 0x1);
   builder_FillValue(mem, 0x24, (size_t)unitBuffer);
@@ -201,8 +201,8 @@ void test_Convert_Secondary(PVOID unitAction, Unit src, Unit dst) {
   builder_FillValue(unitAction, 0x1C, 0x1);
   builder_FillValue(unitAction, 0x20, 0x424A0000);
   builder_FillValue(unitAction, 0x24, 0x424A0000);
-  builder_FillValue(unitAction, 0x2C, (size_t)eeTa_Reference(src));
-  builder_FillValue(unitAction, 0x30, (size_t)eeTa_Reference(dst));
+  builder_FillValue(unitAction, 0x2C, (size_t)eeTa_Unit_Reference(src));
+  builder_FillValue(unitAction, 0x30, (size_t)eeTa_Unit_Reference(dst));
   builder_FillValue(unitAction, 0x34, 0x32);
   builder_FillValue(unitAction, 0x38, 0x31);
 }
@@ -243,7 +243,7 @@ void test_Convert(Unit src, Unit dst) {
 }
 
 void test_Move() {
-  test_Convert(eeTa_EmptyUnit(), eeTa_EmptyUnit());
+  test_Convert(eeTa_Unit_Null(), eeTa_Unit_Null());
 }
 
 void bt_OnInit() {

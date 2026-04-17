@@ -46,7 +46,7 @@ Unit getPriest() {
       return units[i];
     }
   }
-  return eeTa_EmptyUnit();
+  return eeTa_Unit_Null();
 }
 
 Unit getProphet() {
@@ -56,7 +56,7 @@ Unit getProphet() {
       return units[i];
     }
   }
-  return eeTa_EmptyUnit();
+  return eeTa_Unit_Null();
 }
 
 Unit getEnemy() {
@@ -66,7 +66,7 @@ Unit getEnemy() {
       return units[i];
     }
   }
-  return eeTa_EmptyUnit();
+  return eeTa_Unit_Null();
 }
 
 Unit getEnemyBuilding() {
@@ -80,7 +80,7 @@ Unit getEnemyBuilding() {
       };
     }
   }
-  return eeTa_EmptyUnit();
+  return eeTa_Unit_Null();
 }
 
 void printPositions() {
@@ -88,7 +88,7 @@ void printPositions() {
   for(size_t i = 0; i < units.size(); i++) {
     Point pnt = eeTa_GetDestinationCommand(units[i]);
     if(pnt.x != -1) {
-      eeTa_FilePrintf("Position for %p is X: %f, Y: %f\n", eeTa_Reference(units[i]), pnt.x, pnt.y);
+      eeTa_FilePrintf("Position for %p is X: %f, Y: %f\n", eeTa_Unit_Reference(units[i]), pnt.x, pnt.y);
     }
   }
 }
@@ -96,11 +96,11 @@ void printPositions() {
 void test_ConvertEnemy() {
   Unit priest = getPriest();
   Unit enemy = getEnemy();
-  if(!eeTa_Reference(priest) || !eeTa_Reference(enemy)) {
+  if(!eeTa_Unit_Reference(priest) || !eeTa_Unit_Reference(enemy)) {
     eeTa_FilePrintf("Not found\n");
     return ;
   }
-  eeTa_ConvertUnit(priest, enemy);
+  eeTa_Unit_Convert(priest, enemy);
   eeTa_FilePrintf("Rombububico\n");
 }
 

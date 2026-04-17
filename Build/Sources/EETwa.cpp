@@ -28,16 +28,16 @@ void eeTa_Clean() {
 }
 
 void eeTa_MoveTo(Unit src, Unit dst) {
-  help_MoveToTarget(eeTa_Reference(src), eeTa_Reference(dst));
+  help_MoveToTarget(eeTa_Unit_Reference(src), eeTa_Unit_Reference(dst));
 }
 
-Unit eeTa_EmptyUnit() {
+Unit eeTa_Unit_Null() {
   return (Unit) {
     ._payload = NULL
   };
 }
 
-PVOID eeTa_Reference(Unit unit) {
+PVOID eeTa_Unit_Reference(Unit unit) {
   return unit._payload;
 }
 
@@ -84,21 +84,21 @@ int8_t eeTa_AllPlayers() {
 }
 
 void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability) {
-  helper_CastPoint(eeTa_Reference(src), target, ability);
+  helper_CastPoint(eeTa_Unit_Reference(src), target, ability);
 }
 
-void eeTa_ConvertUnit(Unit src, Unit dst) {
+void eeTa_Unit_Convert(Unit src, Unit dst) {
   if(!eeTypes_IsPriest(eeTa_UnitType(src))) {
     return ;
   }
   if(eeTa_IsBuilding(dst) || eeTa_IsUnitDead(dst)) {
     return ;
   }
-  helper_Convert(eeTa_Reference(src), eeTa_Reference(dst));
+  helper_Convert(eeTa_Unit_Reference(src), eeTa_Unit_Reference(dst));
 }
 
 uint8_t eeTa_CurrentEnergy(Unit unit) {
-  uint8_t *energyPointer = (uint8_t *)util_Pointer(eeTa_Reference(unit), 0x2D4, INT8_T_TYPE);
+  uint8_t *energyPointer = (uint8_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x2D4, INT8_T_TYPE);
   return *energyPointer;
 }
 

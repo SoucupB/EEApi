@@ -26,8 +26,8 @@ void eeTa_OnUnitDeath(Unit unit);
 int8_t eeTa_Player(Unit unit);
 UnitTypeDef eeTa_UnitType(Unit unit);
 int32_t eeTa_CurrentHp(Unit unit);
-Unit eeTa_EmptyUnit();
-PVOID eeTa_Reference(Unit unit);
+Unit eeTa_Unit_Null();
+PVOID eeTa_Unit_Reference(Unit unit);
 void eeTa_MoveTo(Unit src, Unit dst);
 int8_t eeTa_IsUnitDead(Unit unit);
 int8_t eeTa_IsUnit(Unit unit);
@@ -60,7 +60,7 @@ int8_t eeTa_PlayerCount();
 int8_t *eeTa_PlayerIDs(); // 30 elements max
 int8_t eeTa_PlayerIndex(); // needs to be fixed.
 void eeTa_FilePrintf(const char *format, ...);
-void eeTa_ConvertUnit(Unit src, Unit dst);
+void eeTa_Unit_Convert(Unit src, Unit dst);
 void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability);
 
 uint8_t eeTa_ShouldOnInitExecute();
