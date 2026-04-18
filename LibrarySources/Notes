@@ -893,3 +893,17 @@ both
 
 [unit + 1EC] controlls what ability does (fck, idk what to do with this).
 Re-aproach this with the method at 005FE9E8.
+
+########### Check areas and point index.
+The move command is 004C281C <- 004C2AD2.
+
+
+This method at 0060DD2D is used when a unit is moving. Caller 0062BA35
+
+
+02B93209 Some poly method
+02B93209
+0051C5CA Some method for checking the polygon closest tile
+##################################
+# Pressing T, reveal the tiles.  #
+##################################

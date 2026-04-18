@@ -10,3 +10,4 @@ void __cdecl help_ConvertTarget(PVOID unit, PVOID target);
 void helper_Convert(PVOID src, PVOID dst);
 void __cdecl help_Delete(PVOID pointer);
 void helper_CastPoint(PVOID unit, Point target, Ability ability);
+void help_MoveSecondMethod(PVOID unit, Point target);

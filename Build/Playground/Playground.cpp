@@ -11,6 +11,7 @@ void testCastSomeSpell(Unit unit, Point pos);
 void randomChecker();
 void replaceCoc(Unit unit, Point pos);
 Unit getProphet();
+Unit getPriest();
 
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
@@ -26,6 +27,14 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
+    Unit priest = getPriest();
+    if(!priest._payload) {
+      return ;
+    }
+    help_MoveSecondMethod(priest._payload, (Point) {
+      .x = 50.0f,
+      .y = 30.0f
+    });
     Beep (300, 250);
   }
 }

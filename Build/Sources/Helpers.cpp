@@ -584,3 +584,29 @@ void __cdecl help_ConvertTarget(PVOID unit, PVOID target) {
     help_SearchUnits(self.buffer);
   }
 }
+
+void help_MoveSecondMethod(PVOID unit, Point target) {
+  // just for testing, not good enough.
+  PVOID unitBuffer = help_New(0x38);
+  float orientation = -1.93f;
+  size_t xPos = *((size_t *)&target.x);
+  size_t yPos = *((size_t *)&target.y);
+  size_t orientantionInteger = *((size_t *)&orientation);
+
+  builder_FillValue(unitBuffer, 0x0, 0x008478A0);
+  builder_FillValue(unitBuffer, 0x4, 257);
+  builder_FillValue(unitBuffer, 0x8, 5000);
+  builder_FillValue(unitBuffer, 0xc, 1101130);
+  builder_FillValue(unitBuffer, 0x10, 1101130);
+  builder_FillValue(unitBuffer, 0x14, 64);
+  builder_FillValue(unitBuffer, 0x18, 1);
+  builder_FillValue(unitBuffer, 0x1C, 257);
+  builder_FillValue(unitBuffer, 0x20, xPos);
+  builder_FillValue(unitBuffer, 0x24, yPos);
+  builder_FillValue(unitBuffer, 0x28, 0);
+  builder_FillValue(unitBuffer, 0x2C, orientantionInteger);
+  builder_FillValue(unitBuffer, 0x30, 257);
+  builder_FillValue(unitBuffer, 0x34, 3);
+  memcpy((PVOID)((size_t)unit + 0x1EC), &unitBuffer, sizeof(size_t));
+  memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
+}
