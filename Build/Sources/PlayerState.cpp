@@ -50,6 +50,7 @@ void pls_OnUnitDestory(Unit unit) {
 }
 
 void pls_ClearData() {
+  method = NULL;
   unitsHealth.clear();
 }
 
