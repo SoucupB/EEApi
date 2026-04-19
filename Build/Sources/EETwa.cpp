@@ -11,6 +11,7 @@ void bt_OnInit();
 void bt_OnFrame();
 void eeta_FileClean();
 void eeTa_RebuildDTs();
+void pls_ClearData();
 
 using namespace std;
 static unordered_map<PVOID, uint8_t> unitPresence[24];
@@ -29,6 +30,7 @@ void eeTa_RebuildExtraDataStructure() {
     unitPresence[i].clear();
   }
   tmrs_Delete(timers);
+  pls_ClearData();
   eeTa_RebuildDTs();
 }
 

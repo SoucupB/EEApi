@@ -49,6 +49,10 @@ void pls_OnUnitDestory(Unit unit) {
   unitsHealth.erase(unit._payload);
 }
 
+void pls_ClearData() {
+  unitsHealth.clear();
+}
+
 void pls_OnInit(PVOID remoteMethod) {
   method = remoteMethod;
 }
