@@ -907,3 +907,13 @@ This method at 0060DD2D is used when a unit is moving. Caller 0062BA35
 ##################################
 # Pressing T, reveal the tiles.  #
 ##################################
+
+Tiles have ID's most likely from the method here.
+0051C5CA
+02AAA5AF
+
+GetTile Method
+AddTilePolys This method actually is called when I hover over water.
+Interesting.
+
+InitializePlanes can be used when the game is loaded. 00522AF9
