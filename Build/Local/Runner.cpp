@@ -2,6 +2,7 @@
 #include "AttackDecision.h"
 #include "PlayerState.h"
 #include "ResourceManager.h"
+#include "EETwa.h"
 
 __declspec(dllexport) PVOID fakeStdin;
 
@@ -142,7 +143,7 @@ void printBuildableTypes(PVOID unit) {
 }
 
 void getMetaData() {
-  vector<PVOID> buildings = eeTa_Buildings(eeTa_SelfPlayer());
+  vector<Unit> buildings = eeTa_Buildings(eeTa_SelfPlayer());
 
   if(fakeStdin) {
     printBuildableTypes(fakeStdin);
@@ -150,8 +151,8 @@ void getMetaData() {
   }
 
   for(int32_t i = 0; i < buildings.size(); i++) {
-    if(eeTa_UnitType((Unit) {._payload = buildings[i]}) == BUILDING_BRONZE_ARCHERY) {
-      printBuildableTypes(buildings[i]);
+    if(eeTa_UnitType(buildings[i]) == BUILDING_BRONZE_ARCHERY) {
+      printBuildableTypes(eeTa_Unit_Reference(buildings[i]));
     }
   }
 }

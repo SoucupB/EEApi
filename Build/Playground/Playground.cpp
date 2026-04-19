@@ -46,6 +46,12 @@ void test_PrintUnits() {
       eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d\n", units[i]._payload, eeTa_UnitType(units[i]), eeTa_Player(units[i]));
     }
   }
+  vector<Unit> buildings = eeTa_Buildings(eeTa_AllPlayers());
+  if(buildings.size()) {
+    for(int32_t i = 0; i < buildings.size(); i++) {
+      eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d\n", buildings[i]._payload, eeTa_UnitType(buildings[i]), eeTa_Player(buildings[i]));
+    }
+  }
 }
 
 Unit getPriest() {
@@ -79,14 +85,10 @@ Unit getEnemy() {
 }
 
 Unit getEnemyBuilding() {
-  vector<PVOID> buildings = eeTa_Buildings(eeTa_AllPlayers());
+  vector<Unit> buildings = eeTa_Buildings(eeTa_AllPlayers());
   for(size_t i = 0; i < buildings.size(); i++) {
-    if(eeTa_Player((Unit) {
-      ._payload = buildings[i]
-    }) != eeTa_SelfPlayer()) {
-      return (Unit) {
-        ._payload = buildings[i]
-      };
+    if(eeTa_Player(buildings[i]) != eeTa_SelfPlayer()) {
+      return buildings[i];
     }
   }
   return eeTa_Unit_Null();

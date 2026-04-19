@@ -231,15 +231,14 @@ int32_t eeTa_TotalPop() {
   return method(unitTypeStruct, NULL, NULL);
 }
 
-vector<PVOID> eeTa_Buildings(int8_t player) {
-  vector<PVOID> buildingsPointer;
+vector<Unit> eeTa_Buildings(int8_t player) {
+  vector<Unit> buildingsPointer;
   for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead((Unit) {
+    Unit currentUnit = (Unit) {
       ._payload = it.first
-    }) && eeTa_IsBuilding((Unit) {
-      ._payload = it.first
-    })) {
-      buildingsPointer.push_back(it.first);
+    };
+    if(!eeTa_IsUnitDead(currentUnit) && eeTa_IsBuilding(currentUnit)) {
+      buildingsPointer.push_back(currentUnit);
     }
   }
   return buildingsPointer;
