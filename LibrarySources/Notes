@@ -917,3 +917,24 @@ AddTilePolys This method actually is called when I hover over water.
 Interesting.
 
 InitializePlanes can be used when the game is loaded. 00522AF9
+
+Unit Tile at [unitPointer + 0x14].
+It changes once the unit moves to another tile, lol
+[unitPointer + 1C] is the X point of the tile.
+[unitPointer + 20] is the Y point of the tile.
+[unitPointer + 18] is for humar player stuff
+
+[[unitPointer + 0x2C] + 0x1C] String, the name of the unit.
+[[unitPointer + 0x30] + 0x0] 4 bytes, the parent of the unit.
+[unitPointer + 0x34] is the unit class upgrade
+[[unitPointer + 0x18] + 0x28] is the player name of the unit.
+
+This method at 00629AC3 is executed when the unit is ordered to move
+This sets the current tile to the unit. Tile objext size is 0x28.
+005FE671 might pe intresting.
+00629B61 executes only once.
+#################################################
+The tile index is here calculated here 00629CCB.
+#################################################
+The addresses at 00930DFC (530DFC) has the tiles pointers.
+Its held in a matrix.

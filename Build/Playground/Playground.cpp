@@ -43,13 +43,15 @@ void test_PrintUnits() {
   vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
   if(units.size()) {
     for(int32_t i = 0; i < units.size(); i++) {
-      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d\n", units[i]._payload, eeTa_UnitType(units[i]), eeTa_Player(units[i]));
+      Point currentPoint = eeTa_CurrentPosition(units[i]);
+      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f)\n", units[i]._payload, eeTa_UnitType(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y);
     }
   }
   vector<Unit> buildings = eeTa_Buildings(eeTa_AllPlayers());
   if(buildings.size()) {
     for(int32_t i = 0; i < buildings.size(); i++) {
-      eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d\n", buildings[i]._payload, eeTa_UnitType(buildings[i]), eeTa_Player(buildings[i]));
+      Point currentPoint = eeTa_CurrentPosition(buildings[i]);
+      eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f)\n", buildings[i]._payload, eeTa_UnitType(buildings[i]), eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y);
     }
   }
 }
