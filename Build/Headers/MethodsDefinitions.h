@@ -11,3 +11,4 @@ void builder_CheckChanges(PVOID ref);
 void builder_FillValue(PVOID ref, size_t offset, size_t value);
 void builder_ReplaceMMUMethods();
 void builder_PrintMemoryTree(PVOID mem);
+void builder_AllowRules(PVOID handle, size_t sz);

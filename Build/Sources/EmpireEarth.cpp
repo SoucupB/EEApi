@@ -8,6 +8,10 @@
 #include "Helpers.h"
 
 static uint8_t onInitFlag = 0;
+static size_t mapPolygons;
+void eeTa_RebuildExtraDataStructure();
+void eeTa_RebuildDTs();
+void rebuildDataStructures();
 
 extern "C" {
   __declspec(dllexport) int32_t __thiscall onUnitIteration(PVOID self) {
@@ -83,6 +87,28 @@ extern "C" {
     int32_t (*method)(long double) = (int32_t (*)(long double)) ((uint8_t *)hModule + 0x148291);
     return eeTa_OnUnitBuy(multiplier, method);
   }
+
+  __declspec(dllexport) int32_t __thiscall onGameStart(PVOID self, PVOID _a, PVOID _b) {
+    rebuildDataStructures();
+    int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)mapPolygons);
+    return method(self, _a, _b);
+  }
+}
+
+void rebuildDataStructures() {
+  onInitFlag = 0;
+  eeTa_RebuildExtraDataStructure();
+}
+
+void setMapStart() {
+  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
+  if(!hModule) {
+    return ;
+  }
+  size_t *methodPointer = (size_t *)((size_t)(hModule) + 0x437924);
+  builder_AllowRules(methodPointer, sizeof(size_t) * 2);
+  mapPolygons = *methodPointer;
+  *methodPointer = (size_t)onGameStart;
 }
 
 void addBotMethodsHooks() {
@@ -92,6 +118,7 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)0x1F5E09, (PVOID)onPlanePark);
   builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
   builder_ReplaceMMUMethods();
+  setMapStart();
 }
 
 extern "C"  __declspec(dllexport) void __cdecl someDllMain() {

@@ -10,6 +10,7 @@ void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
 void bt_OnFrame();
 void eeta_FileClean();
+void eeTa_RebuildDTs();
 
 using namespace std;
 static unordered_map<PVOID, uint8_t> unitPresence[24];
@@ -20,11 +21,15 @@ static int8_t neutralPlayer = 0;
 static int8_t shouldCostBeReduced = 0;
 static int8_t playerPresence[30];
 __declspec(dllexport) char outputBuffer[2048];
+void eeTypes_Clean();
 
-void eeTa_Clean() {
+void eeTa_RebuildExtraDataStructure() {
+  eeTypes_Clean();
   for(uint8_t i = 0; i < 24; i++) {
     unitPresence[i].clear();
   }
+  tmrs_Delete(timers);
+  eeTa_RebuildDTs();
 }
 
 void eeTa_MoveTo(Unit src, Unit dst) {
@@ -359,10 +364,16 @@ int8_t eeTa_PlayerCount() {
   return total;
 }
 
-void eeTa_OnInit() {
+void eeTa_RebuildDTs() {
   eeta_FileClean();
   eeTypes_OnInit();
   timers = tmr_Init();
+}
+
+void eeTa_OnInit() {
+  // eeta_FileClean();
+  // eeTypes_OnInit();
+  // timers = tmr_Init();
   bt_OnInit();
 }
 
