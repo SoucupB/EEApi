@@ -159,7 +159,7 @@ void getMetaData() {
 
 void checkEpochPointer() {
   if(GetAsyncKeyState('P') & 0x8000) {
-    getMetaData();
+    // getMetaData();
     Beep (400, 250);
   }
 }
