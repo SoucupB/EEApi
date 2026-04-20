@@ -100,7 +100,10 @@ void eeTa_Map_Init() {
 void eeTa_Map_PrintTiles() {
   eeTa_FilePrintf("Total amount of tiles is %p\n", tiles.size());
   for(size_t i = 0, c = tiles.size(); i < c; i++) {
-    eeTa_FilePrintf("Tile %p, (%d, %d)\n", tiles[i].ref, tiles[i].i, tiles[i].j);
+    eeTa_FilePrintf("Tile %p, (%d, %d) isWater %d\n", tiles[i].ref, tiles[i].i, tiles[i].j, eeTa_Tile_IsWater((TilePoint) {
+      .x = (int32_t)tiles[i].i,
+      .y = (int32_t)tiles[i].j
+    }));
   }
 }
 
@@ -511,4 +514,15 @@ uint8_t eeTa_ShouldOnInitExecute() {
 int8_t eeTa_Player(Unit unit) {
   PVOID nextStruct = util_Pointer((PVOID)unit._payload, 0x18, POINTER_TYPE);
   return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
+}
+
+uint8_t eeTa_Tile_IsWater(TilePoint self) {
+  PVOID mapPointer = help_GetMapPointer();
+  HMODULE lowLevelDLL = GetModuleHandleA("Low-Level Engine.dll");
+  if(!lowLevelDLL) {
+    return 0;
+  }
+  size_t isWaterTileMethodOffset = (size_t)lowLevelDLL + 0x12681;
+  uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethodOffset;
+  return method((PVOID)((size_t)mapPointer + 0x1C), (PVOID)self.x, (PVOID)self.y);
 }

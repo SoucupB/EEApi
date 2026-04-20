@@ -15,21 +15,15 @@ Unit getPriest();
 
 // I think I find the water tile.
 void pulas() {
-  PVOID mapPointer = help_GetMapPointer();
-  HMODULE dll = GetModuleHandleA("Low-Level Engine.dll");
-  if(!dll) {
-    eeTa_FilePrintf("DLL lowLevel not found\n");
-    return ;
-  }
   Unit currentPriest = getPriest();
   if(!eeTa_Unit_Reference(currentPriest)) {
     return ;
   }
-  TilePoint pnt = eeTa_Unit_TilePosition(currentPriest);
-  size_t isWaterTileMethod = (size_t)dll + 0x12681;
-  uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethod;
-  uint8_t resp = method((PVOID)((size_t)mapPointer + 0x1C), (PVOID)pnt.x, (PVOID)pnt.y);
-  eeTa_FilePrintf("Is water for %p tile %d\n", eeTa_Unit_Reference(currentPriest), resp);
+  // TilePoint pnt = eeTa_Unit_TilePosition(currentPriest);
+  // size_t isWaterTileMethod = (size_t)dll + 0x12681;
+  // uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethod;
+  // uint8_t resp = method((PVOID)((size_t)mapPointer + 0x1C), (PVOID)pnt.x, (PVOID)pnt.y);
+  eeTa_FilePrintf("Is water for %p tile %d\n", currentPriest, eeTa_Tile_IsWater(eeTa_Unit_TilePosition(currentPriest)));
 }
 
 __declspec(dllexport) void printAllTiles() {
@@ -46,8 +40,8 @@ __declspec(dllexport) void printAllTiles() {
 
   // PVOID tileRef = help_Map_TilePointer(mapPointer);
   // eeTa_FilePrintf("SSSSSS is %p\n", tileRef);
-  // eeTa_Map_PrintTiles();
-  pulas();
+  eeTa_Map_PrintTiles();
+  // pulas();
 }
 
 void execDataPengus() {
