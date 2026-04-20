@@ -13,6 +13,25 @@ void replaceCoc(Unit unit, Point pos);
 Unit getProphet();
 Unit getPriest();
 
+// I think I find the water tile.
+void pulas() {
+  PVOID mapPointer = help_GetMapPointer();
+  HMODULE dll = GetModuleHandleA("Low-Level Engine.dll");
+  if(!dll) {
+    eeTa_FilePrintf("DLL lowLevel not found\n");
+    return ;
+  }
+  Unit currentPriest = getPriest();
+  if(!eeTa_Unit_Reference(currentPriest)) {
+    return ;
+  }
+  TilePoint pnt = eeTa_Unit_TilePosition(currentPriest);
+  size_t isWaterTileMethod = (size_t)dll + 0x12681;
+  uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethod;
+  uint8_t resp = method((PVOID)((size_t)mapPointer + 0x1C), (PVOID)pnt.x, (PVOID)pnt.y);
+  eeTa_FilePrintf("Is water for %p tile %d\n", eeTa_Unit_Reference(currentPriest), resp);
+}
+
 __declspec(dllexport) void printAllTiles() {
   // PVOID mapPointer = help_GetMapPointer();
   // size_t count = help_Map_TileCount(mapPointer);
@@ -24,21 +43,11 @@ __declspec(dllexport) void printAllTiles() {
   //     eeTa_FilePrintf("Tile index %d - %p\n", c++, currentIndex);
   //   }
   // }
-  PVOID mapPointer = help_GetMapPointer();
-  PVOID tileRef = help_Map_TilePointer(mapPointer);
-  eeTa_FilePrintf("SSSSSS is %p\n", tileRef);
-  eeTa_Map_PrintTiles();
-  // HMODULE dll = GetModuleHandleA("Low-Level Engine.dll");
-  // if(!dll) {
-  //   eeTa_FilePrintf("DLL lowLevel not found%p\n");
-  //   return ;
-  // }
-  // eeTa_FilePrintf("Address handle is at %p\n", dll);
-  // size_t isWaterTileMethod = (size_t)dll + 0x12681;
-  // PVOID mapPointer = help_GetMapPointer();
-  // uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethod;
-  // uint8_t resp = method(mapPointer + 0x6170, (PVOID)45, (PVOID)39);
-  // eeTa_FilePrintf("Is water tile %d\n", resp);
+
+  // PVOID tileRef = help_Map_TilePointer(mapPointer);
+  // eeTa_FilePrintf("SSSSSS is %p\n", tileRef);
+  // eeTa_Map_PrintTiles();
+  pulas();
 }
 
 void execDataPengus() {

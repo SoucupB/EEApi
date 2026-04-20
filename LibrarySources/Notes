@@ -940,3 +940,5 @@ The addresses at 00930DFC (530DFC) has the tiles pointers.
 Its held in a matrix. [MapPointer + 0xAC] I think holds triangles.
 
 810 elements for the vector array
+
+Data + 0x1C

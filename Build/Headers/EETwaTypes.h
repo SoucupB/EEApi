@@ -6,6 +6,11 @@ typedef struct Point_t {
   float y;
 } Point;
 
+typedef struct TilePoint_t {
+  int32_t x;
+  int32_t y;
+} TilePoint;
+
 enum UnitAction {
   UNIT_MOVE = 0x101,
   UNIT_ATTACK = 0x100

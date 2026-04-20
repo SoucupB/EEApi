@@ -449,6 +449,15 @@ Point eeTa_GetDestinationCommand(Unit unit) {
   };
 }
 
+TilePoint eeTa_Unit_TilePosition(Unit unit) {
+  int32_t x = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x1C, INT32_T_TYPE);
+  int32_t y = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x20, INT32_T_TYPE);
+  return (TilePoint) {
+    .x = x,
+    .y = y
+  };
+}
+
 int32_t eeTa_CurrentlyBuilding(Unit building) {
   return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
 }

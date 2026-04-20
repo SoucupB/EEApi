@@ -63,5 +63,6 @@ void eeTa_FilePrintf(const char *format, ...);
 void eeTa_Unit_Convert(Unit src, Unit dst);
 void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability);
 void eeTa_Map_PrintTiles();
+TilePoint eeTa_Unit_TilePosition(Unit unit);
 
 uint8_t eeTa_ShouldOnInitExecute();
