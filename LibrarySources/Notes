@@ -937,4 +937,6 @@ This sets the current tile to the unit. Tile objext size is 0x28.
 The tile index is here calculated here 00629CCB.
 #################################################
 The addresses at 00930DFC (530DFC) has the tiles pointers.
-Its held in a matrix.
+Its held in a matrix. [MapPointer + 0xAC] I think holds triangles.
+
+810 elements for the vector array

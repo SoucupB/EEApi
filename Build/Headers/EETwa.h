@@ -62,5 +62,6 @@ int8_t eeTa_PlayerIndex(); // needs to be fixed.
 void eeTa_FilePrintf(const char *format, ...);
 void eeTa_Unit_Convert(Unit src, Unit dst);
 void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability);
+void eeTa_Map_PrintTiles();
 
 uint8_t eeTa_ShouldOnInitExecute();

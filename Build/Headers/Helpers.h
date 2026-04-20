@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <stdint.h>
 #include "EETwaTypes.h"
+#include <vector>
 
 PVOID __cdecl help_New(size_t size);
 void help_UnitMove(PVOID unit, Point point, UnitAction currentAction);
@@ -11,3 +12,6 @@ void helper_Convert(PVOID src, PVOID dst);
 void __cdecl help_Delete(PVOID pointer);
 void helper_CastPoint(PVOID unit, Point target, Ability ability);
 void help_MoveSecondMethod(PVOID unit, Point target);
+PVOID help_GetMapPointer();
+size_t help_Map_TileCount(PVOID mapPointer);
+PVOID help_Map_TilePointer(PVOID mapPointer);

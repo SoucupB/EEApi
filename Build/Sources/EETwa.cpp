@@ -13,6 +13,14 @@ void eeta_FileClean();
 void eeTa_RebuildDTs();
 void pls_ClearData();
 
+typedef struct TileStruct_t {
+  PVOID ref;
+  size_t i;
+  size_t j;
+} TileStruct;
+
+vector<TileStruct> help_Map_GetTiles();
+
 using namespace std;
 static unordered_map<PVOID, uint8_t> unitPresence[24];
 static int64_t frames;
@@ -21,16 +29,22 @@ static int8_t playerIndex = 1;
 static int8_t neutralPlayer = 0;
 static int8_t shouldCostBeReduced = 0;
 static int8_t playerPresence[30];
-__declspec(dllexport) char outputBuffer[2048];
+static vector<TileStruct> tiles;
+
 void eeTypes_Clean();
 
-void eeTa_RebuildExtraDataStructure() {
+void eeTa_Clear() {
   eeTypes_Clean();
   for(uint8_t i = 0; i < 24; i++) {
     unitPresence[i].clear();
   }
   tmrs_Delete(timers);
+  tiles.clear();
   pls_ClearData();
+}
+
+void eeTa_RebuildExtraDataStructure() {
+  eeTa_Clear();
   eeTa_RebuildDTs();
 }
 
@@ -58,17 +72,6 @@ uint8_t eeTa_IsNeutral(Unit unit) {
 
 // Money pointer is at ["EE-AOC.exe"+530DB8 + 0xAFC]
 
-void eeTa_Printf(const char *format, ...) {
-  memset(outputBuffer, 0, sizeof(outputBuffer));
-  va_list args;
-  va_start(args, format);
-  int32_t neededSize = vsnprintf(NULL, 0, format, args) + 1;
-  va_end(args);
-  va_start(args, format);
-  vsnprintf(outputBuffer, neededSize, format, args);
-  va_end(args);
-}
-
 void __cdecl eeTa_OnUnitFrame(Unit unit) {
   int8_t playerTeam = eeTa_Player(unit);
   if(playerTeam < 0 || playerTeam >= 24) {
@@ -88,6 +91,17 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
 
 int8_t eeTa_AllPlayers() {
   return all_players;
+}
+
+void eeTa_Map_Init() {
+  tiles = help_Map_GetTiles();
+}
+
+void eeTa_Map_PrintTiles() {
+  eeTa_FilePrintf("Total amount of tiles is %p\n", tiles.size());
+  for(size_t i = 0, c = tiles.size(); i < c; i++) {
+    eeTa_FilePrintf("Tile %p, (%d, %d)\n", tiles[i].ref, tiles[i].i, tiles[i].j);
+  }
 }
 
 void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability) {
@@ -375,6 +389,7 @@ void eeTa_OnInit() {
   // eeta_FileClean();
   // eeTypes_OnInit();
   // timers = tmr_Init();
+  eeTa_Map_Init();
   bt_OnInit();
 }
 
