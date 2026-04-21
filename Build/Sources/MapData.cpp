@@ -4,7 +4,8 @@
 
 using namespace std;
 
-#define INVALID_TILE_ID 125
+#define INVALID_TILE_ID UINT16_MAX
+#define PLANE_MARK_BIT (1<<15)
 
 typedef struct TileStruct_t {
   PVOID ref;
@@ -13,7 +14,7 @@ typedef struct TileStruct_t {
 
 typedef struct TileConnexStruct_t {
   TileStruct tileStruct;
-  uint32_t planeID;
+  uint16_t planeID;
   uint8_t isWater;
 } TileConnexStruct;
 
@@ -29,6 +30,10 @@ static const size_t tileStructPointer = 0x1955F0;
 static const size_t isWaterMethodOffset = 0x12681;
 static const size_t mapPointerTileOffset = 0x1C;
 static TilePlaneMap planeMap;
+
+static inline uint8_t map_TileConnex_IsMarked(TileConnexStruct self);
+static inline void map_TileConnex_Mark(TileConnexStruct *self);
+static inline uint16_t map_TileConnex_PlaneID(TileConnexStruct self);
 
 size_t map_TileCount(PVOID mapPointer) {
   return *(size_t *)((size_t)mapPointer + mapTileCount);
@@ -152,9 +157,88 @@ void map_TileMap_FillWithReffs() {
   }
 }
 
+static inline uint8_t map_TileConnex_IsMarked(TileConnexStruct self) {
+  return (self.planeID & PLANE_MARK_BIT) != 0;
+}
+
+static inline uint16_t map_TileConnex_PlaneID(TileConnexStruct self) {
+  if(map_TileConnex_IsMarked(self)) {
+    return (self.planeID & PLANE_MARK_BIT);
+  }
+  return self.planeID;
+}
+
+static inline void map_TileConnex_Mark(TileConnexStruct *self) {
+  self->planeID ^= PLANE_MARK_BIT;
+}
+
+static inline uint8_t map_TileMap_Fill(size_t i, size_t j, uint16_t currentPlaneID) {
+  if(map_TileConnex_IsMarked(planeMap.map[i][j])) {
+    return 0;
+  }
+  TileConnexStruct **tileMap = planeMap.map;
+  TileConnexStruct *initialConnexTile = &planeMap.map[i][j];
+  const size_t tileCount = planeMap.rowTileCount;
+  int32_t xPos[] = {0, 1, 0, -1};
+  int32_t yPos[] = {1, 0, -1, 0};
+  initialConnexTile->planeID = currentPlaneID;
+  map_TileConnex_Mark(initialConnexTile);
+  vector<TileConnexStruct *> queue;
+  queue.push_back(initialConnexTile);
+  size_t head = 0;
+  while(head != queue.size()) {
+    TileConnexStruct *currentTileConnex = queue[head];
+    TilePoint pnt = currentTileConnex->tileStruct.tile;
+    for(size_t i = 0; i < sizeof(xPos) / sizeof(int32_t); i++) {
+      const int32_t nextTileX = pnt.x + xPos[i];
+      const int32_t nextTileY = pnt.y + yPos[i];
+      if((nextTileX >= (int32_t)tileCount || nextTileX < 0) || (nextTileY >= (int32_t)tileCount || nextTileY < 0)) {
+        continue;
+      }
+      TileConnexStruct *nextTile = &tileMap[nextTileX][nextTileY];
+      if(nextTile->planeID == INVALID_TILE_ID || map_TileConnex_IsMarked(*nextTile) || nextTile->isWater != initialConnexTile->isWater) {
+        continue;
+      }
+      queue.push_back(nextTile);
+      map_TileConnex_Mark(nextTile);
+    }
+    head++;
+  }
+  return 1;
+}
+
+uint16_t map_Tile_GetPlaneID(TilePoint tile) {
+  const int32_t tileCount = (int32_t)planeMap.rowTileCount;
+  if((tile.x < 0 || tile.x >= tileCount) || (tile.y < 0 || tile.y >= tileCount)) {
+    return INVALID_TILE_ID;
+  }
+  TileConnexStruct initialConnexTile = planeMap.map[tile.x][tile.y];
+  if(initialConnexTile.planeID == INVALID_TILE_ID || !map_TileConnex_IsMarked(initialConnexTile)) {
+    return INVALID_TILE_ID;
+  }
+  return map_TileConnex_PlaneID(initialConnexTile);
+}
+
+void map_TileMap_FillPlaneIDs() {
+  const size_t count = planeMap.rowTileCount;
+  uint16_t planeID = 0;
+  for(size_t i = 0; i < count; i++) {
+    for(size_t j = 0; j < count; j++) {
+      TileConnexStruct connexTile = planeMap.map[i][j];
+      if(connexTile.planeID == INVALID_TILE_ID) {
+        continue;
+      }
+      if(map_TileMap_Fill(i, j, planeID)) {
+        planeID++;
+      }
+    }
+  }
+}
+
 void map_ComputerConnexIslands() {
   map_TileMap_Init();
   map_TileMap_FillWithReffs();
+  map_TileMap_FillPlaneIDs();
 }
 
 void map_Init() {
