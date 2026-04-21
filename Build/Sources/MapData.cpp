@@ -97,7 +97,7 @@ char **map_GetBitMap(size_t *tileCount) {
         map[i][j] = 0;
       }
       else {
-        map[i][j] = currentID;
+        map[i][j] = currentID + 1;
       }
     }
   }
@@ -193,8 +193,8 @@ static inline uint8_t map_TileMap_Fill(size_t i, size_t j, uint16_t currentPlane
   TileConnexStruct **tileMap = planeMap.map;
   TileConnexStruct *initialConnexTile = &planeMap.map[i][j];
   const size_t tileCount = planeMap.rowTileCount;
-  int32_t xPos[] = {0, 1, 0, -1};
-  int32_t yPos[] = {1, 0, -1, 0};
+  int32_t xPos[] = {0, 1, 0, -1, 1, 1, -1, -1};
+  int32_t yPos[] = {1, 0, -1, 0, 1, -1, 1, -1};
   initialConnexTile->planeID = currentPlaneID;
   map_TileConnex_Mark(initialConnexTile);
   vector<TileConnexStruct *> queue;
@@ -214,6 +214,7 @@ static inline uint8_t map_TileMap_Fill(size_t i, size_t j, uint16_t currentPlane
         continue;
       }
       queue.push_back(nextTile);
+      nextTile->planeID = currentPlaneID;
       map_TileConnex_Mark(nextTile);
     }
     head++;
