@@ -78,13 +78,27 @@ char **map_GetBitMap(size_t *tileCount) {
     map[i] = (char *)malloc(mapSizeInTiles * sizeof(char));
     memset(map[i], 0, mapSizeInTiles * sizeof(char));
   }
-  for(size_t i = 0; i < tiles.size(); i++) {
-    TilePoint tile = tiles[i].tile;
-    if(map_Tile_IsWater(tile)) {
-      map[tile.x][tile.y] = 2;
-    }
-    else {
-      map[tile.x][tile.y] = 1;
+  // for(size_t i = 0; i < tiles.size(); i++) {
+  //   TilePoint tile = tiles[i].tile;
+  //   if(map_Tile_IsWater(tile)) {
+  //     map[tile.x][tile.y] = 2;
+  //   }
+  //   else {
+  //     map[tile.x][tile.y] = 1;
+  //   }
+  // }
+  for(size_t i = 0; i < mapSizeInTiles; i++) {
+    for(size_t j = 0; j < mapSizeInTiles; j++) {
+      uint16_t currentID = map_Tile_GetPlaneID((TilePoint) {
+        .x = (int32_t)i,
+        .y = (int32_t)j
+      });
+      if(currentID == INVALID_TILE_ID) {
+        map[i][j] = 0;
+      }
+      else {
+        map[i][j] = currentID;
+      }
     }
   }
   if(tileCount) {
