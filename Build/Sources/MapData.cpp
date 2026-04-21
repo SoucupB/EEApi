@@ -4,10 +4,23 @@
 
 using namespace std;
 
+#define INVALID_TILE_ID 125
+
 typedef struct TileStruct_t {
   PVOID ref;
   TilePoint tile;
 } TileStruct;
+
+typedef struct TileConnexStruct_t {
+  TileStruct tileStruct;
+  uint32_t planeID;
+  uint8_t isWater;
+} TileConnexStruct;
+
+typedef struct TilePlaneMap_t {
+  size_t rowTileCount;
+  TileConnexStruct **map;
+} TilePlaneMap;
 
 static vector<TileStruct> tiles;
 static const size_t mapPointer = 0x530DFC;
@@ -15,6 +28,7 @@ static const size_t mapTileCount = 0x195618;
 static const size_t tileStructPointer = 0x1955F0;
 static const size_t isWaterMethodOffset = 0x12681;
 static const size_t mapPointerTileOffset = 0x1C;
+static TilePlaneMap planeMap;
 
 size_t map_TileCount(PVOID mapPointer) {
   return *(size_t *)((size_t)mapPointer + mapTileCount);
@@ -96,8 +110,57 @@ uint8_t map_Tile_IsWater(TilePoint self) {
   return method((PVOID)((size_t)mapPointer + mapPointerTileOffset), (PVOID)self.x, (PVOID)self.y);
 }
 
+void map_TileMap_FreePreviousMap() {
+  if(!planeMap.rowTileCount || !planeMap.map) {
+    return ;
+  }
+  for(size_t i = 0; i < planeMap.rowTileCount; i++) {
+    free(planeMap.map[i]);
+  }
+  free(planeMap.map);
+  planeMap.rowTileCount = 0;
+  planeMap.map = NULL;
+}
+
+void map_TileMap_Init() {
+  map_TileMap_FreePreviousMap();
+  PVOID mapPointer = map_GetMapPointer();
+  size_t count = map_TileCount(mapPointer);
+  planeMap.rowTileCount = count;
+  planeMap.map = (TileConnexStruct **)malloc(count * sizeof(TileConnexStruct *));
+  for(size_t i = 0; i < count; i++) {
+    planeMap.map[i] = (TileConnexStruct *)malloc(count * sizeof(TileConnexStruct));
+    memset(planeMap.map[i], 0, count * sizeof(TileConnexStruct));
+  }
+  for(size_t i = 0; i < count; i++) {
+    for(size_t j = 0; j < count; j++) {
+      planeMap.map[i][j].planeID = INVALID_TILE_ID;
+    }
+  }
+}
+
+void map_TileMap_FillWithReffs() {
+  const size_t count = planeMap.rowTileCount;
+  TileConnexStruct **map = planeMap.map;
+  for(size_t i = 0; i < tiles.size(); i++) {
+    TileStruct tileStruct = tiles[i];
+    map[tileStruct.tile.x][tileStruct.tile.y] = (TileConnexStruct) {
+      .tileStruct = tileStruct,
+      .planeID = 0,
+      .isWater = map_Tile_IsWater(tileStruct.tile)
+    };
+  }
+}
+
+void map_ComputerConnexIslands() {
+  map_TileMap_Init();
+  map_TileMap_FillWithReffs();
+}
+
 void map_Init() {
+  tiles.clear();
   tiles = map_GetTiles();
+  map_ComputerConnexIslands();
 }
 
 void map_Delete() {
