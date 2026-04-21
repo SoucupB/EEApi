@@ -3,23 +3,25 @@
 #include <vector>
 #include <stdarg.h>
 #include "PlayerState.h"
+#include "MapData.h"
 
 static PTimerHelper timers;
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
 void bt_OnFrame();
+
 void eeta_FileClean();
 void eeTa_RebuildDTs();
 void pls_ClearData();
 
 typedef struct TileStruct_t {
   PVOID ref;
-  size_t i;
-  size_t j;
+  TilePoint tile;
 } TileStruct;
 
 vector<TileStruct> help_Map_GetTiles();
+vector<TileStruct> map_GetTilesArray();
 
 using namespace std;
 static unordered_map<PVOID, uint8_t> unitPresence[24];
@@ -29,7 +31,6 @@ static int8_t playerIndex = 1;
 static int8_t neutralPlayer = 0;
 static int8_t shouldCostBeReduced = 0;
 static int8_t playerPresence[30];
-static vector<TileStruct> tiles;
 
 void eeTypes_Clean();
 
@@ -39,7 +40,7 @@ void eeTa_Clear() {
     unitPresence[i].clear();
   }
   tmrs_Delete(timers);
-  tiles.clear();
+  map_Delete();
   pls_ClearData();
 }
 
@@ -94,17 +95,43 @@ int8_t eeTa_AllPlayers() {
 }
 
 void eeTa_Map_Init() {
-  tiles = help_Map_GetTiles();
+  // tiles = help_Map_GetTiles();
+  map_Init();
 }
 
 void eeTa_Map_PrintTiles() {
-  eeTa_FilePrintf("Total amount of tiles is %p\n", tiles.size());
-  for(size_t i = 0, c = tiles.size(); i < c; i++) {
-    eeTa_FilePrintf("Tile %p, (%d, %d) isWater %d\n", tiles[i].ref, tiles[i].i, tiles[i].j, eeTa_Tile_IsWater((TilePoint) {
-      .x = (int32_t)tiles[i].i,
-      .y = (int32_t)tiles[i].j
-    }));
+  // eeTa_FilePrintf("Total amount of tiles is %p\n", tiles.size());
+  // for(size_t i = 0, c = tiles.size(); i < c; i++) {
+  //   eeTa_FilePrintf("Tile %p, (%d, %d) isWater %d\n", tiles[i].ref, tiles[i].tile.x, tiles[i].tile.y, eeTa_Tile_IsWater(tiles[i].tile));
+  // }
+}
+
+void eeTa_Map_PrintBitMap() {
+  // PVOID mapPointer = help_GetMapPointer();
+  // size_t mapSizeInTiles = help_Map_TileCount(mapPointer);
+  // char **map = (char **)malloc(mapSizeInTiles * sizeof(char *));
+  // for(size_t i = 0; i < mapSizeInTiles; i++) {
+  //   map[i] = (char *)malloc(mapSizeInTiles * sizeof(char));
+  //   memset(map[i], 0, mapSizeInTiles * sizeof(char));
+  // }
+  // for(size_t i = 0; i < tiles.size(); i++) {
+  //   TilePoint tile = tiles[i].tile;
+  //   if(eeTa_Tile_IsWater(tile)) {
+  //     map[tile.x][tile.y] = 2;
+  //   }
+  //   else {
+  //     map[tile.x][tile.y] = 1;
+  //   }
+  // }
+  size_t mapSizeInTiles;
+  char **map = map_GetBitMap(&mapSizeInTiles);
+  for(size_t i = 0; i < mapSizeInTiles; i++) {
+    for(size_t j = 0; j < mapSizeInTiles; j++) {
+      eeTa_FilePrintf("%d", map[i][j]);
+    }
+    eeTa_FilePrintf("\n");
   }
+  map_BitMapDelete(map, mapSizeInTiles);
 }
 
 void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability) {
@@ -517,12 +544,13 @@ int8_t eeTa_Player(Unit unit) {
 }
 
 uint8_t eeTa_Tile_IsWater(TilePoint self) {
-  PVOID mapPointer = help_GetMapPointer();
-  HMODULE lowLevelDLL = GetModuleHandleA("Low-Level Engine.dll");
-  if(!lowLevelDLL) {
-    return 0;
-  }
-  size_t isWaterTileMethodOffset = (size_t)lowLevelDLL + 0x12681;
-  uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethodOffset;
-  return method((PVOID)((size_t)mapPointer + 0x1C), (PVOID)self.x, (PVOID)self.y);
+  // PVOID mapPointer = help_GetMapPointer();
+  // HMODULE lowLevelDLL = GetModuleHandleA("Low-Level Engine.dll");
+  // if(!lowLevelDLL) {
+  //   return 0;
+  // }
+  // size_t isWaterTileMethodOffset = (size_t)lowLevelDLL + 0x12681;
+  // uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethodOffset;
+  // return method((PVOID)((size_t)mapPointer + 0x1C), (PVOID)self.x, (PVOID)self.y);
+  return map_Tile_IsWater(self);
 }

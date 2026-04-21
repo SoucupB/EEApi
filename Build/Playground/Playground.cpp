@@ -40,8 +40,10 @@ __declspec(dllexport) void printAllTiles() {
 
   // PVOID tileRef = help_Map_TilePointer(mapPointer);
   // eeTa_FilePrintf("SSSSSS is %p\n", tileRef);
-  eeTa_Map_PrintTiles();
+  // eeTa_Map_PrintTiles();
   // pulas();
+
+  eeTa_Map_PrintBitMap();
 }
 
 void execDataPengus() {

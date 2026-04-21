@@ -68,3 +68,4 @@ TilePoint eeTa_Unit_TilePosition(Unit unit);
 uint8_t eeTa_ShouldOnInitExecute();
 
 uint8_t eeTa_Tile_IsWater(TilePoint self);
+void eeTa_Map_PrintBitMap();

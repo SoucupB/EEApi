@@ -15,8 +15,7 @@ using namespace std;
 
 typedef struct TileStruct_t {
   PVOID ref;
-  size_t i;
-  size_t j;
+  TilePoint tile;
 } TileStruct;
 
 typedef struct MoveAction_t {
@@ -453,13 +452,39 @@ vector<TileStruct> help_Map_GetTiles() {
       if(currentTile) {
         response.push_back((TileStruct) {
           .ref = (PVOID)currentTile,
-          .i = i,
-          .j = j
+          .tile = (TilePoint) {
+            .x = (int32_t)j,
+            .y = (int32_t)i
+          }
         });
       }
     }
   }
   return response;
+}
+
+void help_Map_ComputeIslandComponents() {
+  // PVOID mapPointer = help_GetMapPointer();
+  // size_t mapSizeInTiles = help_Map_TileCount(mapPointer);
+  // char **map = (char **)malloc(mapSizeInTiles * sizeof(char *));
+  // for(size_t i = 0; i < mapSizeInTiles; i++) {
+  //   map[i] = (char *)malloc(mapSizeInTiles * sizeof(char));
+  //   memset(map[i], 0, mapSizeInTiles * sizeof(char));
+  // }
+  // for(size_t i = 0; i < tiles.size(); i++) {
+  //   TilePoint tile = tiles[i].tile;
+  //   if(eeTa_Tile_IsWater(tile)) {
+  //     map[tile.x][tile.y] = 2;
+  //   }
+  //   else {
+  //     map[tile.x][tile.y] = 1;
+  //   }
+  // }
+  // for(size_t i = 0; i < mapSizeInTiles; i++) {
+  //   for(size_t j = 0; j < mapSizeInTiles; j++) {
+  //     eeTa_FilePrintf("%d", map[i][j]);
+  //   }
+  //   eeTa_FilePrintf("\n");
 }
 
 int32_t derefPointer(PVOID ecx) {
