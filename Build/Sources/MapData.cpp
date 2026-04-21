@@ -177,7 +177,7 @@ static inline uint8_t map_TileConnex_IsMarked(TileConnexStruct self) {
 
 static inline uint16_t map_TileConnex_PlaneID(TileConnexStruct self) {
   if(map_TileConnex_IsMarked(self)) {
-    return (self.planeID & PLANE_MARK_BIT);
+    return (self.planeID ^ PLANE_MARK_BIT);
   }
   return self.planeID;
 }
