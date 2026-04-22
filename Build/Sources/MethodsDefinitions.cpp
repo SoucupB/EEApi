@@ -1,7 +1,7 @@
 #include "MethodsDefinitions.h"
 #include "EETwa.h"
-// #include "Helpers.h"
 #include <map>
+#include "LibManager.h"
 
 std::map<size_t, std::pair<size_t, std::vector<size_t> > > storeBuilder;
 uint8_t isMemoryValid(PVOID addr);
@@ -19,11 +19,7 @@ typedef struct MMUHeader_t {
 } MMUHeader;
 
 void builder_Definition(PVOID remoteAddress, PVOID localAddress) {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return ;
-  }
-  size_t methodsAddress = (size_t)hModule + (size_t)remoteAddress;
+  size_t methodsAddress = (size_t)lib_BaseAddress() + (size_t)remoteAddress;
   DWORD oldProtect;
   if (!VirtualProtect((void *)methodsAddress, 2 * sizeof(uint32_t), PAGE_READWRITE, &oldProtect)) {
     eeTa_FilePrintf("Couldn't modify method at %p\n", remoteAddress);
@@ -84,11 +80,7 @@ void builder_AllowRules(PVOID handle, size_t sz) {
 }
 
 void builder_ReplaceNew() {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return ;
-  }
-  size_t newModule = (size_t)hModule + 0x4386DC;
+  size_t newModule = (size_t)lib_BaseAddress() + 0x4386DC;
   old_NewHandle = *(size_t *)newModule;
   size_t *comp = (size_t *)builder_EnchantedNew;
   builder_AllowRules((PVOID)newModule, sizeof(size_t) * 2);
@@ -96,11 +88,7 @@ void builder_ReplaceNew() {
 }
 
 void builder_ReplaceFree() {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return ;
-  }
-  size_t freeModule = (size_t)hModule + 0x4386E4;
+  size_t freeModule = (size_t)lib_BaseAddress() + 0x4386E4;
   old_FreeHandle = *(size_t *)freeModule;
   size_t *comp = (size_t *)builder_EnchantedFree;
   builder_AllowRules((PVOID)freeModule, sizeof(size_t) * 2);
