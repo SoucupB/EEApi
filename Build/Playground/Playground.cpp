@@ -5,6 +5,7 @@
 #include "MethodsDefinitions.h"
 #include "Unit.h"
 #include "LibManager.h"
+#include <map>
 
 void test_PrintUnits();
 void test_ConvertEnemy();
@@ -167,10 +168,22 @@ size_t unitTypeID(PVOID addr) {
   return *(size_t *)((size_t)addr + 0x1E4);
 }
 
+void createClasses(map<size_t, vector<size_t> > &unitsChecker) {
+  for(auto &it : unitsChecker) {
+    eeTa_FilePrintf("enum Class_%p {\n", it.first);
+    for(size_t i = 0; i < it.second.size(); i++) {
+      int32_t type = unitTypeID((PVOID)it.second[i]);
+      eeTa_FilePrintf("   %s = 0x%p,\n", getNumber((PVOID)it.second[i]), type);
+    }
+    eeTa_FilePrintf("};\n\n");
+  }
+}
+
 __declspec(dllexport) void printAllUnitTypes() {
   size_t *startingPointer = (size_t *)((size_t)lib_BaseAddress() + 0x5636B0);
   int32_t total = 10000;
   eeTa_FilePrintf("enum UnitTypeDef {\n");
+  map<size_t, vector<size_t> > unitsClass;
   while(total--) {
     uint8_t valid;
     if(!builder_IsMemoryValid((PVOID)startingPointer)) {
@@ -188,9 +201,11 @@ __declspec(dllexport) void printAllUnitTypes() {
     int32_t type = unitTypeID((PVOID)unitType);
     if(type != 0x186A0) {
       eeTa_FilePrintf("   %s = 0x%p,\n", getNumber((PVOID)unitType), type);
+      unitsClass[*(size_t *)unitType].push_back(unitType);
     }
   }
-  eeTa_FilePrintf("}");
+  eeTa_FilePrintf("};\n\n");
+  createClasses(unitsClass);
 }
 
 void test_ConvertEnemy() {
