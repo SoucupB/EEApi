@@ -45,6 +45,10 @@ void eeTa_Clear() {
   pls_ClearData();
 }
 
+unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence() {
+  return unitPresence;
+}
+
 void eeTa_RebuildExtraDataStructure() {
   eeTa_Clear();
   eeTa_RebuildDTs();

@@ -258,7 +258,7 @@ void helper_ReplaceOrder(PVOID unit, Point target, Ability ability) {
   PVOID unitBuffer = help_New(0x34);
   int32_t valX = (int32_t)target.x;
   int32_t valY = (int32_t)target.y;
-  builder_FillValue(unitBuffer, 0x0, 0x0084748C);
+  builder_FillValue(unitBuffer, 0x0, 0x44748C + (size_t)lib_BaseAddress());
   builder_FillValue(unitBuffer, 0x4, 2817);
   builder_FillValue(unitBuffer, 0x8, 5000);
   builder_FillValue(unitBuffer, 0xc, 0x10235);
@@ -282,18 +282,7 @@ void helper_CastPoint(PVOID unit, Point target, Ability ability) {
 
 __declspec(dllexport)  PVOID __fastcall help_SearchUnits(PVOID self) {
   PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EDCC0);
-  string response;
-  // addPositionDiff((PVOID)(*(uint32_t *)((size_t)self + 0x68)), response, 0x44);
-  // string s = searchDiffsDracu((PVOID)(*(uint32_t *)((size_t)self + 0x68)));
-  // addPositionDiff(self, response, 0xB8);
-  // // help_Delete((PVOID)((size_t)self + 0x68));
-  // // changeSelectedUnits(self, eeTa_Unit_Sample(eeTa_SelfPlayer()));
-  // help_SetActionPointerTset(self, (Point) {
-  //   .x = 50.5f,
-  //   .y = 1500.5f
-  // }, UNIT_MOVE);
-  PVOID caller = method(self);
-  return caller;
+  return method(self);
 }
 
 PVOID help_Const_x14_Value() {
