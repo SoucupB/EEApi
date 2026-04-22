@@ -79,15 +79,6 @@ char **map_GetBitMap(size_t *tileCount) {
     map[i] = (char *)malloc(mapSizeInTiles * sizeof(char));
     memset(map[i], 0, mapSizeInTiles * sizeof(char));
   }
-  // for(size_t i = 0; i < tiles.size(); i++) {
-  //   TilePoint tile = tiles[i].tile;
-  //   if(map_Tile_IsWater(tile)) {
-  //     map[tile.x][tile.y] = 2;
-  //   }
-  //   else {
-  //     map[tile.x][tile.y] = 1;
-  //   }
-  // }
   for(size_t i = 0; i < mapSizeInTiles; i++) {
     for(size_t j = 0; j < mapSizeInTiles; j++) {
       uint16_t currentID = map_Tile_GetPlaneID((TilePoint) {
@@ -183,7 +174,7 @@ static inline void map_TileConnex_Mark(TileConnexStruct *self) {
   self->planeID ^= PLANE_MARK_BIT;
 }
 
-static inline uint8_t map_TileMap_Fill(size_t i, size_t j, uint16_t currentPlaneID) {
+uint8_t map_TileMap_Fill(size_t i, size_t j, uint16_t currentPlaneID) {
   if(map_TileConnex_IsMarked(planeMap.map[i][j])) {
     return 0;
   }
