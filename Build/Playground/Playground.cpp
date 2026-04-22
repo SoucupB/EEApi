@@ -169,18 +169,35 @@ size_t unitTypeID(PVOID addr) {
 }
 
 void createClasses(map<size_t, vector<size_t> > &unitsChecker) {
+  eeTa_FilePrintf("enum ClassTypeDef {\n");
   for(auto &it : unitsChecker) {
-    eeTa_FilePrintf("vector<UnitTypeDef> unitClass%p = {\n", it.first);
+    eeTa_FilePrintf("  CLASS_%p,\n", (PVOID)it.first);
+  }
+  eeTa_FilePrintf("};\n\n");
+  eeTa_FilePrintf("map<ClassTypeDef, vector<UnitTypeDef> > classDefUnits = {\n");
+  for(auto &it : unitsChecker) {
+    eeTa_FilePrintf(" {CLASS_%p, {", (PVOID)it.first);
     for(size_t i = 0; i < it.second.size(); i++) {
       if(i != it.second.size() - 1) {
-        eeTa_FilePrintf("  %s,\n", getNumber((PVOID)it.second[i]));
+        eeTa_FilePrintf("%s, ", getNumber((PVOID)it.second[i]));
       }
       else {
-        eeTa_FilePrintf("  %s\n", getNumber((PVOID)it.second[i]));
+        eeTa_FilePrintf("%s", getNumber((PVOID)it.second[i]));
       }
     }
-    eeTa_FilePrintf("};\n\n");
+    eeTa_FilePrintf("}},\n");
+    // eeTa_FilePrintf("vector<UnitTypeDef> unitClass%p = {\n", it.first);
+    // for(size_t i = 0; i < it.second.size(); i++) {
+    //   if(i != it.second.size() - 1) {
+    //     eeTa_FilePrintf("  %s,\n", getNumber((PVOID)it.second[i]));
+    //   }
+    //   else {
+    //     eeTa_FilePrintf("  %s\n", getNumber((PVOID)it.second[i]));
+    //   }
+    // }
+    // eeTa_FilePrintf("};\n\n");
   }
+  eeTa_FilePrintf("};\n");
 }
 
 __declspec(dllexport) void printAllUnitTypes() {
