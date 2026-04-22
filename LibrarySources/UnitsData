@@ -637,7 +637,7 @@ vector<UnitTypeDef> unitClassCitizens = {
   FEMALE_CITIZEN
 };
 
-vector<UnitTypeDef> unitClassGroundFighters = {
+vector<UnitTypeDef> unitClassGroundUnits = {
   CAV09_DRAGOON_GUN_,
   ARCH03_SIMPLE_BOWMAN,
   ARCH06_CAVALRY_ARCHER,
