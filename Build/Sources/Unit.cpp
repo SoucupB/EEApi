@@ -1,5 +1,6 @@
 #include "Unit.h"
 #include "LibManager.h"
+#include "MapData.h"
 #include <unordered_map>
 
 unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence();
@@ -65,4 +66,17 @@ int8_t unit_IsBuilding(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
   size_t *callerStruct = (size_t *)util_Pointer((PVOID)unitMetaData[0], 0xB8, POINTER_TYPE);
   return (size_t)callerStruct == (size_t)lib_BaseAddress() + 0x20FD9D;
+}
+
+TilePoint unit_Tile_Position(Unit unit) {
+  int32_t x = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x1C, INT32_T_TYPE);
+  int32_t y = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x20, INT32_T_TYPE);
+  return (TilePoint) {
+    .x = x,
+    .y = y
+  };
+}
+
+uint16_t unit_GetPlaneID(Unit unit) {
+  return map_Tile_GetPlaneID(unit_Tile_Position(unit));
 }
