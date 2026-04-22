@@ -53,14 +53,14 @@ void execDataPengus() {
 }
 
 void test_PrintUnits() {
-  vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
+  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
   if(units.size()) {
     for(int32_t i = 0; i < units.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(units[i]);
       eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f)\n", units[i]._payload, eeTa_UnitType(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y);
     }
   }
-  vector<Unit> buildings = eeTa_Buildings(eeTa_AllPlayers());
+  vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
   if(buildings.size()) {
     for(int32_t i = 0; i < buildings.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(buildings[i]);
@@ -152,5 +152,5 @@ void bt_OnFrame() {
 }
 
 void bt_OnUnitDestroy(Unit unit) {
-
+  
 }

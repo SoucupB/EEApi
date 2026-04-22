@@ -153,7 +153,6 @@ void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit) {
   PVOID baseAddres = helper_FindSuperClass_BB884();
   helper_Fill_BB8FD(mem, baseAddres);
   helper_Convert_FillConstants(mem, unit);
-  // test_FillMemCheck(actionStruct, baseAddres);
 }
 
 PVOID __fastcall helper_ConvertUnit(PVOID movingStructure) {
@@ -249,8 +248,6 @@ string searchDiffsDracu(PVOID self) {
 
 void help_SetActionPointerTset(PVOID self, Point pos, UnitAction action) {
   MoveAction *actionPointer = help_GetAction(self, pos, action);
-  // memcpy(actionPointer, (PVOID)(*(uint32_t *)((size_t)self + 0x68)), 0x38);
-  // actionPointer->angle = (float)0xC02730BD;
   memcpy((PVOID)((size_t)self + 0x68), &actionPointer, sizeof(PVOID));
 }
 
@@ -299,7 +296,7 @@ PVOID help_Const_x10_Value() {
 
 MoveAction *help_GetAction(PVOID parent, Point pos, UnitAction action) {
   MoveAction *self = (MoveAction *)help_New(sizeof(MoveAction));
-  self->methodsBundle = (PVOID)((size_t)lib_BaseAddress() + 0x4478A0); // 8478A0
+  self->methodsBundle = (PVOID)((size_t)lib_BaseAddress() + 0x4478A0);
   self->_const_1 = (PVOID)0x101;
   self->_known_Const = (PVOID)0x1388;
   self->_const_4 = help_Const_x10_Value();
@@ -410,30 +407,6 @@ vector<TileStruct> help_Map_GetTiles() {
     }
   }
   return response;
-}
-
-void help_Map_ComputeIslandComponents() {
-  // PVOID mapPointer = help_GetMapPointer();
-  // size_t mapSizeInTiles = help_Map_TileCount(mapPointer);
-  // char **map = (char **)malloc(mapSizeInTiles * sizeof(char *));
-  // for(size_t i = 0; i < mapSizeInTiles; i++) {
-  //   map[i] = (char *)malloc(mapSizeInTiles * sizeof(char));
-  //   memset(map[i], 0, mapSizeInTiles * sizeof(char));
-  // }
-  // for(size_t i = 0; i < tiles.size(); i++) {
-  //   TilePoint tile = tiles[i].tile;
-  //   if(eeTa_Tile_IsWater(tile)) {
-  //     map[tile.x][tile.y] = 2;
-  //   }
-  //   else {
-  //     map[tile.x][tile.y] = 1;
-  //   }
-  // }
-  // for(size_t i = 0; i < mapSizeInTiles; i++) {
-  //   for(size_t j = 0; j < mapSizeInTiles; j++) {
-  //     eeTa_FilePrintf("%d", map[i][j]);
-  //   }
-  //   eeTa_FilePrintf("\n");
 }
 
 int32_t derefPointer(PVOID ecx) {
