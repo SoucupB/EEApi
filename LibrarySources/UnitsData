@@ -459,7 +459,7 @@ enum UnitTypeDef {
    X_COLONY_SHIP = 0x0000378B,
 };
 
-vector<UnitTypeDef> unitClass00847060 = {
+vector<UnitTypeDef> unitClassCasters = {
   PRIEST,
   H1_3_SARGON_OF_AKKAD_HEAL_,
   H1_5_CHARLEMAGNE_HEAL_,
@@ -496,33 +496,33 @@ vector<UnitTypeDef> unitClass00847060 = {
   X_TITUS_LABENIUS
 };
 
-vector<UnitTypeDef> unitClass00847BF4 = {
+vector<UnitTypeDef> unitClassSpacefighters = {
   SP15_SPACE_FIGHTER
 };
 
-vector<UnitTypeDef> unitClass00847CDC = {
+vector<UnitTypeDef> unitClassSpaceCarriers = {
   SP15_SPACE_CARRIER
 };
 
-vector<UnitTypeDef> unitClass00847DC8 = {
+vector<UnitTypeDef> unitClassSpaceTransport = {
   SP15_SPACE_TRANSPORT
 };
 
-vector<UnitTypeDef> unitClass00847ED4 = {
+vector<UnitTypeDef> unitClassSpaceships = {
   SP15_CAPITAL_SHIP,
   SP15_SPACE_CORVETTE,
   X_CAPITAL_SHIP_YAMATO
 };
 
-vector<UnitTypeDef> unitClass00847FB8 = {
+vector<UnitTypeDef> unitClassSpecialBuilding = {
   B_PRIEST_TOWER
 };
 
-vector<UnitTypeDef> unitClass00848270 = {
+vector<UnitTypeDef> unitClassFlyingcasters = {
   MECH_APOLLO
 };
 
-vector<UnitTypeDef> unitClass00848354 = {
+vector<UnitTypeDef> unitClassGates = {
   B_GATE_DIGITAL,
   B_GATE_WW1,
   B_GATE_IMPERIAL,
@@ -534,7 +534,7 @@ vector<UnitTypeDef> unitClass00848354 = {
   B_GATE_BAMBOO
 };
 
-vector<UnitTypeDef> unitClass00848524 = {
+vector<UnitTypeDef> unitClassHeroes = {
   H2_3_GILGAMESH_MORALE_,
   H2_4_HANNIBAL_MORALE_,
   H2_5_JULIUS_CAESAR_MORALE_,
@@ -561,12 +561,12 @@ vector<UnitTypeDef> unitClass00848524 = {
   HERO_BULLDOG_RAMSEY_MORALE_
 };
 
-vector<UnitTypeDef> unitClass0084860C = {
+vector<UnitTypeDef> unitClassSSBuilding = {
   B_FORTRESS,
   B_TELEPORTER
 };
 
-vector<UnitTypeDef> unitClass00848718 = {
+vector<UnitTypeDef> unitClassTransportors = {
   S03_COPPER_TRANSPORT,
   S04_BRONZE_TRANSPORT,
   S08_IMPERIAL_TRANSPORT,
@@ -576,13 +576,13 @@ vector<UnitTypeDef> unitClass00848718 = {
   S11_LST_TRANSPORT
 };
 
-vector<UnitTypeDef> unitClass00848824 = {
+vector<UnitTypeDef> unitClassFyingTransporters = {
   A_HELICOPTERXPRT13_PEGASUS,
   A_HELICOPTERXPRT12_CHINOOK_TRANSPORT_12,
   X_COLONY_SHIP
 };
 
-vector<UnitTypeDef> unitClass00848930 = {
+vector<UnitTypeDef> unitClassMachineries = {
   SIEGE04_TOWER,
   X04_TROJAN_HORSE,
   X10_CARGO_TRUCK,
@@ -590,7 +590,7 @@ vector<UnitTypeDef> unitClass00848930 = {
   X11_GERMAN_STAFF_CAR
 };
 
-vector<UnitTypeDef> unitClass00848A3C = {
+vector<UnitTypeDef> unitClassNuclearSubmarins = {
   S12_NAUTILUS_SUBMARINE,
   S14_HAMMERHEAD_SUBMARINE,
   S12_TRIDENT_SUBMARINE,
@@ -598,17 +598,17 @@ vector<UnitTypeDef> unitClass00848A3C = {
   S10_U_BOAT
 };
 
-vector<UnitTypeDef> unitClass00848C0C = {
+vector<UnitTypeDef> unitClassCarriers = {
   S11_ENTERPRISE_AIRCRAFT_CARRIER,
   S13_NEXUS_CARRIER,
   S11_JAPANESE_FLATTOP_CARRIER
 };
 
-vector<UnitTypeDef> unitClass00848CF8 = {
+vector<UnitTypeDef> unitClassRocket = {
   CP_ICBM
 };
 
-vector<UnitTypeDef> unitClass00848FBC = {
+vector<UnitTypeDef> unitClassNoncombustionFliers = {
   A_HELICOPTER_APACHE_LONGBOW_12,
   A_HELICOPTERGUNSHIP13_REAPER,
   A_HELICOPTER_SEA_KING_II_13,
@@ -623,7 +623,7 @@ vector<UnitTypeDef> unitClass00848FBC = {
   SPC_SPY_SATELLITE
 };
 
-vector<UnitTypeDef> unitClass008490A0 = {
+vector<UnitTypeDef> unitClassFishingboats = {
   S02_FISHING_BOAT_STONE,
   S04_FISHING_BOAT_BRONZE,
   S11_FISHING_BOAT_MODERN,
@@ -631,13 +631,13 @@ vector<UnitTypeDef> unitClass008490A0 = {
   S08_FISHING_BOAT_IMPERIAL
 };
 
-vector<UnitTypeDef> unitClass00849184 = {
+vector<UnitTypeDef> unitClassCitizens = {
   X10_ENGINEER,
   CITIZEN,
   FEMALE_CITIZEN
 };
 
-vector<UnitTypeDef> unitClass00849268 = {
+vector<UnitTypeDef> unitClassGroundFighters = {
   CAV09_DRAGOON_GUN_,
   ARCH03_SIMPLE_BOWMAN,
   ARCH06_CAVALRY_ARCHER,
@@ -781,7 +781,7 @@ vector<UnitTypeDef> unitClass00849268 = {
   X_ROMAN_SENATOR
 };
 
-vector<UnitTypeDef> unitClass00849350 = {
+vector<UnitTypeDef> unitClassFightingBoats = {
   S08_GUNBOAT_CRUISER,
   S08_IMPERIAL_GALLEON,
   S03_COPPER_GALLEY,
@@ -820,7 +820,7 @@ vector<UnitTypeDef> unitClass00849350 = {
   X07_GOLDEN_HIND
 };
 
-vector<UnitTypeDef> unitClass00849434 = {
+vector<UnitTypeDef> unitClassAirfighters = {
   A_FIGHTER11_SPITFIRE,
   A_FIGHTER12_F_15,
   A_BOMBER_12_STEALTH_B_2,
@@ -864,7 +864,7 @@ vector<UnitTypeDef> unitClass00849434 = {
   A_FIGHTER15_PLANETARY_FIGHTER
 };
 
-vector<UnitTypeDef> unitClass00849520 = {
+vector<UnitTypeDef> unitClassBuildings = {
   B_BARRACKS,
   B_TOWN_CENTER,
   B_DOCK,
