@@ -118,8 +118,24 @@ uint8_t isMemoryValid(PVOID addr) {
     !(mbi.Protect & PAGE_EXECUTE);
 }
 
+uint8_t builder_IsMemoryValid(PVOID addr) {
+  return isMemoryValid(addr);
+}
+
 size_t bufferSize(PVOID buffer) {
   return ((size_t *)((size_t)buffer - sizeof(size_t)))[0];
+}
+
+uint8_t hasBeenAllocked(PVOID buffer);
+
+size_t builder_BufferSize(PVOID buffer, uint8_t *ok) {
+  *ok = 1;
+  PVOID offsetBuffer = (PVOID)((size_t)buffer - sizeof(MMUHeader));
+  if(!isMemoryValid(offsetBuffer) || !hasBeenAllocked(buffer)) {
+    *ok = 0;
+    return 0;
+  }
+  return bufferSize(buffer);
 }
 
 uint8_t hasBeenAllocked(PVOID buffer) {

@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 #include "MethodsDefinitions.h"
 #include "Unit.h"
+#include "LibManager.h"
 
 void test_PrintUnits();
 void test_ConvertEnemy();
@@ -13,6 +14,7 @@ void randomChecker();
 void replaceCoc(Unit unit, Point pos);
 Unit getProphet();
 Unit getPriest();
+void printAllUnitTypes();
 
 // I think I find the water tile.
 void pulas() {
@@ -47,7 +49,8 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
-    printAllTiles();
+    // printAllTiles();
+    printAllUnitTypes();
     Beep (300, 250);
   }
 }
@@ -119,6 +122,77 @@ void printPositions() {
   }
 }
 
+uint8_t isUnitChar(char element) {
+  return isdigit(element) || isalpha(element);
+}
+
+uint8_t upperCase(char element) {
+  if(element >= 'a' && element <= 'z') {
+    return element - ('a' - 'A');
+  }
+  return element;
+}
+
+char *tokenizeUnitName(char *unitName) {
+  size_t cnt = strlen(unitName);
+  char *newChar = (char *)malloc(cnt);
+  size_t index = 0;
+  uint8_t lowerBar = 0;
+  for(size_t i = 0; i < cnt; i++) {
+    if(!i && isdigit(unitName[i])) {
+      newChar[index++] = 'A';
+      newChar[index++] = upperCase(unitName[i]);
+      lowerBar = 0;
+      continue;
+    }
+    if(isUnitChar(unitName[i])) {
+      newChar[index++] = upperCase(unitName[i]);
+      lowerBar = 0;
+      continue;
+    }
+    if(!lowerBar) {
+      lowerBar = 1;
+      newChar[index++] = '_';
+    }
+  }
+  newChar[index] = '\0';
+  return newChar;
+}
+
+char *getNumber(PVOID addr) {
+  return tokenizeUnitName((char *)*(size_t *)((size_t)addr + 0x1C));
+}
+
+size_t unitTypeID(PVOID addr) {
+  return *(size_t *)((size_t)addr + 0x1E4);
+}
+
+__declspec(dllexport) void printAllUnitTypes() {
+  size_t *startingPointer = (size_t *)((size_t)lib_BaseAddress() + 0x5636B0);
+  int32_t total = 10000;
+  eeTa_FilePrintf("enum UnitTypeDef {\n");
+  while(total--) {
+    uint8_t valid;
+    if(!builder_IsMemoryValid((PVOID)startingPointer)) {
+      continue;
+    }
+    size_t unitType = *(size_t *)startingPointer;
+    startingPointer++;
+    if(!unitType) {
+      continue;
+    }
+    size_t bufferSize = builder_BufferSize((PVOID)unitType, &valid);
+    if(!valid || bufferSize != 0x32C) {
+      continue;
+    }
+    int32_t type = unitTypeID((PVOID)unitType);
+    if(type != 0x186A0) {
+      eeTa_FilePrintf("   %s = 0x%p,\n", getNumber((PVOID)unitType), type);
+    }
+  }
+  eeTa_FilePrintf("}");
+}
+
 void test_ConvertEnemy() {
   Unit priest = getPriest();
   Unit enemy = getEnemy();
@@ -152,5 +226,5 @@ void bt_OnFrame() {
 }
 
 void bt_OnUnitDestroy(Unit unit) {
-  
+
 }
