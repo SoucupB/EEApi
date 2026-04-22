@@ -3,6 +3,7 @@
 #include "PlayerState.h"
 #include "ResourceManager.h"
 #include "MethodsDefinitions.h"
+#include "Unit.h"
 
 void test_PrintUnits();
 void test_ConvertEnemy();
@@ -23,8 +24,13 @@ void pulas() {
 }
 
 __declspec(dllexport) void printAllTiles() {
+  Unit currentPriest = getPriest();
+  if(!eeTa_Unit_Reference(currentPriest)) {
+    return ;
+  }
+  eeTa_FilePrintf("Current plane ID %d\n", unit_GetPlaneID(currentPriest));
   // pulas();
-  eeTa_Map_PrintBitMap();
+  // eeTa_Map_PrintBitMap();
 }
 
 void execDataPengus() {
