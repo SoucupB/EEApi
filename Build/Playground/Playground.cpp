@@ -170,10 +170,14 @@ size_t unitTypeID(PVOID addr) {
 
 void createClasses(map<size_t, vector<size_t> > &unitsChecker) {
   for(auto &it : unitsChecker) {
-    eeTa_FilePrintf("enum Class_%p {\n", it.first);
+    eeTa_FilePrintf("vector<UnitTypeDef> unitClass%p = {\n", it.first);
     for(size_t i = 0; i < it.second.size(); i++) {
-      int32_t type = unitTypeID((PVOID)it.second[i]);
-      eeTa_FilePrintf("   %s = 0x%p,\n", getNumber((PVOID)it.second[i]), type);
+      if(i != it.second.size() - 1) {
+        eeTa_FilePrintf("  %s,\n", getNumber((PVOID)it.second[i]));
+      }
+      else {
+        eeTa_FilePrintf("  %s\n", getNumber((PVOID)it.second[i]));
+      }
     }
     eeTa_FilePrintf("};\n\n");
   }
