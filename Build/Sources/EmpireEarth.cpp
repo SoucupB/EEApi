@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include "InjectUtilities.h"
 #include "MethodsDefinitions.h"
-// #include "BotLogic.h"
+#include "LibManager.h"
 #include "EETwa.h"
 #include "Helpers.h"
 
@@ -122,5 +122,9 @@ void addBotMethodsHooks() {
 }
 
 extern "C"  __declspec(dllexport) void __cdecl someDllMain() {
+  if(!lib_IsLoaded()) {
+    exit(0xC0000135); // libs DLL not found
+  }
+
   addBotMethodsHooks();
 }

@@ -10,4 +10,5 @@ g++ -std=gnu++11 -IHeaders/ -c Sources/InjectUtilities32bits.cpp -O9 -lPsapi -lg
 g++ -std=gnu++11 -IHeaders/ -c Sources/TimerHelper.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/TimerHelper.o
 g++ -std=gnu++11 -IHeaders/ -c Sources/MethodsDefinitions.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/MethodsDefinitions.o
 g++ -std=gnu++11 -IHeaders/ -c Sources/MapData.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/MapData.o
+g++ -std=gnu++11 -IHeaders/ -c Sources/LibManager.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/LibManager.o
 ar rcs lib/Engine.a lib/*.o
