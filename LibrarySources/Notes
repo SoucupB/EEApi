@@ -942,3 +942,4 @@ Its held in a matrix. [MapPointer + 0xAC] I think holds triangles.
 810 elements for the vector array
 
 Data + 0x1C
+[unit + 0x2C] might be the unit class.
