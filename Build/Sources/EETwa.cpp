@@ -544,13 +544,5 @@ int8_t eeTa_Player(Unit unit) {
 }
 
 uint8_t eeTa_Tile_IsWater(TilePoint self) {
-  // PVOID mapPointer = help_GetMapPointer();
-  // HMODULE lowLevelDLL = GetModuleHandleA("Low-Level Engine.dll");
-  // if(!lowLevelDLL) {
-  //   return 0;
-  // }
-  // size_t isWaterTileMethodOffset = (size_t)lowLevelDLL + 0x12681;
-  // uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethodOffset;
-  // return method((PVOID)((size_t)mapPointer + 0x1C), (PVOID)self.x, (PVOID)self.y);
   return map_Tile_IsWater(self);
 }

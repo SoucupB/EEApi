@@ -8,6 +8,7 @@ uint8_t isMemoryValid(PVOID addr);
 static size_t old_NewHandle;
 static size_t old_FreeHandle;
 static uint8_t mmu_Replaced;
+static int32_t allocCount;
 static uint8_t magicKey[] = {0xCC, 0xFF, 0xAA, 0x00, 0xBB, 0x12, 0x43, 0x27, 0x19, 0x91, 0x01, 0x02};
 PVOID _cdecl builder_EnchantedNew(const size_t memSize);
 PVOID _cdecl builder_EnchantedFree(const PVOID buffer);
@@ -110,9 +111,12 @@ PVOID _cdecl builder_EnchantedNew(const size_t memSize) {
   PVOID _cdecl (*method)(size_t) = (PVOID _cdecl (*)(size_t))old_NewHandle;
   const size_t newSize = memSize + sizeof(MMUHeader);
   PVOID buffer = method(newSize);
+  allocCount++;
   memcpy(buffer, magicKey, sizeof(magicKey));
   memcpy((PVOID)((size_t)buffer + sizeof(magicKey)), &memSize, sizeof(size_t));
-  return (PVOID)((size_t)buffer + sizeof(MMUHeader));
+  PVOID responseRef = (PVOID)((size_t)buffer + sizeof(MMUHeader));
+  memset(responseRef, 0, memSize);
+  return responseRef;
 }
 
 uint8_t isMemoryValid(PVOID addr) {
@@ -146,6 +150,9 @@ PVOID _cdecl builder_EnchantedFree(const PVOID buffer) {
   }
   if(!memcmp(offsetBuffer, magicKey, sizeof(magicKey))) {
     memset(offsetBuffer, 0, sizeof(MMUHeader));
+    if(allocCount) {
+      allocCount--;
+    }
     return method(offsetBuffer);
   }
   return method(buffer);

@@ -55,7 +55,6 @@ typedef struct ActionBuffer_t {
   uint8_t validAddress;
 } ActionBuffer;
 
-PVOID __thiscall help_FillSelectedUnits(PVOID self, size_t _a, size_t _b, size_t _c);
 PVOID __fastcall help_SearchUnits(PVOID self);
 MoveAction *help_GetAction(PVOID parent, Point pos, UnitAction action);
 void __cdecl help_Delete(PVOID pointer);
@@ -198,24 +197,6 @@ PVOID _snapshot(PVOID self, size_t sz) {
   PVOID buffer = malloc(sz);
   memcpy(buffer, self, sz);
   return buffer;
-}
-
-void cleanSlate(PVOID self) {
-  memset((PVOID)((size_t)self + 0x70), 0, 0x3C);
-}
-
-PVOID __thiscall help_FillSelectedUnits(PVOID self, size_t _a, size_t _b, size_t _c) {
-  PVOID __thiscall (*method)(PVOID, size_t, size_t, size_t) = (PVOID __thiscall (*)(PVOID, size_t, size_t, size_t)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x1ED9D4);
-  size_t bufferSize = 0xB8;
-  PVOID deepCopy = _snapshot(self, bufferSize);
-  PVOID rsp = method(self, _a, _b, _c);
-  // if(_c == 1) {
-  //   // cleanSlate(self);
-  //   string response = help_DisplayDiff(self, deepCopy, bufferSize);
-  //   eeTa_Printf("Pengus call %p %p %p %p -> \n%s", self, _a, _b, _c, &response[0]);
-  // }
-  free(deepCopy);
-  return rsp;
 }
 
 string searchDiffs(PVOID self) {

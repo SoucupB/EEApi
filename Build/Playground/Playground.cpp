@@ -19,30 +19,11 @@ void pulas() {
   if(!eeTa_Unit_Reference(currentPriest)) {
     return ;
   }
-  // TilePoint pnt = eeTa_Unit_TilePosition(currentPriest);
-  // size_t isWaterTileMethod = (size_t)dll + 0x12681;
-  // uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethod;
-  // uint8_t resp = method((PVOID)((size_t)mapPointer + 0x1C), (PVOID)pnt.x, (PVOID)pnt.y);
   eeTa_FilePrintf("Is water for %p tile %d\n", currentPriest, eeTa_Tile_IsWater(eeTa_Unit_TilePosition(currentPriest)));
 }
 
 __declspec(dllexport) void printAllTiles() {
-  // PVOID mapPointer = help_GetMapPointer();
-  // size_t count = help_Map_TileCount(mapPointer);
-  // PVOID tileRef = help_Map_TilePointer(mapPointer);
-  // size_t c = 0;
-  // for(size_t i = 0; i < count; i++) {
-  //   for(size_t j = 0; j < count; j++) {
-  //     size_t currentIndex = *(size_t *)((size_t)tileRef + (count * i + j) * 4);
-  //     eeTa_FilePrintf("Tile index %d - %p\n", c++, currentIndex);
-  //   }
-  // }
-
-  // PVOID tileRef = help_Map_TilePointer(mapPointer);
-  // eeTa_FilePrintf("SSSSSS is %p\n", tileRef);
-  // eeTa_Map_PrintTiles();
   // pulas();
-
   eeTa_Map_PrintBitMap();
 }
 
