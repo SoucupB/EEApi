@@ -1,6 +1,7 @@
 #include "MapData.h"
 #include <vector>
 #include <stdlib.h>
+#include "LibManager.h"
 
 using namespace std;
 
@@ -44,7 +45,7 @@ PVOID map_TilePointer(PVOID mapPointer) {
 }
 
 PVOID map_GetMapPointer() {
-  PVOID basePointer = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + mapPointer);
+  PVOID basePointer = (PVOID)((size_t)lib_BaseAddress() + mapPointer);
   return (PVOID)*(size_t *)basePointer;
 }
 
@@ -120,11 +121,7 @@ vector<TileStruct> map_GetTilesArray() {
 
 uint8_t map_Tile_IsWater(TilePoint self) {
   PVOID mapPointer = map_GetMapPointer();
-  HMODULE lowLevelDLL = GetModuleHandleA("Low-Level Engine.dll");
-  if(!lowLevelDLL) {
-    return 0;
-  }
-  size_t isWaterTileMethodOffset = (size_t)lowLevelDLL + isWaterMethodOffset;
+  size_t isWaterTileMethodOffset = (size_t)lib_LowLevelEngine() + isWaterMethodOffset;
   uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isWaterTileMethodOffset;
   return method((PVOID)((size_t)mapPointer + mapPointerTileOffset), (PVOID)self.x, (PVOID)self.y);
 }
