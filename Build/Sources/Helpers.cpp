@@ -8,6 +8,7 @@
 #include "EETwaTypes.h"
 #include "MethodsDefinitions.h"
 #include "Helpers.h"
+#include "LibManager.h"
 
 #define ACTION_BUFFER_SIZE 0xB8
 
@@ -71,7 +72,7 @@ void help_FillData_Air(PVOID buffer);
 MoveActionUnit *help_GetActionUnit(PVOID parent, PVOID unit);
 
 PVOID __cdecl help_New(size_t size) {
-  PVOID __cdecl (*method)(size_t) = (PVOID __cdecl (*)(size_t)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x29D178);
+  PVOID __cdecl (*method)(size_t) = (PVOID __cdecl (*)(size_t)) ((uint8_t *)lib_BaseAddress() + 0x29D178);
   PVOID response = method(size);
   if(!response) {
     return NULL;
@@ -120,7 +121,7 @@ void helper_Convert(PVOID src, PVOID dst) {
 }
 
 void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst) {
-  PVOID classNameRef = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0x447380);
+  PVOID classNameRef = (PVOID)((size_t)lib_BaseAddress() + (size_t)0x447380);
   builder_FillValue(unitAction, 0x0, (size_t)classNameRef);
   builder_FillValue(unitAction, 0x4, 0x201);
   builder_FillValue(unitAction, 0x8, 0x1388);
@@ -136,20 +137,14 @@ void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst) {
 }
 
 PVOID helper_FindSuperClass_BB884() {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return 0;
-  }
+  PVOID hModule = lib_BaseAddress();
   PVOID param = (PVOID)((size_t)hModule + (size_t)0x530D40);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x139670);
   return method(param, (PVOID)0xFE);
 }
 
 PVOID helper_Fill_BB8FD(PVOID moveAction, PVOID baseClass) {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return 0;
-  }
+  PVOID hModule = lib_BaseAddress();
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x1EBC86);
   return method(moveAction, baseClass);
 }
@@ -162,16 +157,13 @@ void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit) {
 }
 
 PVOID __fastcall helper_ConvertUnit(PVOID movingStructure) {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return 0;
-  }
+  PVOID hModule = lib_BaseAddress();
   PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)hModule + 0x1EDCC0);
   return method(movingStructure);
 }
 
 void __cdecl help_Delete(PVOID pointer) {
-  PVOID __cdecl (*method)(PVOID) = (PVOID __cdecl (*)(PVOID)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x29D150);
+  PVOID __cdecl (*method)(PVOID) = (PVOID __cdecl (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x29D150);
   method(pointer);
 }
 
@@ -289,7 +281,7 @@ void helper_CastPoint(PVOID unit, Point target, Ability ability) {
 }
 
 __declspec(dllexport)  PVOID __fastcall help_SearchUnits(PVOID self) {
-  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x1EDCC0);
+  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EDCC0);
   string response;
   // addPositionDiff((PVOID)(*(uint32_t *)((size_t)self + 0x68)), response, 0x44);
   // string s = searchDiffsDracu((PVOID)(*(uint32_t *)((size_t)self + 0x68)));
@@ -305,20 +297,20 @@ __declspec(dllexport)  PVOID __fastcall help_SearchUnits(PVOID self) {
 }
 
 PVOID help_Const_x14_Value() {
-  int32_t *value = (int32_t *)util_Pointer(GetModuleHandleA("EE-AOC.exe"), 0x564480, INT32_T_TYPE);
+  int32_t *value = (int32_t *)util_Pointer(lib_BaseAddress(), 0x564480, INT32_T_TYPE);
   (*value) += 1;
   return (PVOID)*value;
 }
 
 PVOID help_Const_x10_Value() {
-  PVOID addressAt = util_Pointer(GetModuleHandleA("EE-AOC.exe"), 0x5318F0, POINTER_TYPE);
+  PVOID addressAt = util_Pointer(lib_BaseAddress(), 0x5318F0, POINTER_TYPE);
 
   return util_Pointer(addressAt, 0xD0, POINTER_TYPE);
 }
 
 MoveAction *help_GetAction(PVOID parent, Point pos, UnitAction action) {
   MoveAction *self = (MoveAction *)help_New(sizeof(MoveAction));
-  self->methodsBundle = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + 0x4478A0); // 8478A0
+  self->methodsBundle = (PVOID)((size_t)lib_BaseAddress() + 0x4478A0); // 8478A0
   self->_const_1 = (PVOID)0x101;
   self->_known_Const = (PVOID)0x1388;
   self->_const_4 = help_Const_x10_Value();
@@ -333,7 +325,7 @@ MoveAction *help_GetAction(PVOID parent, Point pos, UnitAction action) {
 }
 
 void __fastcall help_FillMetaParameters(PVOID tempStruct) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
+  PVOID basePointer = lib_BaseAddress();
   PVOID generalStruct = util_Pointer(basePointer, 0x530DB8, POINTER_TYPE);
   int8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int8_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)basePointer + 0x1EBC86);
   method(tempStruct, generalStruct, generalStruct);
@@ -350,41 +342,29 @@ void help_AddConvertMagicFlag(ActionBuffer self) {
 }
 
 void help_RunMethod_4C2AAD(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  int8_t __fastcall (*method)(PVOID) = (int8_t __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0x1EDAC5);
+  int8_t __fastcall (*method)(PVOID) = (int8_t __fastcall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EDAC5);
   method(self);
 }
 
 void help_RunMethod_4C2A67(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0x1EF56D);
+  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EF56D);
   method(self);
 }
 
 void help_RunMethod_4BB02A(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0xBB02A);
+  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0xBB02A);
   method(self);
 }
 
 void help_RunMethod_4C2A60(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
+  PVOID basePointer = lib_BaseAddress();
   PVOID generalStruct = util_Pointer(basePointer, 0x530DB8, POINTER_TYPE);
   PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0xC8F99);
   method(&self);
 }
 
-// void help_RunMethod_4C2A60(PVOID self) {
-//   PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-//   PVOID generalStruct = util_Pointer(basePointer, 0x530DB8, POINTER_TYPE);
-//   PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0xC8F99);
-//   method(&self);
-// }
-
-// Test method
 PVOID __thiscall help_Checker_4C2A3C(PVOID self, PVOID _1, PVOID _2, PVOID _3) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)basePointer + 0x1ED9D4);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1ED9D4);
   return method(self, _1, _2, _3);
 }
 
@@ -393,8 +373,7 @@ void help_SetPlayerActionPointer(PVOID unit, PVOID self) {
 }
 
 int32_t help_DerefChecker(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  PVOID derefStruct = util_Pointer(basePointer, 0x0, POINTER_TYPE);
+  PVOID derefStruct = util_Pointer(lib_BaseAddress(), 0x0, POINTER_TYPE);
   PVOID callerStruct = util_Pointer(derefStruct, 0x18, POINTER_TYPE);
   int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callerStruct);
 
@@ -410,7 +389,7 @@ int32_t help_DerefCounter(PVOID ecx) {
 }
 
 PVOID help_GetMapPointer() {
-  PVOID basePointer = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0x530DFC);
+  PVOID basePointer = (PVOID)((size_t)lib_BaseAddress() + (size_t)0x530DFC);
   return (PVOID)*(size_t *)basePointer;
 }
 
@@ -469,7 +448,7 @@ void help_Map_ComputeIslandComponents() {
 }
 
 int32_t derefPointer(PVOID ecx) {
-  PVOID methodsAddress = GetModuleHandleA("EE-AOC.exe") + 0x4371A8;
+  PVOID methodsAddress = (PVOID)((size_t)lib_BaseAddress() + 0x4371A8);
   PVOID methodsBundle = util_Pointer(methodsAddress, 0x0, POINTER_TYPE);
   int32_t (*method)(PVOID) = (int32_t (*)(PVOID)) ((uint8_t *)methodsBundle);
 
@@ -564,7 +543,7 @@ void help_FillData_Air(PVOID buffer) {
 MoveActionUnit *help_GetActionUnit(PVOID parent, PVOID unit) {
   Point pos = eeTa_CurrentPosition((Unit) {._payload = unit});
   MoveActionUnit *self = (MoveActionUnit *)help_New(0x44);
-  self->methodsBundle = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + 0x4475A8); // 8478A0
+  self->methodsBundle = (PVOID)((size_t)lib_BaseAddress() + 0x4475A8); // 8478A0
   self->_const_1 = (PVOID)0x601;
   self->_known_Const = (PVOID)0x1388;
   self->_const_4 = help_Const_x10_Value();
