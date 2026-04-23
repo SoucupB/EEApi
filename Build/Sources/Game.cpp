@@ -58,17 +58,18 @@ PGame game_Reference() {
   return game;
 }
 
-void game_Delete(PGame self) {
-  if(!self) {
+void game_Delete(PGame *self) {
+  if(!*self) {
     return ;
   }
-  game_PlayerState_Delete(self);
-  game_MapData_Delete(self);
-  free(self);
+  game_PlayerState_Delete(*self);
+  game_MapData_Delete(*self);
+  free(*self);
+  *self = NULL;
 }
 
 void game_Init() {
-  game_Delete(game);
+  game_Delete(&game);
   game = (PGame)malloc(sizeof(Game));
   game_PlayerState_Init(game);
   game_MapData_Init(game);
