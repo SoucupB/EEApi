@@ -52,6 +52,7 @@ uint8_t eeTypes_IsWaterUnit(UnitType unitType) {
   return eeTypes_IsFromClass(CLASS_WATER_TRANSPORT, unitType) || 
          eeTypes_IsFromClass(CLASS_WATER_CARRIERS, unitType) ||
          eeTypes_IsFromClass(CLASS_WATER_FISHING_BOATS, unitType) ||
+         eeTypes_IsFromClass(CLASS_WATER_BOATS, unitType) ||
          eeTypes_IsFromClass(CLASS_SUBMARINES, unitType);
 }
 
