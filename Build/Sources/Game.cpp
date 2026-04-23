@@ -35,6 +35,22 @@ typedef Game *PGame;
 
 static PGame game;
 
+void game_PlayerState_Init(PGame game) {
+  new (&game->plyState.unitsHealth) unordered_map<PVOID, UnitHealth>();
+  game->plyState.method = NULL;
+}
+
+void game_MapData_Init(PGame game) {
+  new (&game->mapData.tiles) vector<TileStruct>;
+  memset(&game->mapData.planeMap, 0, sizeof(TilePlaneMap));
+}
+
+PGame game_Reference() {
+  return game;
+}
+
 void game_Init() {
   game = (PGame)malloc(sizeof(Game));
+  game_PlayerState_Init(game);
+  game_MapData_Init(game);
 }
