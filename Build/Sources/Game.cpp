@@ -45,11 +45,30 @@ void game_MapData_Init(PGame game) {
   memset(&game->mapData.planeMap, 0, sizeof(TilePlaneMap));
 }
 
+void game_PlayerState_Delete(PGame game) {
+  game->plyState.unitsHealth.~unordered_map();
+  game->plyState.method = NULL;
+}
+
+void game_MapData_Delete(PGame game) {
+  game->mapData.tiles.~vector();
+}
+
 PGame game_Reference() {
   return game;
 }
 
+void game_Delete(PGame self) {
+  if(!self) {
+    return ;
+  }
+  game_PlayerState_Delete(self);
+  game_MapData_Delete(self);
+  free(self);
+}
+
 void game_Init() {
+  game_Delete(game);
   game = (PGame)malloc(sizeof(Game));
   game_PlayerState_Init(game);
   game_MapData_Init(game);
