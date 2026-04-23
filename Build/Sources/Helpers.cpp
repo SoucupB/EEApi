@@ -65,7 +65,7 @@ void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst);
 PVOID __fastcall helper_ConvertUnit(PVOID movingStructure);
 void helper_CastPoint(PVOID unit, Point target, Ability ability);
 
-static unordered_map<PVOID, size_t> memoryMap;
+static unordered_map<PVOID, size_t> memoryMap; // No need this into the general pointer
 
 void help_FillData_NonAir(PVOID buffer);
 void help_FillData_Air(PVOID buffer);

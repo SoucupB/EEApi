@@ -13,4 +13,5 @@ g++ -std=gnu++11 -IHeaders/ -c Sources/MapData.cpp -O9 -lPsapi -lgdi32 -luser32 
 g++ -std=gnu++11 -IHeaders/ -c Sources/LibManager.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/LibManager.o
 g++ -std=gnu++11 -IHeaders/ -c Sources/Unit.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/Unit.o
 g++ -std=gnu++11 -IHeaders/ -c Sources/EETypes.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/EETypes.o
+g++ -std=gnu++11 -IHeaders/ -c Sources/Game.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/Game.o
 ar rcs lib/Engine.a lib/*.o

@@ -2,6 +2,8 @@
 #include <unordered_map>
 #include <stdint.h>
 #include <windows.h>
+#include "MapData.h"
+#include "EETypes.h"
 using namespace std;
 
 typedef struct UnitHealth_t {
@@ -14,9 +16,19 @@ typedef struct PlayerState_t {
   PVOID method;
 } PlayerState;
 
+typedef struct MapData_t {
+  vector<TileStruct> tiles;
+  TilePlaneMap planeMap;
+} MapData;
+
+typedef struct EETypes_t {
+  map<UnitClassType, map<UnitType, uint8_t> > classTreeStructure;
+} EETypes;
+
 typedef struct Game_t {
   PlayerState plyState;
-
+  MapData mapData;
+  EETypes types;
 } Game;
 
 typedef Game *PGame;
