@@ -491,3 +491,5 @@ enum UnitClassType {
   CLASS_EXTRA,
 };
 
+void eetypes_Init();
+uint8_t eeTypes_IsFromClass(UnitClassType unitClass, UnitType unitType);
