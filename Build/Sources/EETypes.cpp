@@ -29,7 +29,7 @@ static map<UnitClassType, vector<UnitType> > classDefUnits = {
   {CLASS_EXTRA, {X_GASLIGHT, X_STREET_LAMP}},
 };
 
-void eetypes_Init() {
+void eeTypes_InitUnits() {
   classTreeStructure.clear();
   for(auto &it : classDefUnits) {
     for(size_t i = 0, c = it.second.size(); i < c; i++) {
@@ -46,4 +46,15 @@ uint8_t eeTypes_IsFromClass(UnitClassType unitClass, UnitType unitType) {
     return 0;
   }
   return 1;
+}
+
+uint8_t eeTypes_IsWaterUnit(UnitType unitType) {
+  return eeTypes_IsFromClass(CLASS_WATER_TRANSPORT, unitType) || 
+         eeTypes_IsFromClass(CLASS_WATER_CARRIERS, unitType) ||
+         eeTypes_IsFromClass(CLASS_WATER_FISHING_BOATS, unitType) ||
+         eeTypes_IsFromClass(CLASS_SUBMARINES, unitType);
+}
+
+uint8_t eeTypes_IsCitizen(UnitType unitType) {
+  return eeTypes_IsFromClass(CLASS_CITIZENS, unitType);
 }

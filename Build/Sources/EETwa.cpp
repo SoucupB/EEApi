@@ -5,6 +5,7 @@
 #include "PlayerState.h"
 #include "MapData.h"
 #include "LibManager.h"
+#include "EETypes.h"
 
 static PTimerHelper timers;
 
@@ -360,6 +361,7 @@ int8_t eeTa_PlayerCount() {
 void eeTa_RebuildDTs() {
   eeta_FileClean();
   eeTypes_OnInit();
+  eeTypes_InitUnits();
   timers = tmr_Init();
 }
 
