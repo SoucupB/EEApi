@@ -8,22 +8,6 @@ using namespace std;
 #define INVALID_TILE_ID UINT16_MAX
 #define PLANE_MARK_BIT (1<<15)
 
-typedef struct TileStruct_t {
-  PVOID ref;
-  TilePoint tile;
-} TileStruct;
-
-typedef struct TileConnexStruct_t {
-  TileStruct tileStruct;
-  uint16_t planeID;
-  uint8_t isWater;
-} TileConnexStruct;
-
-typedef struct TilePlaneMap_t {
-  size_t rowTileCount;
-  TileConnexStruct **map;
-} TilePlaneMap;
-
 static vector<TileStruct> tiles;
 static const size_t mapPointer = 0x530DFC;
 static const size_t mapTileCount = 0x195618;

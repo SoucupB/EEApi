@@ -17,11 +17,6 @@ void eeta_FileClean();
 void eeTa_RebuildDTs();
 void pls_ClearData();
 
-typedef struct TileStruct_t {
-  PVOID ref;
-  TilePoint tile;
-} TileStruct;
-
 vector<TileStruct> help_Map_GetTiles();
 vector<TileStruct> map_GetTilesArray();
 

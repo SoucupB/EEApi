@@ -1,6 +1,22 @@
 #pragma once
 #include "Helpers.h"
 
+typedef struct TileStruct_t {
+  PVOID ref;
+  TilePoint tile;
+} TileStruct;
+
+typedef struct TileConnexStruct_t {
+  TileStruct tileStruct;
+  uint16_t planeID;
+  uint8_t isWater;
+} TileConnexStruct;
+
+typedef struct TilePlaneMap_t {
+  size_t rowTileCount;
+  TileConnexStruct **map;
+} TilePlaneMap;
+
 void map_Init();
 void map_Delete();
 uint8_t map_Tile_IsWater(TilePoint self);

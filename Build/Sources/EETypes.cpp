@@ -58,3 +58,7 @@ uint8_t eeTypes_IsWaterUnit(UnitType unitType) {
 uint8_t eeTypes_IsCitizen(UnitType unitType) {
   return eeTypes_IsFromClass(CLASS_CITIZENS, unitType);
 }
+
+uint8_t eeTypes_IsWaterTransport(UnitType unitType) {
+  return eeTypes_IsFromClass(CLASS_WATER_TRANSPORT, unitType);
+}
