@@ -22,17 +22,19 @@ typedef struct PlayerState_t {
 typedef PlayerState *PPlayerState;
 
 typedef struct MapData_t {
-  vector<TileStruct> tiles;
-  TilePlaneMap planeMap;
+  vector<TileStruct> *tiles;
+  TilePlaneMap *planeMap;
 } MapData;
+
+typedef MapData *PMapData;
 
 typedef struct EETypes_t {
   map<UnitClassType, map<UnitType, uint8_t> > classTreeStructure;
 } EETypes;
 
 typedef struct Game_t {
-  PlayerState *plyState;
-  MapData mapData;
+  PPlayerState plyState;
+  PMapData mapData;
   EETypes types;
 } Game;
 
@@ -40,3 +42,4 @@ typedef Game *PGame;
 
 void game_Init();
 PPlayerState game_GetPlayerState();
+PMapData game_GetMapData();
