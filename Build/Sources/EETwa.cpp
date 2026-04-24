@@ -16,7 +16,6 @@ void bt_OnFrame();
 
 void eeta_FileClean();
 void eeTa_RebuildDTs();
-void pls_ClearData();
 
 vector<TileStruct> help_Map_GetTiles();
 vector<TileStruct> map_GetTilesArray();
@@ -39,7 +38,7 @@ void eeTa_Clear() {
   }
   tmrs_Delete(timers);
   map_Delete();
-  pls_ClearData();
+  // pls_ClearData();
 }
 
 unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence() {

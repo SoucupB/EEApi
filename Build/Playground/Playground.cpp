@@ -26,6 +26,10 @@ void pulas() {
   eeTa_FilePrintf("Is water for %p tile %d\n", currentPriest, eeTa_Tile_IsWater(eeTa_Unit_TilePosition(currentPriest)));
 }
 
+void onLosingHealth(Unit unit) {
+  eeTa_FilePrintf("Unit %p taking damage\n", eeTa_Unit_Reference(unit));
+}
+
 __declspec(dllexport) void printAllTiles() {
   Unit currentPriest = getPriest();
   if(!eeTa_Unit_Reference(currentPriest)) {
@@ -259,6 +263,7 @@ void bt_OnInit() {
 
 void bt_OnFrame() {
   execDataPengus();
+  pls_OnInit((PVOID)onLosingHealth);
 }
 
 void bt_OnUnitDestroy(Unit unit) {
