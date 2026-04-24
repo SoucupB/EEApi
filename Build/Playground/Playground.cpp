@@ -7,6 +7,7 @@
 #include "LibManager.h"
 #include "EETypes.h"
 #include <map>
+#include <algorithm>
 
 void test_PrintUnits();
 void test_ConvertEnemy();
@@ -202,6 +203,7 @@ __declspec(dllexport) void printAllUnitTypes() {
   int32_t total = 10000;
   eeTa_FilePrintf("enum UnitTypeDef {\n");
   map<size_t, vector<size_t> > unitsClass;
+  vector< pair<char *, size_t> > unitTypes;
   while(total--) {
     uint8_t valid;
     if(!builder_IsMemoryValid((PVOID)startingPointer)) {
@@ -218,9 +220,16 @@ __declspec(dllexport) void printAllUnitTypes() {
     }
     int32_t type = unitTypeID((PVOID)unitType);
     if(type != 0x186A0) {
-      eeTa_FilePrintf("   %s = 0x%p,\n", getNumber((PVOID)unitType), type);
+      // eeTa_FilePrintf("   %s = 0x%p,\n", getNumber((PVOID)unitType), type);
       unitsClass[*(size_t *)unitType].push_back(unitType);
+      unitTypes.push_back(make_pair(getNumber((PVOID)unitType), type));
     }
+  }
+  sort(unitTypes.begin(), unitTypes.end(), [](const std::pair<char*, size_t>& a, const std::pair<char*, size_t>& b) {
+    return strcmp(a.first, b.first) < 0;
+  });
+  for(size_t i = 0; i < unitTypes.size(); i++) {
+    eeTa_FilePrintf("   %s = 0x%p,\n", unitTypes[i].first, unitTypes[i].second);
   }
   eeTa_FilePrintf("};\n\n");
   createClasses(unitsClass);
