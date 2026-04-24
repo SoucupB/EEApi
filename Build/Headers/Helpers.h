@@ -1,8 +1,8 @@
 #pragma once
 #include <Windows.h>
 #include <stdint.h>
-#include "EETwaTypes.h"
 #include <vector>
+#include "Geometry.h"
 
 PVOID __cdecl help_New(size_t size);
 void help_UnitMove(PVOID unit, Point point, UnitAction currentAction);

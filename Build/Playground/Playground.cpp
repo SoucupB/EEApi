@@ -1,7 +1,5 @@
 #include <math.h>
-#include "AttackDecision.h"
 #include "PlayerState.h"
-#include "ResourceManager.h"
 #include "MethodsDefinitions.h"
 #include "Unit.h"
 #include "LibManager.h"
@@ -84,7 +82,7 @@ void test_PrintUnits() {
 Unit getPriest() {
   vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
   for(size_t i = 0; i < units.size(); i++) {
-    if(eeTa_UnitType(units[i]) == UNIT_PREHISTORIC_PRIEST) {
+    if(eeTa_UnitType(units[i]) == PRIEST) {
       return units[i];
     }
   }
@@ -94,7 +92,7 @@ Unit getPriest() {
 Unit getProphet() {
   vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
   for(size_t i = 0; i < units.size(); i++) {
-    if(eeTa_UnitType(units[i]) == UNIT_PREHISTORIC_PROPHET) {
+    if(eeTa_UnitType(units[i]) == PROPHET) {
       return units[i];
     }
   }

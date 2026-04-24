@@ -1,14 +1,14 @@
 #include "Helpers.h"
 #include <iostream>
 #include "EETwa.h"
-#include "EETwaTypes.h"
 #include <unordered_map>
 #include <stdint.h>
 #include <Windows.h>
-#include "EETwaTypes.h"
 #include "MethodsDefinitions.h"
 #include "Helpers.h"
 #include "LibManager.h"
+#include "EETypes.h"
+#include "Geometry.h"
 
 #define ACTION_BUFFER_SIZE 0xB8
 

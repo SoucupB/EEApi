@@ -2,15 +2,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <Windows.h>
+#include "Geometry.h"
 #include "InjectUtilities.h"
-#include "EETwaTypes.h"
 #include "Helpers.h"
 #include "TimerHelper.h"
 #include "EETypes.h"
-
-typedef struct Unit_t {
-  PVOID _payload;
-} Unit;
 
 vector<Unit> eeTa_Buildings(int8_t player);
 vector<PVOID> eeTa_UnitTypes(Unit building);
@@ -25,7 +21,7 @@ int64_t eeTa_CurrentFrame();
 int8_t eeTa_IsBuilding(Unit unit);
 void eeTa_OnUnitDeath(Unit unit);
 int8_t eeTa_Player(Unit unit);
-UnitTypeDef eeTa_UnitType(Unit unit);
+UnitType eeTa_UnitType(Unit unit);
 int32_t eeTa_CurrentHp(Unit unit);
 Unit eeTa_Unit_Null();
 PVOID eeTa_Unit_Reference(Unit unit);

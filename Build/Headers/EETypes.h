@@ -1,8 +1,28 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <windows.h>
 
 using namespace std;
+
+typedef struct Unit_t {
+  PVOID _payload;
+} Unit;
+
+enum UnitAction {
+  UNIT_MOVE = 0x101,
+  UNIT_ATTACK = 0x100
+};
+
+enum Ability {
+  PROPHET_EARTHQUAKE = 0x3FA,
+  PROPHET_MALARIA = 0x3F8,
+  PROPHET_TORNADO = 0x3FE
+};
+
+enum DefaultType {
+  IDLE = 0x186A0
+};
 
 enum UnitType {
   A10_AA_TANK = 0x0000272F,

@@ -353,7 +353,6 @@ int8_t eeTa_PlayerCount() {
 void eeTa_RebuildDTs() {
   game_Init();
   eeta_FileClean();
-  eeTypes_OnInit();
   eeTypes_InitUnits();
   timers = tmr_Init();
 }
@@ -363,9 +362,9 @@ void eeTa_OnInit() {
   bt_OnInit();
 }
 
-UnitTypeDef eeTa_UnitType(Unit unit) {
+UnitType eeTa_UnitType(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  return (UnitTypeDef)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
+  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
 }
 
 UnitType eeTa_EETypes_UnitType(Unit unit) {
