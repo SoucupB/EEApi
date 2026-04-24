@@ -464,11 +464,12 @@ enum UnitType {
 };
 
 enum UnitClassType {
-  CLASSS_SPELL_CASTER,
-  CLASSS_SPACE_FIGHTER,
-  CLASSS_SPACE_CARRIER,
-  CLASSS_SPACE_TRANSPORT,
-  CLASSS_SPACE_SHIP_FIGHTERS,
+  CLASS_UNDEFINED,
+  CLASS_SPELL_CASTER,
+  CLASS_SPACE_FIGHTER,
+  CLASS_SPACE_CARRIER,
+  CLASS_SPACE_TRANSPORT,
+  CLASS_SPACE_SHIP_FIGHTERS,
   CLASS_SPECIAL_BUILDING,
   CLASS_MECH_APOLLY,
   CLASS_GATES,
@@ -496,3 +497,4 @@ uint8_t eeTypes_IsFromClass(UnitClassType unitClass, UnitType unitType);
 uint8_t eeTypes_IsWaterUnit(UnitType unitType);
 uint8_t eeTypes_IsCitizen(UnitType unitType);
 uint8_t eeTypes_IsWaterTransport(UnitType unitType);
+UnitClassType eeTypes_UnitClass(UnitType unitType);

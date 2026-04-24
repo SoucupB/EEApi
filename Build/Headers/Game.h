@@ -26,6 +26,7 @@ typedef struct MapData_t {
 
 typedef struct EETypes_t {
   map<UnitClassType, map<UnitType, uint8_t> > *classTreeStructure;
+  map<UnitType, UnitClassType> *parentsClass;
 } EETypes;
 
 typedef EETypes *PEETypes;
