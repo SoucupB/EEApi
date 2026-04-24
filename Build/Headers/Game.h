@@ -19,23 +19,23 @@ typedef struct PlayerState_t {
   PVOID method;
 } PlayerState;
 
-typedef PlayerState *PPlayerState;
-
 typedef struct MapData_t {
   vector<TileStruct> *tiles;
   TilePlaneMap *planeMap;
 } MapData;
 
-typedef MapData *PMapData;
-
 typedef struct EETypes_t {
-  map<UnitClassType, map<UnitType, uint8_t> > classTreeStructure;
+  map<UnitClassType, map<UnitType, uint8_t> > *classTreeStructure;
 } EETypes;
+
+typedef EETypes *PEETypes;
+typedef MapData *PMapData;
+typedef PlayerState *PPlayerState;
 
 typedef struct Game_t {
   PPlayerState plyState;
   PMapData mapData;
-  EETypes types;
+  PEETypes types;
 } Game;
 
 typedef Game *PGame;

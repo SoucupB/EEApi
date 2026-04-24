@@ -4,6 +4,7 @@
 #include <windows.h>
 #include "MapData.h"
 #include "EETypes.h"
+
 using namespace std;
 
 static PGame game;
@@ -39,12 +40,26 @@ void game_PlayerState_Delete(PGame game) {
 }
 
 void game_MapData_Delete(PGame game) {
-  if(game->mapData) {
+  if(!game->mapData) {
     return ;
   }
   delete game->mapData->tiles;
   free(game->mapData->planeMap);
   game->mapData = NULL;
+}
+
+void game_EETypes_Init(PGame game) {
+  game->types = (PEETypes)malloc(sizeof(EETypes));
+  game->types->classTreeStructure = new map<UnitClassType, map<UnitType, uint8_t> >();
+}
+
+void game_EETypes_Delete(PGame game) {
+  if(!game->types) {
+    return ;
+  }
+  delete game->types->classTreeStructure;
+  free(game->types);
+  game->types = NULL;
 }
 
 PGame game_Reference() {
@@ -57,6 +72,7 @@ void game_Delete(PGame *self) {
   }
   game_PlayerState_Delete(*self);
   game_MapData_Delete(*self);
+  game_EETypes_Delete(*self);
   free(*self);
   *self = NULL;
 }
@@ -66,4 +82,5 @@ void game_Init() {
   game = (PGame)malloc(sizeof(Game));
   game_PlayerState_Init(game);
   game_MapData_Init(game);
+  game_EETypes_Init(game);
 }
