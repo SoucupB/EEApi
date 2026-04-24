@@ -359,9 +359,6 @@ void eeTa_RebuildDTs() {
 }
 
 void eeTa_OnInit() {
-  // eeta_FileClean();
-  // eeTypes_OnInit();
-  // timers = tmr_Init();
   eeTa_Map_Init();
   bt_OnInit();
 }

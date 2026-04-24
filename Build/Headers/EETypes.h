@@ -497,4 +497,11 @@ uint8_t eeTypes_IsFromClass(UnitClassType unitClass, UnitType unitType);
 uint8_t eeTypes_IsWaterUnit(UnitType unitType);
 uint8_t eeTypes_IsCitizen(UnitType unitType);
 uint8_t eeTypes_IsWaterTransport(UnitType unitType);
+uint8_t eeTypes_IsTransport(UnitType unitType);
+uint8_t eeTypes_IsGroundUnit(UnitType unitType);
+uint8_t eeTypes_IsFishBoat(UnitType unitType);
+uint8_t eeTypes_IsPriest(UnitType type);
+uint8_t eeTypes_IsAirUnit(UnitType unitType);
+uint8_t eeTypes_CanProduceWorkers(UnitType type);
+
 UnitClassType eeTypes_UnitClass(UnitType unitType);

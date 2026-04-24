@@ -78,3 +78,33 @@ uint8_t eeTypes_IsCitizen(UnitType unitType) {
 uint8_t eeTypes_IsWaterTransport(UnitType unitType) {
   return eeTypes_IsFromClass(CLASS_WATER_TRANSPORT, unitType);
 }
+
+uint8_t eeTypes_IsTransport(UnitType unitType) {
+  return eeTypes_IsWaterUnit(unitType) || eeTypes_IsFromClass(CLASS_SPACE_TRANSPORT, unitType) || eeTypes_IsFromClass(CLASS_AIR_TRANSPORT, unitType);
+}
+
+uint8_t eeTypes_IsGroundUnit(UnitType unitType) {
+  return eeTypes_IsFromClass(CLASS_GROUND_UNITS, unitType) || 
+         eeTypes_IsFromClass(CLASS_CITIZENS, unitType) || 
+         eeTypes_IsFromClass(CLASS_HEROES, unitType) ||
+         eeTypes_IsFromClass(CLASS_MACHINES, unitType) ||
+         eeTypes_IsFromClass(CLASS_SPELL_CASTER, unitType);
+}
+
+uint8_t eeTypes_IsFishBoat(UnitType unitType) {
+  return eeTypes_IsFromClass(CLASS_WATER_FISHING_BOATS, unitType);
+}
+
+uint8_t eeTypes_IsPriest(UnitType type) {
+  return type == PRIEST; 
+}
+
+uint8_t eeTypes_IsAirUnit(UnitType unitType) {
+  return eeTypes_IsFromClass(CLASS_AIR_COMBUSTION_FLYEIR, unitType) ||
+         eeTypes_IsFromClass(CLASS_AIR_TRANSPORT, unitType) ||
+         eeTypes_IsFromClass(CLASS_AIR_NON_COMBUSTION_FLYER, unitType);
+}
+
+uint8_t eeTypes_CanProduceWorkers(UnitType unitType) {
+  return unitType == B_TOWN_CENTER || unitType == B_CAPITOL;
+}
