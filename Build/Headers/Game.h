@@ -43,3 +43,4 @@ typedef Game *PGame;
 void game_Init();
 PPlayerState game_GetPlayerState();
 PMapData game_GetMapData();
+PEETypes game_GetEETypes();

@@ -190,16 +190,6 @@ void createClasses(map<size_t, vector<size_t> > &unitsChecker) {
       }
     }
     eeTa_FilePrintf("}},\n");
-    // eeTa_FilePrintf("vector<UnitTypeDef> unitClass%p = {\n", it.first);
-    // for(size_t i = 0; i < it.second.size(); i++) {
-    //   if(i != it.second.size() - 1) {
-    //     eeTa_FilePrintf("  %s,\n", getNumber((PVOID)it.second[i]));
-    //   }
-    //   else {
-    //     eeTa_FilePrintf("  %s\n", getNumber((PVOID)it.second[i]));
-    //   }
-    // }
-    // eeTa_FilePrintf("};\n\n");
   }
   eeTa_FilePrintf("};\n");
 }

@@ -30,6 +30,10 @@ PMapData game_GetMapData() {
   return game->mapData;
 }
 
+PEETypes game_GetEETypes() {
+  return game->types;
+}
+
 void game_PlayerState_Delete(PGame game) {
   if(!game->plyState) {
     return ;
