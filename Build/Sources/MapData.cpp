@@ -2,19 +2,18 @@
 #include <vector>
 #include <stdlib.h>
 #include "LibManager.h"
+#include "Game.h"
 
 using namespace std;
 
 #define INVALID_TILE_ID UINT16_MAX
 #define PLANE_MARK_BIT (1<<15)
 
-static vector<TileStruct> tiles;
 static const size_t mapPointer = 0x530DFC;
 static const size_t mapTileCount = 0x195618;
 static const size_t tileStructPointer = 0x1955F0;
 static const size_t isWaterMethodOffset = 0x12681;
 static const size_t mapPointerTileOffset = 0x1C;
-static TilePlaneMap planeMap;
 
 static inline uint8_t map_TileConnex_IsMarked(TileConnexStruct self);
 static inline void map_TileConnex_Mark(TileConnexStruct *self);
@@ -33,8 +32,10 @@ PVOID map_GetMapPointer() {
   return (PVOID)*(size_t *)basePointer;
 }
 
-vector<TileStruct> map_GetTiles() {
-  vector<TileStruct> response;
+void map_FillTiles() {
+  PMapData md = game_GetMapData();
+  vector<TileStruct> *tiles = md->tiles;
+
   PVOID mapPointer = map_GetMapPointer();
   size_t count = map_TileCount(mapPointer);
   PVOID tileRef = map_TilePointer(mapPointer);
@@ -42,7 +43,7 @@ vector<TileStruct> map_GetTiles() {
     for(size_t j = 0; j < count; j++) {
       size_t currentTile = *(size_t *)((size_t)tileRef + (count * i + j) * 4);
       if(currentTile) {
-        response.push_back((TileStruct) {
+        tiles->push_back((TileStruct) {
           .ref = (PVOID)currentTile,
           .tile = (TilePoint) {
             .x = (int32_t)j,
@@ -52,7 +53,6 @@ vector<TileStruct> map_GetTiles() {
       }
     }
   }
-  return response;
 }
 
 char **map_GetBitMap(size_t *tileCount) {
@@ -90,8 +90,9 @@ void map_BitMapDelete(char **map, size_t mapSizeInTiles) {
   free(map);
 }
 
-vector<TileStruct> map_GetTilesArray() {
-  return tiles;
+vector<TileStruct> map_FillTilesArray() {
+  PMapData md = game_GetMapData();
+  return *md->tiles;
 }
 
 uint8_t map_Tile_IsWater(TilePoint self) {
@@ -102,39 +103,50 @@ uint8_t map_Tile_IsWater(TilePoint self) {
 }
 
 void map_TileMap_FreePreviousMap() {
-  if(!planeMap.rowTileCount || !planeMap.map) {
+  PMapData md = game_GetMapData();
+  TilePlaneMap *planeMap = md->planeMap;
+
+  if(!planeMap->rowTileCount || !planeMap->map) {
     return ;
   }
-  for(size_t i = 0; i < planeMap.rowTileCount; i++) {
-    free(planeMap.map[i]);
+  for(size_t i = 0; i < planeMap->rowTileCount; i++) {
+    free(planeMap->map[i]);
   }
-  free(planeMap.map);
-  planeMap.rowTileCount = 0;
-  planeMap.map = NULL;
+  free(planeMap->map);
+  planeMap->rowTileCount = 0;
+  planeMap->map = NULL;
 }
 
 void map_TileMap_Init() {
   map_TileMap_FreePreviousMap();
   PVOID mapPointer = map_GetMapPointer();
   size_t count = map_TileCount(mapPointer);
-  planeMap.rowTileCount = count;
-  planeMap.map = (TileConnexStruct **)malloc(count * sizeof(TileConnexStruct *));
+  PMapData md = game_GetMapData();
+  TilePlaneMap *planeMap = md->planeMap;
+
+  planeMap->rowTileCount = count;
+  planeMap->map = (TileConnexStruct **)malloc(count * sizeof(TileConnexStruct *));
   for(size_t i = 0; i < count; i++) {
-    planeMap.map[i] = (TileConnexStruct *)malloc(count * sizeof(TileConnexStruct));
-    memset(planeMap.map[i], 0, count * sizeof(TileConnexStruct));
+    planeMap->map[i] = (TileConnexStruct *)malloc(count * sizeof(TileConnexStruct));
+    memset(planeMap->map[i], 0, count * sizeof(TileConnexStruct));
   }
   for(size_t i = 0; i < count; i++) {
     for(size_t j = 0; j < count; j++) {
-      planeMap.map[i][j].planeID = INVALID_TILE_ID;
+      planeMap->map[i][j].planeID = INVALID_TILE_ID;
     }
   }
 }
 
 void map_TileMap_FillWithReffs() {
-  const size_t count = planeMap.rowTileCount;
-  TileConnexStruct **map = planeMap.map;
-  for(size_t i = 0; i < tiles.size(); i++) {
-    TileStruct tileStruct = tiles[i];
+  PMapData md = game_GetMapData();
+  TilePlaneMap *planeMap = md->planeMap;
+
+  const size_t count = planeMap->rowTileCount;
+  TileConnexStruct **map = planeMap->map;
+  vector<TileStruct> *tiles = md->tiles;
+
+  for(size_t i = 0; i < tiles->size(); i++) {
+    TileStruct tileStruct = (*tiles)[i];
     map[tileStruct.tile.x][tileStruct.tile.y] = (TileConnexStruct) {
       .tileStruct = tileStruct,
       .planeID = 0,
@@ -159,12 +171,15 @@ static inline void map_TileConnex_Mark(TileConnexStruct *self) {
 }
 
 uint8_t map_TileMap_Fill(size_t i, size_t j, uint16_t currentPlaneID) {
-  if(map_TileConnex_IsMarked(planeMap.map[i][j])) {
+  PMapData md = game_GetMapData();
+  TilePlaneMap *planeMap = md->planeMap;
+
+  if(map_TileConnex_IsMarked(planeMap->map[i][j])) {
     return 0;
   }
-  TileConnexStruct **tileMap = planeMap.map;
-  TileConnexStruct *initialConnexTile = &planeMap.map[i][j];
-  const size_t tileCount = planeMap.rowTileCount;
+  TileConnexStruct **tileMap = planeMap->map;
+  TileConnexStruct *initialConnexTile = &planeMap->map[i][j];
+  const size_t tileCount = planeMap->rowTileCount;
   int32_t xPos[] = {0, 1, 0, -1, 1, 1, -1, -1};
   int32_t yPos[] = {1, 0, -1, 0, 1, -1, 1, -1};
   initialConnexTile->planeID = currentPlaneID;
@@ -195,11 +210,14 @@ uint8_t map_TileMap_Fill(size_t i, size_t j, uint16_t currentPlaneID) {
 }
 
 uint16_t map_Tile_GetPlaneID(TilePoint tile) {
-  const int32_t tileCount = (int32_t)planeMap.rowTileCount;
+  PMapData md = game_GetMapData();
+  TilePlaneMap *planeMap = md->planeMap;
+
+  const int32_t tileCount = (int32_t)planeMap->rowTileCount;
   if((tile.x < 0 || tile.x >= tileCount) || (tile.y < 0 || tile.y >= tileCount)) {
     return INVALID_TILE_ID;
   }
-  TileConnexStruct initialConnexTile = planeMap.map[tile.x][tile.y];
+  TileConnexStruct initialConnexTile = planeMap->map[tile.x][tile.y];
   if(initialConnexTile.planeID == INVALID_TILE_ID || !map_TileConnex_IsMarked(initialConnexTile)) {
     return INVALID_TILE_ID;
   }
@@ -207,11 +225,14 @@ uint16_t map_Tile_GetPlaneID(TilePoint tile) {
 }
 
 void map_TileMap_FillPlaneIDs() {
-  const size_t count = planeMap.rowTileCount;
+  PMapData md = game_GetMapData();
+  TilePlaneMap *planeMap = md->planeMap;
+
+  const size_t count = planeMap->rowTileCount;
   uint16_t planeID = 0;
   for(size_t i = 0; i < count; i++) {
     for(size_t j = 0; j < count; j++) {
-      TileConnexStruct connexTile = planeMap.map[i][j];
+      TileConnexStruct connexTile = planeMap->map[i][j];
       if(connexTile.planeID == INVALID_TILE_ID) {
         continue;
       }
@@ -229,12 +250,7 @@ void map_ComputerConnexIslands() {
 }
 
 void map_Init() {
-  tiles.clear();
-  tiles = map_GetTiles();
+  map_FillTiles();
   map_ComputerConnexIslands();
-}
-
-void map_Delete() {
-  tiles.clear();
 }
 

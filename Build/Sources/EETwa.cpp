@@ -37,8 +37,6 @@ void eeTa_Clear() {
     unitPresence[i].clear();
   }
   tmrs_Delete(timers);
-  map_Delete();
-  // pls_ClearData();
 }
 
 unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence() {

@@ -18,7 +18,7 @@ void game_MapData_Init(PGame game) {
   game->mapData = (PMapData)malloc(sizeof(MapData));
   game->mapData->tiles = new vector<TileStruct>();
   game->mapData->planeMap = (TilePlaneMap *)malloc(sizeof(TilePlaneMap));
-  memset(&game->mapData->planeMap, 0, sizeof(TilePlaneMap));
+  memset(game->mapData->planeMap, 0, sizeof(TilePlaneMap));
 }
 
 PPlayerState game_GetPlayerState() {
@@ -44,6 +44,7 @@ void game_MapData_Delete(PGame game) {
   }
   delete game->mapData->tiles;
   free(game->mapData->planeMap);
+  game->mapData = NULL;
 }
 
 PGame game_Reference() {
