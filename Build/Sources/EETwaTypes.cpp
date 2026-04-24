@@ -1,3 +1,5 @@
+// deprecated
+
 #include "EETwaTypes.h"
 #include <unordered_map>
 

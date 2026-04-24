@@ -29,6 +29,17 @@ typedef struct EETypes_t {
   map<UnitType, UnitClassType> *parentsClass;
 } EETypes;
 
+typedef struct EETwa_t {
+  unordered_map<PVOID, uint8_t> *unitPresence[24];
+  int64_t frames;
+  int8_t all_players;
+  int8_t playerIndex;
+  int8_t neutralPlayer;
+  int8_t shouldCostBeReduced;
+  int8_t playerPresence[30];
+} EETwa;
+
+typedef EETwa *PEETwa;
 typedef EETypes *PEETypes;
 typedef MapData *PMapData;
 typedef PlayerState *PPlayerState;
