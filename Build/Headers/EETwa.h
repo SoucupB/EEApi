@@ -6,6 +6,7 @@
 #include "EETwaTypes.h"
 #include "Helpers.h"
 #include "TimerHelper.h"
+#include "EETypes.h"
 
 typedef struct Unit_t {
   PVOID _payload;
@@ -63,6 +64,7 @@ void eeTa_FilePrintf(const char *format, ...);
 void eeTa_Unit_Convert(Unit src, Unit dst);
 void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability);
 TilePoint eeTa_Unit_TilePosition(Unit unit);
+UnitType eeTa_EETypes_UnitType(Unit unit);
 
 uint8_t eeTa_ShouldOnInitExecute();
 

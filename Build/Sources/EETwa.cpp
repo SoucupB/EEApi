@@ -5,7 +5,6 @@
 #include "PlayerState.h"
 #include "MapData.h"
 #include "LibManager.h"
-#include "EETypes.h"
 #include "Game.h"
 
 static PTimerHelper timers;
@@ -370,6 +369,11 @@ void eeTa_OnInit() {
 UnitTypeDef eeTa_UnitType(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
   return (UnitTypeDef)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
+}
+
+UnitType eeTa_EETypes_UnitType(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
+  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
 }
 
 void eeTa_OnFrame() {

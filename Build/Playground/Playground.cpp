@@ -5,6 +5,7 @@
 #include "MethodsDefinitions.h"
 #include "Unit.h"
 #include "LibManager.h"
+#include "EETypes.h"
 #include <map>
 
 void test_PrintUnits();
@@ -65,14 +66,16 @@ void test_PrintUnits() {
   if(units.size()) {
     for(int32_t i = 0; i < units.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(units[i]);
-      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f)\n", units[i]._payload, eeTa_UnitType(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y);
+      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p\n", units[i]._payload, 
+                      eeTa_UnitType(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(units[i])));
     }
   }
   vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
   if(buildings.size()) {
     for(int32_t i = 0; i < buildings.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(buildings[i]);
-      eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f)\n", buildings[i]._payload, eeTa_UnitType(buildings[i]), eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y);
+      eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p\n", 
+                      buildings[i]._payload, eeTa_UnitType(buildings[i]), eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(buildings[i])));
     }
   }
 }
