@@ -946,3 +946,19 @@ Data + 0x1C
 
 It seems that [unit + 0x1C] is 0083C330 for human players.
 [unit + 0x1C] is 0083A57C for computer players.
+
+[unit + 80] and [unit + 94] and [unit + 1C8] are related to movement
+94 is the queue
+Address at might be interesting 005F8999.
+
+##### Back to casting spells.
+I need to create a B8
+then call 004BC6AC
+
+I need to create an address B4
+then call this shit 004BC787
+
+Calling this shit 004BC7BA sets the address for 1F0
+Calling this shit at 004BC7C5 sets the address for 1C8
+
+The setting the callamity workflow is between 004BC75A and 004BC787.

@@ -16,6 +16,10 @@ void replaceCoc(Unit unit, Point pos);
 Unit getProphet();
 Unit getPriest();
 void printAllUnitTypes();
+void queueCommand(PVOID unit, Point target, Ability ability);
+__declspec(dllexport) void createCapacityVector();
+
+PVOID createCalamityStruct(Point pos, Ability ability);
 
 // I think I find the water tile.
 void pulas() {
@@ -46,11 +50,12 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('P') & 0x8000) {
-    test_ConvertEnemy();
+    // test_ConvertEnemy();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {
-    randomChecker();
+    // randomChecker();
+    createCapacityVector();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -119,131 +124,6 @@ Unit getEnemyBuilding() {
   return eeTa_Unit_Null();
 }
 
-void printPositions() {
-  vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
-  for(size_t i = 0; i < units.size(); i++) {
-    Point pnt = eeTa_GetDestinationCommand(units[i]);
-    if(pnt.x != -1) {
-      eeTa_FilePrintf("Position for %p is X: %f, Y: %f\n", eeTa_Unit_Reference(units[i]), pnt.x, pnt.y);
-    }
-  }
-}
-
-uint8_t isUnitChar(char element) {
-  return isdigit(element) || isalpha(element);
-}
-
-uint8_t upperCase(char element) {
-  if(element >= 'a' && element <= 'z') {
-    return element - ('a' - 'A');
-  }
-  return element;
-}
-
-char *tokenizeUnitName(char *unitName) {
-  size_t cnt = strlen(unitName);
-  char *newChar = (char *)malloc(cnt);
-  size_t index = 0;
-  uint8_t lowerBar = 0;
-  for(size_t i = 0; i < cnt; i++) {
-    if(!i && isdigit(unitName[i])) {
-      newChar[index++] = 'A';
-      newChar[index++] = upperCase(unitName[i]);
-      lowerBar = 0;
-      continue;
-    }
-    if(isUnitChar(unitName[i])) {
-      newChar[index++] = upperCase(unitName[i]);
-      lowerBar = 0;
-      continue;
-    }
-    if(!lowerBar) {
-      lowerBar = 1;
-      newChar[index++] = '_';
-    }
-  }
-  newChar[index] = '\0';
-  return newChar;
-}
-
-char *getNumber(PVOID addr) {
-  return tokenizeUnitName((char *)*(size_t *)((size_t)addr + 0x1C));
-}
-
-size_t unitTypeID(PVOID addr) {
-  return *(size_t *)((size_t)addr + 0x1E4);
-}
-
-void createClasses(map<size_t, vector<size_t> > &unitsChecker) {
-  eeTa_FilePrintf("enum ClassTypeDef {\n");
-  for(auto &it : unitsChecker) {
-    eeTa_FilePrintf("  CLASS_%p,\n", (PVOID)it.first);
-  }
-  eeTa_FilePrintf("};\n\n");
-  eeTa_FilePrintf("map<ClassTypeDef, vector<UnitTypeDef> > classDefUnits = {\n");
-  for(auto &it : unitsChecker) {
-    eeTa_FilePrintf(" {CLASS_%p, {", (PVOID)it.first);
-    for(size_t i = 0; i < it.second.size(); i++) {
-      if(i != it.second.size() - 1) {
-        eeTa_FilePrintf("%s, ", getNumber((PVOID)it.second[i]));
-      }
-      else {
-        eeTa_FilePrintf("%s", getNumber((PVOID)it.second[i]));
-      }
-    }
-    eeTa_FilePrintf("}},\n");
-  }
-  eeTa_FilePrintf("};\n");
-}
-
-__declspec(dllexport) void printAllUnitTypes() {
-  size_t *startingPointer = (size_t *)((size_t)lib_BaseAddress() + 0x5636B0);
-  int32_t total = 10000;
-  eeTa_FilePrintf("enum UnitTypeDef {\n");
-  map<size_t, vector<size_t> > unitsClass;
-  vector< pair<char *, size_t> > unitTypes;
-  while(total--) {
-    uint8_t valid;
-    if(!builder_IsMemoryValid((PVOID)startingPointer)) {
-      continue;
-    }
-    size_t unitType = *(size_t *)startingPointer;
-    startingPointer++;
-    if(!unitType) {
-      continue;
-    }
-    size_t bufferSize = builder_BufferSize((PVOID)unitType, &valid);
-    if(!valid || bufferSize != 0x32C) {
-      continue;
-    }
-    int32_t type = unitTypeID((PVOID)unitType);
-    if(type != 0x186A0) {
-      // eeTa_FilePrintf("   %s = 0x%p,\n", getNumber((PVOID)unitType), type);
-      unitsClass[*(size_t *)unitType].push_back(unitType);
-      unitTypes.push_back(make_pair(getNumber((PVOID)unitType), type));
-    }
-  }
-  sort(unitTypes.begin(), unitTypes.end(), [](const std::pair<char*, size_t>& a, const std::pair<char*, size_t>& b) {
-    return strcmp(a.first, b.first) < 0;
-  });
-  for(size_t i = 0; i < unitTypes.size(); i++) {
-    eeTa_FilePrintf("   %s = 0x%p,\n", unitTypes[i].first, unitTypes[i].second);
-  }
-  eeTa_FilePrintf("};\n\n");
-  createClasses(unitsClass);
-}
-
-void test_ConvertEnemy() {
-  Unit priest = getPriest();
-  Unit enemy = getEnemy();
-  if(!eeTa_Unit_Reference(priest) || !eeTa_Unit_Reference(enemy)) {
-    eeTa_FilePrintf("Not found\n");
-    return ;
-  }
-  eeTa_Unit_Convert(priest, enemy);
-  eeTa_FilePrintf("Rombububico\n");
-}
-
 __declspec(dllexport) void randomChecker() {
   Unit priest = getProphet();
   if(!priest._payload) {
@@ -257,13 +137,70 @@ __declspec(dllexport) void randomChecker() {
   eeTa_FilePrintf("Moved\n");
 }
 
+PVOID createCalamityStruct(Point pos, Ability ability) {
+  PVOID calamityBuffer = help_New(0x24);
+  int32_t xPos = (int32_t)pos.x;
+  int32_t yPos = (int32_t)pos.y;
+
+  builder_FillValue(calamityBuffer, 0x0, (size_t)lib_BaseAddress() + 0x438B98);
+  builder_FillValue(calamityBuffer, 0x4, 2);
+  builder_FillValue(calamityBuffer, 0x8, 0xFEFF75);
+  builder_FillValue(calamityBuffer, 0xC, 2);
+  builder_FillValue(calamityBuffer, 0x10, 0x1000004);
+  builder_FillValue(calamityBuffer, 0x14, 0xFFFFFFFF);
+  builder_FillValue(calamityBuffer, 0x18, xPos);
+  builder_FillValue(calamityBuffer, 0x1C, yPos);
+  builder_FillValue(calamityBuffer, 0x20, ability);
+
+  return calamityBuffer;
+}
+
+void fillCalamityStruct(PVOID unit, PVOID calamityStruct, PVOID originalPointer) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
+  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(originalPointer, 
+         unit, 
+         0x0, 
+         (PVOID)*(size_t *)((size_t)calamityStruct + 0x18), 
+         (PVOID)*(size_t *)((size_t)calamityStruct + 0x1C),
+         (PVOID)*(size_t *)((size_t)calamityStruct + 0x20), 
+         (PVOID)0x1);
+}
+
+void addCommandToUnit(PVOID unit, PVOID calamityStruct) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
+  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(unit, calamityStruct, NULL, NULL);
+}
+
+void queueCommand(PVOID unit, Point target, Ability ability) {
+  PVOID pntTarget = help_New(0x34);
+  PVOID calamityStruct = createCalamityStruct(target, ability);
+  fillCalamityStruct(unit, calamityStruct, pntTarget);
+  addCommandToUnit(unit, pntTarget);
+}
+
+__declspec(dllexport) void createCapacityVector() {
+  // PVOID unitBuffer = help_New(0xB8);
+  Unit currentProphet = getProphet();
+  if(!eeTa_Unit_Reference(currentProphet)) {
+    return ;
+  }
+  Unit currentBuilding = getEnemyBuilding();
+  if(!eeTa_Unit_Reference(currentBuilding)) {
+    return ;
+  }
+  queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentProphet), PROPHET_EARTHQUAKE);
+  eeTa_FilePrintf("Postal card plm\n");
+}
+
 void bt_OnInit() {
   eeTa_FilePrintf("Changing at %p\n", (size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0xBB9D8);
 }
 
 void bt_OnFrame() {
   execDataPengus();
-  pls_OnInit((PVOID)onLosingHealth);
+  // pls_OnInit((PVOID)onLosingHealth);
 }
 
 void bt_OnUnitDestroy(Unit unit) {
