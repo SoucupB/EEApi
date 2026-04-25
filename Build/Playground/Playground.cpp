@@ -19,6 +19,7 @@ void printAllUnitTypes();
 void queueCommand(PVOID unit, Point target, Ability ability);
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
+__declspec(dllexport) void castHurricane();
 
 PVOID createCalamityStruct(Point pos, Ability ability);
 
@@ -62,7 +63,8 @@ void execDataPengus() {
   if(GetAsyncKeyState('T') & 0x8000) {
     // printAllTiles();
     // printAllUnitTypes();
-    castMalaria();
+    // castMalaria();
+    castHurricane();
     Beep (300, 250);
   }
 }
@@ -121,6 +123,22 @@ Unit getEnemyBuilding() {
   for(size_t i = 0; i < buildings.size(); i++) {
     if(eeTa_Player(buildings[i]) != eeTa_SelfPlayer()) {
       return buildings[i];
+    }
+  }
+  return eeTa_Unit_Null();
+}
+
+uint8_t navalAttackFilter(Unit unit) {
+  UnitType def = eeTa_EETypes_UnitType(unit);
+  return eeTypes_IsWaterUnit(def);
+}
+
+Unit getEnemyShip() {
+  vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
+  vector<Unit> filteredUnits = eeTa_Filter(units, navalAttackFilter);
+  for(size_t i = 0; i < filteredUnits.size(); i++) {
+    if(eeTa_Player(filteredUnits[i]) != eeTa_SelfPlayer()) {
+      return filteredUnits[i];
     }
   }
   return eeTa_Unit_Null();
@@ -216,6 +234,20 @@ __declspec(dllexport) void castMalaria() {
   }
   // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
   unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
+  eeTa_FilePrintf("Some ability\n");
+}
+
+__declspec(dllexport) void castHurricane() {
+  Unit currentProphet = getProphet();
+  if(!eeTa_Unit_Reference(currentProphet)) {
+    return ;
+  }
+  // Unit currentenemy = getEnemyShip();
+  Unit currentenemy = getEnemy();
+  if(!eeTa_Unit_Reference(currentenemy)) {
+    return ;
+  }
+  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_TORNADO);
   eeTa_FilePrintf("Some ability\n");
 }
 

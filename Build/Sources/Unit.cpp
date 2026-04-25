@@ -85,6 +85,8 @@ uint16_t unit_GetPlaneID(Unit unit) {
   return map_Tile_GetPlaneID(unit_Tile_Position(unit));
 }
 
+// This method does not check whether it can cast things,
+// Need to fix this.
 void unit_CastAbility(Unit unit, Point target, Ability ability) {
   helper_CastAbility(unit_Reference(unit), target, ability);
 }
