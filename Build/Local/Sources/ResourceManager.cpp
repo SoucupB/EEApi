@@ -20,7 +20,6 @@ void fishTheFishes(PVOID fishBoat) {
   if(!unit._payload) {
     return ;
   }
-
   help_MoveToTarget(fishBoat, unit._payload);
 }
 

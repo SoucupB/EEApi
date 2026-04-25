@@ -2,16 +2,13 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <Windows.h>
+#include "Geometry.h"
 #include "InjectUtilities.h"
-#include "EETwaTypes.h"
 #include "Helpers.h"
 #include "TimerHelper.h"
+#include "EETypes.h"
 
-typedef struct Unit_t {
-  PVOID _payload;
-} Unit;
-
-vector<PVOID> eeTa_Buildings(int8_t player);
+vector<Unit> eeTa_Buildings(int8_t player);
 vector<PVOID> eeTa_UnitTypes(Unit building);
 void __cdecl eeTa_OnUnitFrame(Unit unit);
 vector<Unit> eeTa_Units(int8_t player);
@@ -24,8 +21,11 @@ int64_t eeTa_CurrentFrame();
 int8_t eeTa_IsBuilding(Unit unit);
 void eeTa_OnUnitDeath(Unit unit);
 int8_t eeTa_Player(Unit unit);
-UnitTypeDef eeTa_UnitType(Unit unit);
+UnitType eeTa_UnitType(Unit unit);
 int32_t eeTa_CurrentHp(Unit unit);
+Unit eeTa_Unit_Null();
+PVOID eeTa_Unit_Reference(Unit unit);
+void eeTa_MoveTo(Unit src, Unit dst);
 int8_t eeTa_IsUnitDead(Unit unit);
 int8_t eeTa_IsUnit(Unit unit);
 void eeTa_Printf(const char *format, ...);
@@ -56,5 +56,13 @@ int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double));
 int8_t eeTa_PlayerCount();
 int8_t *eeTa_PlayerIDs(); // 30 elements max
 int8_t eeTa_PlayerIndex(); // needs to be fixed.
+void eeTa_FilePrintf(const char *format, ...);
+void eeTa_Unit_Convert(Unit src, Unit dst);
+void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability);
+TilePoint eeTa_Unit_TilePosition(Unit unit);
+UnitType eeTa_EETypes_UnitType(Unit unit);
 
 uint8_t eeTa_ShouldOnInitExecute();
+
+uint8_t eeTa_Tile_IsWater(TilePoint self);
+void eeTa_Map_PrintBitMap();

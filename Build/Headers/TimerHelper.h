@@ -20,4 +20,5 @@ typedef TimerHelper *PTimerHelper;
 PTimerHelper tmr_Init();
 uint64_t tmr_Milliseconds();
 void tmrs_AddMethod(PTimerHelper self, TimeAtom atom);
+void tmrs_Delete(PTimerHelper self);
 void tmr_OnFrame(PTimerHelper self);

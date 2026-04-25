@@ -1,13 +1,23 @@
 #include "Helpers.h"
 #include <iostream>
 #include "EETwa.h"
-#include "EETwaTypes.h"
 #include <unordered_map>
 #include <stdint.h>
 #include <Windows.h>
-#include "EETwaTypes.h"
+#include "MethodsDefinitions.h"
+#include "Helpers.h"
+#include "LibManager.h"
+#include "EETypes.h"
+#include "Geometry.h"
 
 #define ACTION_BUFFER_SIZE 0xB8
+
+using namespace std;
+
+typedef struct TileStruct_t {
+  PVOID ref;
+  TilePoint tile;
+} TileStruct;
 
 typedef struct MoveAction_t {
   PVOID methodsBundle; // 0x0
@@ -46,20 +56,23 @@ typedef struct ActionBuffer_t {
   uint8_t validAddress;
 } ActionBuffer;
 
-PVOID __thiscall help_FillSelectedUnits(PVOID self, size_t _a, size_t _b, size_t _c);
 PVOID __fastcall help_SearchUnits(PVOID self);
 MoveAction *help_GetAction(PVOID parent, Point pos, UnitAction action);
 void __cdecl help_Delete(PVOID pointer);
 PVOID __thiscall help_Checker_4C2A3C(PVOID self, PVOID _1, PVOID _2, PVOID _3);
+void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit);
+void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst);
+PVOID __fastcall helper_ConvertUnit(PVOID movingStructure);
+void helper_CastPoint(PVOID unit, Point target, Ability ability);
 
-static unordered_map<PVOID, size_t> memoryMap;
+static unordered_map<PVOID, size_t> memoryMap; // No need this into the general pointer
 
 void help_FillData_NonAir(PVOID buffer);
 void help_FillData_Air(PVOID buffer);
 MoveActionUnit *help_GetActionUnit(PVOID parent, PVOID unit);
 
 PVOID __cdecl help_New(size_t size) {
-  PVOID __cdecl (*method)(size_t) = (PVOID __cdecl (*)(size_t)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x29D178);
+  PVOID __cdecl (*method)(size_t) = (PVOID __cdecl (*)(size_t)) ((uint8_t *)lib_BaseAddress() + 0x29D178);
   PVOID response = method(size);
   if(!response) {
     return NULL;
@@ -68,9 +81,93 @@ PVOID __cdecl help_New(size_t size) {
   return response;
 }
 
+void helper_Convert_FillConstants(PVOID mem, PVOID currentUnit) {
+  PVOID unitBuffer = help_New(0x8);
+  builder_FillValue(unitBuffer, 0x0, (size_t)currentUnit);
+  builder_FillValue(mem, 0x4, 0x2);
+  builder_FillValue(mem, 0x1C, 0x1);
+  builder_FillValue(mem, 0x24, (size_t)unitBuffer);
+  builder_FillValue(mem, 0x28, (size_t)unitBuffer + 0x4);
+  builder_FillValue(mem, 0x2C, (size_t)unitBuffer + 0x4);
+  builder_FillValue(mem, 0x38, 0x23C04);
+  builder_FillValue(mem, 0x70, 0x3F000000);
+  builder_FillValue(mem, 0x74, 0x3F000000);
+  builder_FillValue(mem, 0x78, 0x3F000000);
+  builder_FillValue(mem, 0x7C, 0x400E38E4);
+  builder_FillValue(mem, 0x80, 0x400E38E4);
+  builder_FillValue(mem, 0x84, 0x400E38E4);
+  builder_FillValue(mem, 0x88, 0x41783980);
+  builder_FillValue(mem, 0x8C, 0x41783980);
+  builder_FillValue(mem, 0x90, 0x41783980);
+  builder_FillValue(mem, 0x94, 0x41593251);
+  builder_FillValue(mem, 0x98, 0x41593251);
+  builder_FillValue(mem, 0x9C, 0x41593251);
+  builder_FillValue(mem, 0xA0, 0x40000000);
+  builder_FillValue(mem, 0xA4, 0x3EE66666);
+  builder_FillValue(mem, 0xA8, 0x3D84026D);
+  builder_FillValue(mem, 0xAC, 0x3D96DE33);
+}
+
+void helper_Convert(PVOID src, PVOID dst) {
+  PVOID actionMove = help_New(0xB8);
+  PVOID secondary = help_New(0x44);
+  memset(actionMove, 0x0, 0xB8);
+  memset(secondary, 0x0, 0x44);
+  helper_Convert_Fill(actionMove, secondary, src);
+  builder_FillValue(actionMove, 0x68, (size_t)secondary);
+  helper_Convert_Secondary(secondary, src, dst);
+  builder_FillValue(actionMove, 0x6C, (size_t)0x7D1);
+  helper_ConvertUnit(actionMove);
+}
+
+void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst) {
+  PVOID classNameRef = (PVOID)((size_t)lib_BaseAddress() + (size_t)0x447380);
+  builder_FillValue(unitAction, 0x0, (size_t)classNameRef);
+  builder_FillValue(unitAction, 0x4, 0x201);
+  builder_FillValue(unitAction, 0x8, 0x1388);
+  builder_FillValue(unitAction, 0x10, 0x5FE);
+  builder_FillValue(unitAction, 0x14, 0x3);
+  builder_FillValue(unitAction, 0x1C, 0x1);
+  builder_FillValue(unitAction, 0x20, 0x424A0000);
+  builder_FillValue(unitAction, 0x24, 0x424A0000);
+  builder_FillValue(unitAction, 0x2C, (size_t)src);
+  builder_FillValue(unitAction, 0x30, (size_t)dst);
+  builder_FillValue(unitAction, 0x34, 0x32);
+  builder_FillValue(unitAction, 0x38, 0x31);
+}
+
+PVOID helper_FindSuperClass_BB884() {
+  PVOID hModule = lib_BaseAddress();
+  PVOID param = (PVOID)((size_t)hModule + (size_t)0x530D40);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x139670);
+  return method(param, (PVOID)0xFE);
+}
+
+PVOID helper_Fill_BB8FD(PVOID moveAction, PVOID baseClass) {
+  PVOID hModule = lib_BaseAddress();
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x1EBC86);
+  return method(moveAction, baseClass);
+}
+
+void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit) {
+  PVOID baseAddres = helper_FindSuperClass_BB884();
+  helper_Fill_BB8FD(mem, baseAddres);
+  helper_Convert_FillConstants(mem, unit);
+}
+
+PVOID __fastcall helper_ConvertUnit(PVOID movingStructure) {
+  PVOID hModule = lib_BaseAddress();
+  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)hModule + 0x1EDCC0);
+  return method(movingStructure);
+}
+
 void __cdecl help_Delete(PVOID pointer) {
-  PVOID __cdecl (*method)(PVOID) = (PVOID __cdecl (*)(PVOID)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x29D150);
+  PVOID __cdecl (*method)(PVOID) = (PVOID __cdecl (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x29D150);
   method(pointer);
+}
+
+void help_Convert(PVOID src, PVOID dst) {
+
 }
 
 string help_DisplayDiff(PVOID src, PVOID dst, size_t sz) {
@@ -91,24 +188,6 @@ PVOID _snapshot(PVOID self, size_t sz) {
   PVOID buffer = malloc(sz);
   memcpy(buffer, self, sz);
   return buffer;
-}
-
-void cleanSlate(PVOID self) {
-  memset((PVOID)((size_t)self + 0x70), 0, 0x3C);
-}
-
-PVOID __thiscall help_FillSelectedUnits(PVOID self, size_t _a, size_t _b, size_t _c) {
-  PVOID __thiscall (*method)(PVOID, size_t, size_t, size_t) = (PVOID __thiscall (*)(PVOID, size_t, size_t, size_t)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x1ED9D4);
-  size_t bufferSize = 0xB8;
-  PVOID deepCopy = _snapshot(self, bufferSize);
-  PVOID rsp = method(self, _a, _b, _c);
-  // if(_c == 1) {
-  //   // cleanSlate(self);
-  //   string response = help_DisplayDiff(self, deepCopy, bufferSize);
-  //   eeTa_Printf("Pengus call %p %p %p %p -> \n%s", self, _a, _b, _c, &response[0]);
-  // }
-  free(deepCopy);
-  return rsp;
 }
 
 string searchDiffs(PVOID self) {
@@ -169,43 +248,106 @@ string searchDiffsDracu(PVOID self) {
 
 void help_SetActionPointerTset(PVOID self, Point pos, UnitAction action) {
   MoveAction *actionPointer = help_GetAction(self, pos, action);
-  // memcpy(actionPointer, (PVOID)(*(uint32_t *)((size_t)self + 0x68)), 0x38);
-  // actionPointer->angle = (float)0xC02730BD;
   memcpy((PVOID)((size_t)self + 0x68), &actionPointer, sizeof(PVOID));
 }
 
+void helper_ReplaceOrder(PVOID unit, Point target, Ability ability) {
+  PVOID unitBuffer = help_New(0x34);
+  int32_t valX = (int32_t)target.x;
+  int32_t valY = (int32_t)target.y;
+  builder_FillValue(unitBuffer, 0x0, 0x44748C + (size_t)lib_BaseAddress());
+  builder_FillValue(unitBuffer, 0x4, 2817);
+  builder_FillValue(unitBuffer, 0x8, 5000);
+  builder_FillValue(unitBuffer, 0xc, 0x10235);
+  builder_FillValue(unitBuffer, 0x10, 0x39ED);
+  builder_FillValue(unitBuffer, 0x14, 4);
+  builder_FillValue(unitBuffer, 0x18, 2);
+  builder_FillValue(unitBuffer, 0x1C, 257);
+  builder_FillValue(unitBuffer, 0x20, (size_t)unit);
+  builder_FillValue(unitBuffer, 0x24, 0);
+  builder_FillValue(unitBuffer, 0x28, valX);
+  builder_FillValue(unitBuffer, 0x2C, valY);
+  builder_FillValue(unitBuffer, 0x30, ability);
+  memcpy((PVOID)((size_t)unit + 0x1EC), &unitBuffer, sizeof(size_t));
+  memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
+}
+
+void helper_CastPoint(PVOID unit, Point target, Ability ability) {
+  help_UnitMove(unit, target, UNIT_ATTACK);
+  helper_ReplaceOrder(unit, target, ability);
+}
+
+
+
+void helper_ReplaceECOrder(PVOID unit, Point target, Ability ability) {
+  PVOID unitBuffer = help_New(0x34);
+  builder_FillValue(unitBuffer, 0x0, 0x44748C + (size_t)lib_BaseAddress());
+  builder_FillValue(unitBuffer, 0x4, 2817);
+  builder_FillValue(unitBuffer, 0x8, 8000);
+  builder_FillValue(unitBuffer, 0xc, 0x0);
+  builder_FillValue(unitBuffer, 0x10, 0xA5CB);
+  builder_FillValue(unitBuffer, 0x14, 4);
+  builder_FillValue(unitBuffer, 0x18, 2);
+  builder_FillValue(unitBuffer, 0x1C, 0x101);
+  builder_FillValue(unitBuffer, 0x20, (size_t)unit);
+  builder_FillValue(unitBuffer, 0x24, 0);
+  builder_FillValue(unitBuffer, 0x28, 32);
+  builder_FillValue(unitBuffer, 0x2C, 38);
+  builder_FillValue(unitBuffer, 0x30, ability);
+  memcpy((PVOID)((size_t)unit + 0x1EC), &unitBuffer, sizeof(size_t));
+  // memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
+}
+
+void helper_ReplaceF0Order(PVOID unit, Point target, Ability ability) {
+  PVOID unitBuffer = help_New(0x38);
+  float valX = (float)(int32_t)target.x + 0.5f;
+  float valY = (float)(int32_t)target.y + 0.5f;
+  builder_FillValue(unitBuffer, 0x0, 0x4478A0 + (size_t)lib_BaseAddress());
+  builder_FillValue(unitBuffer, 0x4, 0x101);
+  builder_FillValue(unitBuffer, 0x8, 5000);
+  builder_FillValue(unitBuffer, 0xc, 0x1A0B1);
+  builder_FillValue(unitBuffer, 0x10, 0x19980);
+  builder_FillValue(unitBuffer, 0x14, 0x13);
+  builder_FillValue(unitBuffer, 0x18, 1);
+  builder_FillValue(unitBuffer, 0x1C, 0x1);
+  builder_FillValue(unitBuffer, 0x20, valX);
+  builder_FillValue(unitBuffer, 0x24, valY);
+  builder_FillValue(unitBuffer, 0x28, 0);
+  builder_FillValue(unitBuffer, 0x2C, 0);
+  builder_FillValue(unitBuffer, 0x30, 0x00010001);
+  builder_FillValue(unitBuffer, 0x34, 0);
+  memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
+  // memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
+}
+
+__declspec(dllexport) void helper_CastPointInTesting(PVOID unit, Point target, Ability ability) {
+  help_UnitMove(unit, target, UNIT_ATTACK);
+  helper_ReplaceECOrder(unit, target, ability);
+  helper_ReplaceF0Order(unit, target, ability);
+}
+
+
 
 __declspec(dllexport)  PVOID __fastcall help_SearchUnits(PVOID self) {
-  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)GetModuleHandleA("EE-AOC.exe") + 0x1EDCC0);
-  string response;
-  // addPositionDiff((PVOID)(*(uint32_t *)((size_t)self + 0x68)), response, 0x44);
-  // string s = searchDiffsDracu((PVOID)(*(uint32_t *)((size_t)self + 0x68)));
-  // addPositionDiff(self, response, 0xB8);
-  // // help_Delete((PVOID)((size_t)self + 0x68));
-  // // changeSelectedUnits(self, eeTa_Unit_Sample(eeTa_SelfPlayer()));
-  // help_SetActionPointerTset(self, (Point) {
-  //   .x = 50.5f,
-  //   .y = 1500.5f
-  // }, UNIT_MOVE);
-  PVOID caller = method(self);
-  return caller;
+  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EDCC0);
+  return method(self);
 }
 
 PVOID help_Const_x14_Value() {
-  int32_t *value = (int32_t *)util_Pointer(GetModuleHandleA("EE-AOC.exe"), 0x564480, INT32_T_TYPE);
+  int32_t *value = (int32_t *)util_Pointer(lib_BaseAddress(), 0x564480, INT32_T_TYPE);
   (*value) += 1;
   return (PVOID)*value;
 }
 
 PVOID help_Const_x10_Value() {
-  PVOID addressAt = util_Pointer(GetModuleHandleA("EE-AOC.exe"), 0x5318F0, POINTER_TYPE);
+  PVOID addressAt = util_Pointer(lib_BaseAddress(), 0x5318F0, POINTER_TYPE);
 
   return util_Pointer(addressAt, 0xD0, POINTER_TYPE);
 }
 
 MoveAction *help_GetAction(PVOID parent, Point pos, UnitAction action) {
   MoveAction *self = (MoveAction *)help_New(sizeof(MoveAction));
-  self->methodsBundle = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + 0x4478A0); // 8478A0
+  self->methodsBundle = (PVOID)((size_t)lib_BaseAddress() + 0x4478A0);
   self->_const_1 = (PVOID)0x101;
   self->_known_Const = (PVOID)0x1388;
   self->_const_4 = help_Const_x10_Value();
@@ -220,7 +362,7 @@ MoveAction *help_GetAction(PVOID parent, Point pos, UnitAction action) {
 }
 
 void __fastcall help_FillMetaParameters(PVOID tempStruct) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
+  PVOID basePointer = lib_BaseAddress();
   PVOID generalStruct = util_Pointer(basePointer, 0x530DB8, POINTER_TYPE);
   int8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int8_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)basePointer + 0x1EBC86);
   method(tempStruct, generalStruct, generalStruct);
@@ -237,41 +379,29 @@ void help_AddConvertMagicFlag(ActionBuffer self) {
 }
 
 void help_RunMethod_4C2AAD(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  int8_t __fastcall (*method)(PVOID) = (int8_t __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0x1EDAC5);
+  int8_t __fastcall (*method)(PVOID) = (int8_t __fastcall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EDAC5);
   method(self);
 }
 
 void help_RunMethod_4C2A67(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0x1EF56D);
+  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EF56D);
   method(self);
 }
 
 void help_RunMethod_4BB02A(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0xBB02A);
+  PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0xBB02A);
   method(self);
 }
 
 void help_RunMethod_4C2A60(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
+  PVOID basePointer = lib_BaseAddress();
   PVOID generalStruct = util_Pointer(basePointer, 0x530DB8, POINTER_TYPE);
   PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0xC8F99);
   method(&self);
 }
 
-// void help_RunMethod_4C2A60(PVOID self) {
-//   PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-//   PVOID generalStruct = util_Pointer(basePointer, 0x530DB8, POINTER_TYPE);
-//   PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)basePointer + 0xC8F99);
-//   method(&self);
-// }
-
-// Test method
 PVOID __thiscall help_Checker_4C2A3C(PVOID self, PVOID _1, PVOID _2, PVOID _3) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)basePointer + 0x1ED9D4);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1ED9D4);
   return method(self, _1, _2, _3);
 }
 
@@ -280,8 +410,7 @@ void help_SetPlayerActionPointer(PVOID unit, PVOID self) {
 }
 
 int32_t help_DerefChecker(PVOID self) {
-  PVOID basePointer = GetModuleHandleA("EE-AOC.exe");
-  PVOID derefStruct = util_Pointer(basePointer, 0x0, POINTER_TYPE);
+  PVOID derefStruct = util_Pointer(lib_BaseAddress(), 0x0, POINTER_TYPE);
   PVOID callerStruct = util_Pointer(derefStruct, 0x18, POINTER_TYPE);
   int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callerStruct);
 
@@ -296,44 +425,48 @@ int32_t help_DerefCounter(PVOID ecx) {
   return method(ecx);
 }
 
+PVOID help_GetMapPointer() {
+  PVOID basePointer = (PVOID)((size_t)lib_BaseAddress() + (size_t)0x530DFC);
+  return (PVOID)*(size_t *)basePointer;
+}
+
+size_t help_Map_TileCount(PVOID mapPointer) {
+  return *(size_t *)((size_t)mapPointer + 0x195618);
+}
+
+PVOID help_Map_TilePointer(PVOID mapPointer) {
+  return (PVOID)*(size_t *)((size_t)mapPointer + 0x1955F0);
+}
+
+vector<TileStruct> help_Map_GetTiles() {
+  vector<TileStruct> response;
+  PVOID mapPointer = help_GetMapPointer();
+  size_t count = help_Map_TileCount(mapPointer);
+  PVOID tileRef = help_Map_TilePointer(mapPointer);
+  for(size_t i = 0; i < count; i++) {
+    for(size_t j = 0; j < count; j++) {
+      size_t currentTile = *(size_t *)((size_t)tileRef + (count * i + j) * 4);
+      if(currentTile) {
+        response.push_back((TileStruct) {
+          .ref = (PVOID)currentTile,
+          .tile = (TilePoint) {
+            .x = (int32_t)j,
+            .y = (int32_t)i
+          }
+        });
+      }
+    }
+  }
+  return response;
+}
+
 int32_t derefPointer(PVOID ecx) {
-  PVOID methodsAddress = GetModuleHandleA("EE-AOC.exe") + 0x4371A8;
+  PVOID methodsAddress = (PVOID)((size_t)lib_BaseAddress() + 0x4371A8);
   PVOID methodsBundle = util_Pointer(methodsAddress, 0x0, POINTER_TYPE);
   int32_t (*method)(PVOID) = (int32_t (*)(PVOID)) ((uint8_t *)methodsBundle);
 
   return method(ecx);
 }
-
-// __declspec(dllexport) ActionBuffer help_ActionBuffer(PVOID unit, Point point, UnitAction action) {
-//   ActionBuffer self = {0};
-//   self.validAddress = 1;
-//   for(int32_t i = 1; i <= 6; i++) {
-//     self.buffer = (uint8_t *)help_New(ACTION_BUFFER_SIZE);
-//     if(!self.buffer) {
-//       self.validAddress = 0;
-//       return self;
-//     }
-//     help_FillMetaParameters(self.buffer);
-//     if(!changeSelectedUnits(self.buffer, unit)) {
-//       help_Delete(self.buffer);
-//       self.validAddress = 0;
-//       return self;
-//     }
-//     if(help_DerefCounter(self.buffer) <= 0) {
-//       derefPointer(self.buffer);
-//       continue;
-//     }
-//     // help_RunMethod_4C2A60(self.buffer);
-//     help_RunMethod_4C2A67(self.buffer);
-//     help_RunMethod_4C2AAD(self.buffer);
-//     help_RunMethod_4BB02A(self.buffer);
-//     help_AddMagicFlag(self);
-//     help_SetActionPointer(self.buffer, point, action);
-//     return self;
-//   }
-//   // help_SetPlayerActionPointer(unit, self.buffer);
-//   return self;
-// }
 
 void help_ActionBuffer(PVOID unit, Point point, UnitAction action) {
   ActionBuffer self = {0};
@@ -361,21 +494,11 @@ void help_ActionBuffer(PVOID unit, Point point, UnitAction action) {
   // help_SetPlayerActionPointer(unit, self.buffer);
 }
 
-void printString(PVOID buffer) {
-  string s = searchDiffs(buffer);
-  eeTa_Printf("Pengus mengus \n%s\n", &s[0]);
-}
-
 void help_UnitMove(PVOID unit, Point point, UnitAction currentAction) {
   if(!unit) {
     return ;
   }
   help_ActionBuffer(unit, point, currentAction);
-  // ActionBuffer action = help_ActionBuffer(unit, point, currentAction);
-  // if(!action.validAddress) {
-  //   return ;
-  // }
-  // help_SearchUnits(action.buffer);
 }
 
 void help_FillData_NonAir(PVOID buffer) {
@@ -433,7 +556,7 @@ void help_FillData_Air(PVOID buffer) {
 MoveActionUnit *help_GetActionUnit(PVOID parent, PVOID unit) {
   Point pos = eeTa_CurrentPosition((Unit) {._payload = unit});
   MoveActionUnit *self = (MoveActionUnit *)help_New(0x44);
-  self->methodsBundle = (PVOID)((size_t)GetModuleHandleA("EE-AOC.exe") + 0x4475A8); // 8478A0
+  self->methodsBundle = (PVOID)((size_t)lib_BaseAddress() + 0x4475A8); // 8478A0
   self->_const_1 = (PVOID)0x601;
   self->_known_Const = (PVOID)0x1388;
   self->_const_4 = help_Const_x10_Value();
@@ -500,4 +623,81 @@ void __cdecl help_ConvertTarget(PVOID unit, PVOID target) {
     help_SetActionPointerUnit(self.buffer, target);
     help_SearchUnits(self.buffer);
   }
+}
+
+void help_MoveSecondMethod(PVOID unit, Point target) {
+  // just for testing, not good enough.
+  PVOID unitBuffer = help_New(0x38);
+  float orientation = -1.93f;
+  size_t xPos = *((size_t *)&target.x);
+  size_t yPos = *((size_t *)&target.y);
+  size_t orientantionInteger = *((size_t *)&orientation);
+
+  builder_FillValue(unitBuffer, 0x0, 0x008478A0);
+  builder_FillValue(unitBuffer, 0x4, 257);
+  builder_FillValue(unitBuffer, 0x8, 5000);
+  builder_FillValue(unitBuffer, 0xc, 1101130);
+  builder_FillValue(unitBuffer, 0x10, 1101130);
+  builder_FillValue(unitBuffer, 0x14, 64);
+  builder_FillValue(unitBuffer, 0x18, 1);
+  builder_FillValue(unitBuffer, 0x1C, 257);
+  builder_FillValue(unitBuffer, 0x20, xPos);
+  builder_FillValue(unitBuffer, 0x24, yPos);
+  builder_FillValue(unitBuffer, 0x28, 0);
+  builder_FillValue(unitBuffer, 0x2C, orientantionInteger);
+  builder_FillValue(unitBuffer, 0x30, 257);
+  builder_FillValue(unitBuffer, 0x34, 3);
+  memcpy((PVOID)((size_t)unit + 0x1EC), &unitBuffer, sizeof(size_t));
+  memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
+}
+
+PVOID helper_CreateCalamityStruct(Point pos, Ability ability) {
+  PVOID calamityBuffer = help_New(0x24);
+  int32_t xPos = (int32_t)pos.x;
+  int32_t yPos = (int32_t)pos.y;
+
+  builder_FillValue(calamityBuffer, 0x0, (size_t)lib_BaseAddress() + 0x438B98);
+  builder_FillValue(calamityBuffer, 0x4, 2);
+  builder_FillValue(calamityBuffer, 0x8, 0xFEFF75);
+  builder_FillValue(calamityBuffer, 0xC, 2);
+  builder_FillValue(calamityBuffer, 0x10, 0x1000004);
+  builder_FillValue(calamityBuffer, 0x14, 0xFFFFFFFF);
+  builder_FillValue(calamityBuffer, 0x18, xPos);
+  builder_FillValue(calamityBuffer, 0x1C, yPos);
+  builder_FillValue(calamityBuffer, 0x20, ability);
+
+  return calamityBuffer;
+}
+
+void helper_FillCalamityStruct(PVOID unit, PVOID calamityStruct, PVOID originalPointer) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
+  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(originalPointer, 
+         unit, 
+         0x0, 
+         (PVOID)*(size_t *)((size_t)calamityStruct + 0x18), 
+         (PVOID)*(size_t *)((size_t)calamityStruct + 0x1C),
+         (PVOID)*(size_t *)((size_t)calamityStruct + 0x20), 
+         (PVOID)0x1);
+}
+
+void helper_AddCommandToUnit(PVOID unit, PVOID calamityStruct) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
+  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(unit, calamityStruct, NULL, NULL);
+}
+
+void helper_UnknownMethod4BC7AF(PVOID unit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
+  void __thiscall (*method)(PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(unit, 
+         (PVOID)0x1F40);
+}
+
+void helper_CastAbility(PVOID unit, Point target, Ability ability) {
+  PVOID pntTarget = help_New(0x34);
+  PVOID calamityStruct = helper_CreateCalamityStruct(target, ability);
+  helper_FillCalamityStruct(unit, calamityStruct, pntTarget);
+  helper_AddCommandToUnit(unit, pntTarget);
+  helper_UnknownMethod4BC7AF(unit); // This is the method which makes the unit move.
 }

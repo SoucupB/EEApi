@@ -2,6 +2,7 @@
 #include <cmath>
 #include <float.h>
 #include <iterator>
+#include "EETwa.h"
 
 float distancef(Point a, Point b) {
   return fabs(a.x - b.x) + fabs(a.y - b.y);

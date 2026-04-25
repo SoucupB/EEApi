@@ -1,13 +1,23 @@
 #include "EETwa.h"
 #include <unordered_map>
 #include <vector>
+#include <stdarg.h>
 #include "PlayerState.h"
+#include "MapData.h"
+#include "LibManager.h"
+#include "Game.h"
 
 static PTimerHelper timers;
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
-void onFrame();
+void bt_OnFrame();
+
+void eeta_FileClean();
+void eeTa_RebuildDTs();
+
+vector<TileStruct> help_Map_GetTiles();
+vector<TileStruct> map_GetTilesArray();
 
 using namespace std;
 static unordered_map<PVOID, uint8_t> unitPresence[24];
@@ -17,12 +27,38 @@ static int8_t playerIndex = 1;
 static int8_t neutralPlayer = 0;
 static int8_t shouldCostBeReduced = 0;
 static int8_t playerPresence[30];
-__declspec(dllexport) char outputBuffer[2048];
 
-void eeTa_Clean() {
+void eeTypes_Clean();
+
+void eeTa_Clear() {
+  eeTypes_Clean();
   for(uint8_t i = 0; i < 24; i++) {
     unitPresence[i].clear();
   }
+  tmrs_Delete(timers);
+}
+
+unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence() {
+  return unitPresence;
+}
+
+void eeTa_RebuildExtraDataStructure() {
+  eeTa_Clear();
+  eeTa_RebuildDTs();
+}
+
+void eeTa_MoveTo(Unit src, Unit dst) {
+  help_MoveToTarget(eeTa_Unit_Reference(src), eeTa_Unit_Reference(dst));
+}
+
+Unit eeTa_Unit_Null() {
+  return (Unit) {
+    ._payload = NULL
+  };
+}
+
+PVOID eeTa_Unit_Reference(Unit unit) {
+  return unit._payload;
 }
 
 uint8_t eeTa_NeutralPlayer() {
@@ -34,17 +70,6 @@ uint8_t eeTa_IsNeutral(Unit unit) {
 }
 
 // Money pointer is at ["EE-AOC.exe"+530DB8 + 0xAFC]
-
-void eeTa_Printf(const char *format, ...) {
-  memset(outputBuffer, 0, sizeof(outputBuffer));
-  va_list args;
-  va_start(args, format);
-  int32_t neededSize = vsnprintf(NULL, 0, format, args) + 1;
-  va_end(args);
-  va_start(args, format);
-  vsnprintf(outputBuffer, neededSize, format, args);
-  va_end(args);
-}
 
 void __cdecl eeTa_OnUnitFrame(Unit unit) {
   int8_t playerTeam = eeTa_Player(unit);
@@ -65,6 +90,41 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
 
 int8_t eeTa_AllPlayers() {
   return all_players;
+}
+
+void eeTa_Map_Init() {
+  map_Init();
+}
+
+void eeTa_Map_PrintBitMap() {
+  size_t mapSizeInTiles;
+  char **map = map_GetBitMap(&mapSizeInTiles);
+  for(size_t i = 0; i < mapSizeInTiles; i++) {
+    for(size_t j = 0; j < mapSizeInTiles; j++) {
+      eeTa_FilePrintf("%d", map[i][j]);
+    }
+    eeTa_FilePrintf("\n");
+  }
+  map_BitMapDelete(map, mapSizeInTiles);
+}
+
+void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability) {
+  helper_CastPoint(eeTa_Unit_Reference(src), target, ability);
+}
+
+void eeTa_Unit_Convert(Unit src, Unit dst) {
+  if(!eeTypes_IsPriest(eeTa_UnitType(src))) {
+    return ;
+  }
+  if(eeTa_IsBuilding(dst) || eeTa_IsUnitDead(dst)) {
+    return ;
+  }
+  helper_Convert(eeTa_Unit_Reference(src), eeTa_Unit_Reference(dst));
+}
+
+uint8_t eeTa_CurrentEnergy(Unit unit) {
+  uint8_t *energyPointer = (uint8_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x2D4, INT8_T_TYPE);
+  return *energyPointer;
 }
 
 vector<Unit> eeTa_Units(int8_t player) {
@@ -91,14 +151,10 @@ void __cdecl eeTa_OnUnitDeath(Unit unit) {
 }
 
 void eeTa_BuildUnit(Unit building, PVOID unitType) {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return ;
-  }
   if(eeTa_CurrentPopulation() > eeTa_TotalPop()) {
     return ;
   }
-  int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)hModule + 0x1F5F97);
+  int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1F5F97);
   shouldCostBeReduced = 1;
   method(building._payload, unitType, 0);
   shouldCostBeReduced = 0;
@@ -114,21 +170,12 @@ int32_t eeTa_UnitPopulation(Unit unit) {
 }
 
 PVOID eeTa_GetPlayer() {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return NULL;
-  }
-  return util_Pointer(hModule, 0x530DB8, POINTER_TYPE);
+  return util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
 }
 
 int32_t eeTa_CurrentPopulation() {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return -1;
-  }
-  PVOID unitTypeStruct = util_Pointer(hModule, 0x530DB8, POINTER_TYPE);
+  PVOID unitTypeStruct = util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
   int32_t *unitPop = (int32_t *)util_Pointer(unitTypeStruct, 0xB14, INT32_T_TYPE);
-  
   return *unitPop;
 }
 
@@ -140,11 +187,7 @@ int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double)) {
 }
 
 int8_t eeTa_AreAllies(uint8_t plySrc, uint8_t plyDst) {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return 0;
-  }
-  PVOID _1 = util_Pointer(hModule, 0x530DB4 + 0x4 * plySrc, POINTER_TYPE);
+  PVOID _1 = util_Pointer(lib_BaseAddress(), 0x530DB4 + 0x4 * plySrc, POINTER_TYPE);
   if(!_1) {
     return 0;
   }
@@ -154,11 +197,7 @@ int8_t eeTa_AreAllies(uint8_t plySrc, uint8_t plyDst) {
 }
 
 void eeTa_SetCvCAggression(uint8_t botIndex, float aggression) {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return ;
-  }
-  PVOID _1 = util_Pointer(hModule, 0x530DB4 + 0x4 * botIndex, POINTER_TYPE);
+  PVOID _1 = util_Pointer(lib_BaseAddress(), 0x530DB4 + 0x4 * botIndex, POINTER_TYPE);
   if(!_1) {
     return ;
   }
@@ -177,11 +216,7 @@ vector<Unit> eeTa_Filter(vector<Unit> &units, uint8_t (*method)(Unit)) {
 }
 
 int32_t eeTa_TotalPop() {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return -1;
-  }
-  PVOID unitTypeStruct = util_Pointer(hModule, 0x530DB8, POINTER_TYPE);
+  PVOID unitTypeStruct = util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
   PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
   PVOID popMethod = util_Pointer(callerMethods, 0x7C, POINTER_TYPE);
   int32_t __fastcall (*method)(PVOID, PVOID, PVOID) = (int32_t __fastcall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)popMethod);
@@ -189,15 +224,14 @@ int32_t eeTa_TotalPop() {
   return method(unitTypeStruct, NULL, NULL);
 }
 
-vector<PVOID> eeTa_Buildings(int8_t player) {
-  vector<PVOID> buildingsPointer;
+vector<Unit> eeTa_Buildings(int8_t player) {
+  vector<Unit> buildingsPointer;
   for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead((Unit) {
+    Unit currentUnit = (Unit) {
       ._payload = it.first
-    }) && eeTa_IsBuilding((Unit) {
-      ._payload = it.first
-    })) {
-      buildingsPointer.push_back(it.first);
+    };
+    if(!eeTa_IsUnitDead(currentUnit) && eeTa_IsBuilding(currentUnit)) {
+      buildingsPointer.push_back(currentUnit);
     }
   }
   return buildingsPointer;
@@ -205,6 +239,23 @@ vector<PVOID> eeTa_Buildings(int8_t player) {
 
 int8_t eeTa_IsIdle(Unit building) {
   return eeTa_CurrentlyBuilding(building) == IDLE;
+}
+
+void eeta_FileClean() {
+  FILE* f = fopen("EETWa.log", "w");
+  fclose(f);
+}
+
+void eeTa_FilePrintf(const char *format, ...) {
+  FILE* f = fopen("EETWa.log", "a");
+  if (!f) return;
+
+  va_list args;
+  va_start(args, format);
+  vfprintf(f, format, args);
+  va_end(args);
+
+  fclose(f);
 }
 
 vector<Unit> eeTa_IdleBuildings(int8_t player) {
@@ -236,24 +287,16 @@ vector<PVOID> eeTa_UnitTypes(Unit building) {
 }
 
 PVOID _eeTa_EpochStruct(PVOID building, PVOID unitType) {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return NULL;
-  }
   size_t *buildingMetaData = (size_t *)util_Pointer((PVOID)building, 0x18, POINTER_TYPE);
   size_t *epochStruct = (size_t *)util_Pointer((PVOID)buildingMetaData, 0x9CC, POINTER_TYPE);
-  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x18A4);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x18A4);
 
   return method((PVOID)epochStruct, unitType);
 }
 
 int32_t eeTa_Buildables(Unit unit) {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return 0;
-  }
   size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x196DFF);
+  int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x196DFF);
   return method(typeMetaPointer);
 }
 
@@ -307,18 +350,30 @@ int8_t eeTa_PlayerCount() {
   return total;
 }
 
-void eeTa_OnInit() {
-  eeTypes_OnInit();
+void eeTa_RebuildDTs() {
+  game_Init();
+  eeta_FileClean();
+  eeTypes_InitUnits();
   timers = tmr_Init();
+}
+
+void eeTa_OnInit() {
+  eeTa_Map_Init();
   bt_OnInit();
 }
 
-UnitTypeDef eeTa_UnitType(Unit unit) {
+UnitType eeTa_UnitType(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  return (UnitTypeDef)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
+  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
+}
+
+UnitType eeTa_EETypes_UnitType(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
+  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
 }
 
 void eeTa_OnFrame() {
+  bt_OnFrame();
   tmr_OnFrame(timers);
   frames++;
 }
@@ -331,7 +386,7 @@ int8_t eeTa_IsBuilding(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
   size_t *callerStruct = (size_t *)util_Pointer((PVOID)unitMetaData[0], 0xB8, POINTER_TYPE);
 
-  return (size_t)callerStruct == (size_t)GetModuleHandleA("EE-AOC.exe") + 0x20FD9D;
+  return (size_t)callerStruct == (size_t)lib_BaseAddress() + 0x20FD9D;
 }
 
 PVOID eeTa_CreateDestionationPointer() {
@@ -365,6 +420,15 @@ Point eeTa_GetDestinationCommand(Unit unit) {
   return (Point) {
     .x = positionPointer[0],
     .y = positionPointer[1]
+  };
+}
+
+TilePoint eeTa_Unit_TilePosition(Unit unit) {
+  int32_t x = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x1C, INT32_T_TYPE);
+  int32_t y = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x20, INT32_T_TYPE);
+  return (TilePoint) {
+    .x = x,
+    .y = y
   };
 }
 
@@ -407,11 +471,7 @@ PVOID eeTa_Unit_Sample(int8_t player) {
 }
 
 int8_t eeTa_PlayerIndex() {
-  HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-  if(!hModule) {
-    return 0;
-  }
-  return *(int8_t *)util_Pointer(hModule, 0x5318C4, POINTER_TYPE);
+  return *(int8_t *)util_Pointer(lib_BaseAddress(), 0x5318C4, POINTER_TYPE);
 }
 
 uint8_t eeTa_ShouldOnInitExecute() {
@@ -421,4 +481,8 @@ uint8_t eeTa_ShouldOnInitExecute() {
 int8_t eeTa_Player(Unit unit) {
   PVOID nextStruct = util_Pointer((PVOID)unit._payload, 0x18, POINTER_TYPE);
   return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
+}
+
+uint8_t eeTa_Tile_IsWater(TilePoint self) {
+  return map_Tile_IsWater(self);
 }

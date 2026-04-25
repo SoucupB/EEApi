@@ -1,7 +1,15 @@
 #pragma once
-#include "EETwa.h"
-#include "EETwaTypes.h"
-#include "InjectUtilities.h"
+#include "EETypes.h"
+
+typedef struct Point_t {
+  float x;
+  float y;
+} Point;
+
+typedef struct TilePoint_t {
+  int32_t x;
+  int32_t y;
+} TilePoint;
 
 typedef struct Circle_t {
   Point p;

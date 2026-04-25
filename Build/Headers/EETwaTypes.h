@@ -1,3 +1,5 @@
+// Deprecated.
+
 #pragma once
 #include <stdint.h>
 
@@ -6,9 +8,20 @@ typedef struct Point_t {
   float y;
 } Point;
 
+typedef struct TilePoint_t {
+  int32_t x;
+  int32_t y;
+} TilePoint;
+
 enum UnitAction {
   UNIT_MOVE = 0x101,
   UNIT_ATTACK = 0x100
+};
+
+enum Ability {
+  PROPHET_EARTHQUAKE = 0x3FA,
+  PROPHET_MALARIA = 0x3F8,
+  PROPHET_TORNADO = 0x3FE
 };
 
 enum UnitTypeDef {
@@ -17,6 +30,7 @@ enum UnitTypeDef {
   UNIT_MALE_CITIZEN = 0x432,
   CAPITOL = 0x41D,
   TOWN_CENTER = 0x401,
+  HURRICANE = 0x186A0,
 
   UNIT_PREHISTORIC_ROCK_THROWER = 0x3ED,
   UNIT_PREHISTORIC_CLUBMAN = 0x431,

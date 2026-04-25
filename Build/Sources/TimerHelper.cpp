@@ -18,6 +18,14 @@ void tmrs_Execute(TimeAtom *atom) {
   method(atom->arguments);
 }
 
+void tmrs_Delete(PTimerHelper self) {
+  if(!self) {
+    return ;
+  }
+  self->fractures->clear();
+  free(self);
+}
+
 void tmrs_OnFrame(TimeAtom *atom) {
   uint64_t currentTime = tmr_Milliseconds();
   if(currentTime - atom->_lastCheckedTime >= atom->time) {

@@ -739,3 +739,226 @@ The method that calls the 005EDCC0 convert method is at 004BB9DB.
 The method that iterates through units is at 5540DC
 
 00838F18 Is the method that executes when a priest wants to convert.
+
+64187D happends only once I try to convert, idk.
+
+
+The method at 005EDCC0 is called for conversion as well
+but not from the same source. (Converting is 4BB9DB);
+
+
+Address 00000000, value: 00846CF8 // Don't care
+Address 00000004, value: 00000002 // Don't care
+Address 00000008, value: 00002525 // Don't care
+Address 0000000C, value: 2564DE80 // Don't care
+Address 00000010, value: 00000000
+Address 00000014, value: 00002525 // Don't care
+Address 00000018, value: 2564DF80 // Don't care
+Address 0000001C, value: 00000001
+Address 00000020, value: 00000025 // Don't care
+Address 00000024, value: 1D8A73D8
+Address 00000028, value: 1D8A73DC
+Address 0000002C, value: 1D8A73DC
+Address 00000030, value: 25495AD8 // Don't care
+Address 00000034, value: 1C767B10 // Don't care
+Address 00000038, value: 00023C04
+Address 0000003C, value: 00002525 // Don't care
+Address 00000040, value: 1CB708D8 // Don't care
+Address 00000044, value: 00000000
+Address 00000048, value: 00000025 // Don't care
+Address 0000004C, value: 00000000
+Address 00000050, value: 00000000
+Address 00000054, value: 00000000
+Address 00000058, value: 00000025 // Don't care
+Address 0000005C, value: 00000000
+Address 00000060, value: 00000000
+Address 00000064, value: 00000000
+Address 00000068, value: 258257E0
+Address 0000006C, value: 000007D1 // Don't care
+Address 00000070, value: 3F000000
+Address 00000074, value: 3F000000
+Address 00000078, value: 3F000000 // Don't care
+Address 0000007C, value: 400E38E4
+Address 00000080, value: 400E38E4
+Address 00000084, value: 400E38E4 // Don't care
+Address 00000088, value: 41783980
+Address 0000008C, value: 41783980
+Address 00000090, value: 41783980 // Don't care
+Address 00000094, value: 41593251
+Address 00000098, value: 41593251
+Address 0000009C, value: 41593251 // Don't care
+Address 000000A0, value: 40000000
+Address 000000A4, value: 3EE66666
+Address 000000A8, value: 3D84026D
+Address 000000AC, value: 3D96DE33
+Address 000000B0, value: 40000000 // Don't care
+Address 000000B4, value: 00000000
+
+For ref 25737B60 size is 000000B8, arr size is 0000002E
+Equal at 00000000 - 00846CF8 - 00846CF8
+Difference at 00000004 then: 00000001, now: 00000002
+Equal at 00000008 - 00001C1C - 00001C1C
+Equal at 0000000C - 25E86550 - 25E86550
+Equal at 00000010 - 00000000 - 00000000
+Equal at 00000014 - 00001C1C - 00001C1C
+Equal at 00000018 - 25E86790 - 25E86790
+Difference at 0000001C then: 00000000, now: 00000001
+Equal at 00000020 - 0000001C - 0000001C
+Difference at 00000024 then: 00000000, now: 2549C368
+Difference at 00000028 then: 00000000, now: 2549C36C
+Difference at 0000002C then: 00000000, now: 2549C36C
+Equal at 00000030 - 1CB98DA8 - 1CB98DA8
+Difference at 00000034 then: 1C976158, now: 1C6DAD78
+Difference at 00000038 then: 00000000, now: 00023C04
+Equal at 0000003C - 00001C1C - 00001C1C
+Equal at 00000040 - 1C7EC0E0 - 1C7EC0E0
+Equal at 00000044 - 00000000 - 00000000
+Equal at 00000048 - 0000001C - 0000001C
+Equal at 0000004C - 00000000 - 00000000
+Equal at 00000050 - 00000000 - 00000000
+Equal at 00000054 - 00000000 - 00000000
+Equal at 00000058 - 0000001C - 0000001C
+Equal at 0000005C - 00000000 - 00000000
+Equal at 00000060 - 00000000 - 00000000
+Equal at 00000064 - 00000000 - 00000000
+Equal at 00000068 - 00000000 - 00000000
+Equal at 0000006C - 00001388 - 00001388
+Difference at 00000070 then: 00000000, now: 3F000000
+Difference at 00000074 then: 00000000, now: 3F000000
+Difference at 00000078 then: 7F7FFFFF, now: 3F000000
+Difference at 0000007C then: 00000000, now: 400E38E4
+Difference at 00000080 then: 00000000, now: 400E38E4
+Difference at 00000084 then: 7F7FFFFF, now: 400E38E4
+Difference at 00000088 then: 00000000, now: 41783980
+Difference at 0000008C then: 00000000, now: 41783980
+Difference at 00000090 then: 7F7FFFFF, now: 41783980
+Difference at 00000094 then: 00000000, now: 41593251
+Difference at 00000098 then: 00000000, now: 41593251
+Difference at 0000009C then: 7F7FFFFF, now: 41593251
+Difference at 000000A0 then: 00000000, now: 40000000
+Difference at 000000A4 then: 00000000, now: 3EE66666
+Difference at 000000A8 then: 00000000, now: 3D84026D
+Difference at 000000AC then: 00000000, now: 3D96DE33
+Equal at 000000B0 - 40000000 - 40000000
+Equal at 000000B4 - 00000000 - 00000000
+
+
+004BC744 is a method which checks the energy of the unit.
+004BC483 is the method which gets called for the ability.
+
+005537BA might be usefull.
+
+At 004B8F10 The priest casting the ability is in [EDI + 58]
+
+
+00620C0C is where the energy is set.
+
+004BC483 is the method that if I return, abilities will not be casted
+by the prophet.
+
+
+The method that creates the address here 004BC696 is the same NEW which
+creates the order to create a move command.
+At 004BC696 [esp + 2C] is probably the ability ID
+ID:3 is for earthquake
+ID:8 is for malarya.
+
+#### Some ability progress.
+At 004BC4FA the ability is held in [esi + 20] Modify this value to change
+the current ability.
+3FA earthquake.
+3F8 malaria.
+3FE Tornado.
+
+At 004BC483 there is ECX register. This register holds the information 
+about the ability which should be casted.
+[ECX + 20] is the ability
+3FA earthquake.
+3F8 malaria.
+3FE Tornado.
+
+This method is also interesting 005537BA.
+005537AC is the copy method which will copy the data.
+
+Need to study this method 004BC6AC more
+Probably check where the prophet is and where the caller is.
+
+The structure seems to be same like before but more retarted.
+Now, the 0xB8 buffer gets set very late in the process for some reason
+
+both 
+[buffer + 0x24] gets set to a pointer
+[buffer + 0x28] gets set to the last pointer of the Array
+[buffer + 0x2C] same as above.
+
+[unit + 1EC] controlls what ability does (fck, idk what to do with this).
+Re-aproach this with the method at 005FE9E8.
+
+########### Check areas and point index.
+The move command is 004C281C <- 004C2AD2.
+
+
+This method at 0060DD2D is used when a unit is moving. Caller 0062BA35
+
+
+02B93209 Some poly method
+02B93209
+0051C5CA Some method for checking the polygon closest tile
+##################################
+# Pressing T, reveal the tiles.  #
+##################################
+
+Tiles have ID's most likely from the method here.
+0051C5CA
+02AAA5AF
+
+GetTile Method
+AddTilePolys This method actually is called when I hover over water.
+Interesting.
+
+InitializePlanes can be used when the game is loaded. 00522AF9
+
+Unit Tile at [unitPointer + 0x14].
+It changes once the unit moves to another tile, lol
+[unitPointer + 1C] is the X point of the tile.
+[unitPointer + 20] is the Y point of the tile.
+[unitPointer + 18] is for humar player stuff
+
+[[unitPointer + 0x2C] + 0x1C] String, the name of the unit.
+[[unitPointer + 0x30] + 0x0] 4 bytes, the parent of the unit.
+[unitPointer + 0x34] is the unit class upgrade
+[[unitPointer + 0x18] + 0x28] is the player name of the unit.
+
+This method at 00629AC3 is executed when the unit is ordered to move
+This sets the current tile to the unit. Tile objext size is 0x28.
+005FE671 might pe intresting.
+00629B61 executes only once.
+#################################################
+The tile index is here calculated here 00629CCB.
+#################################################
+The addresses at 00930DFC (530DFC) has the tiles pointers.
+Its held in a matrix. [MapPointer + 0xAC] I think holds triangles.
+
+810 elements for the vector array
+
+Data + 0x1C
+[unit + 0x2C] might be the unit class.
+
+It seems that [unit + 0x1C] is 0083C330 for human players.
+[unit + 0x1C] is 0083A57C for computer players.
+
+[unit + 80] and [unit + 94] and [unit + 1C8] are related to movement
+94 is the queue
+Address at might be interesting 005F8999.
+
+##### Back to casting spells.
+I need to create a B8
+then call 004BC6AC
+
+I need to create an address B4
+then call this shit 004BC787
+
+Calling this shit 004BC7BA sets the address for 1F0
+Calling this shit at 004BC7C5 sets the address for 1C8
+
+The setting the callamity workflow is between 004BC75A and 004BC787.

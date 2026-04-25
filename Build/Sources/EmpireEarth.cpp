@@ -3,19 +3,19 @@
 #include <Windows.h>
 #include "InjectUtilities.h"
 #include "MethodsDefinitions.h"
-// #include "BotLogic.h"
+#include "LibManager.h"
 #include "EETwa.h"
 #include "Helpers.h"
 
 static uint8_t onInitFlag = 0;
+static size_t mapPolygons;
+void eeTa_RebuildExtraDataStructure();
+void eeTa_RebuildDTs();
+void rebuildDataStructures();
 
 extern "C" {
   __declspec(dllexport) int32_t __thiscall onUnitIteration(PVOID self) {
-    HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-    if(!hModule) {
-      return 0;
-    }
-    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x1540DC);
+    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1540DC);
     eeTa_OnUnitFrame((Unit) {
       ._payload = self
     });
@@ -23,11 +23,7 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t __thiscall onFrame(PVOID self) {
-    HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-    if(!hModule) {
-      return 0;
-    }
-    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x15401E);
+    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x15401E);
     if(!onInitFlag) {
       if(!eeTa_ShouldOnInitExecute()) {
         return method(self);
@@ -35,17 +31,12 @@ extern "C" {
       eeTa_OnInit();
       onInitFlag = 1;
     }
-    // bt_OnFrame();
     eeTa_OnFrame();
     return method(self);
   }
 
   __declspec(dllexport) int32_t __thiscall onUnitDeath(PVOID self, PVOID _a, PVOID _b, PVOID _c) {
-    HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-    if(!hModule) {
-      return 0;
-    }
-    int32_t __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)hModule + 0x22975A);
+    int32_t __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x22975A);
     eeTa_OnUnitDeath((Unit) {
       ._payload = self
     });
@@ -53,11 +44,7 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t __thiscall onPlanePark(PVOID self) {
-    HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-    if(!hModule) {
-      return 0;
-    }
-    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)hModule + 0x1FDAF3);
+    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1FDAF3);
     eeTa_OnUnitDeath((Unit) {
       ._payload = self
     });
@@ -65,11 +52,7 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t __fastcall onUnitDelete(PVOID self) {
-    HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-    if(!hModule) {
-      return 0;
-    }
-    int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)hModule + 0x1DB4);
+    int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1DB4);
     eeTa_OnUnitDeath((Unit) {
       ._payload = self
     });
@@ -77,13 +60,27 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t onUnitBuy(long double multiplier) {
-    HMODULE hModule = GetModuleHandleA("EE-AOC.exe");
-    if(!hModule) {
-      return 0;
-    }
-    int32_t (*method)(long double) = (int32_t (*)(long double)) ((uint8_t *)hModule + 0x148291);
+    int32_t (*method)(long double) = (int32_t (*)(long double)) ((uint8_t *)lib_BaseAddress() + 0x148291);
     return eeTa_OnUnitBuy(multiplier, method);
   }
+
+  __declspec(dllexport) int32_t __thiscall onGameStart(PVOID self, PVOID _a, PVOID _b) {
+    rebuildDataStructures();
+    int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)mapPolygons);
+    return method(self, _a, _b);
+  }
+}
+
+void rebuildDataStructures() {
+  onInitFlag = 0;
+  eeTa_RebuildExtraDataStructure();
+}
+
+void setMapStart() {
+  size_t *methodPointer = (size_t *)((size_t)(lib_BaseAddress()) + 0x437924);
+  builder_AllowRules(methodPointer, sizeof(size_t) * 2);
+  mapPolygons = *methodPointer;
+  *methodPointer = (size_t)onGameStart;
 }
 
 void addBotMethodsHooks() {
@@ -92,8 +89,14 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)0x13B8CF, (PVOID)onUnitDelete);
   builder_Definition((PVOID)0x1F5E09, (PVOID)onPlanePark);
   builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
+  builder_ReplaceMMUMethods();
+  setMapStart();
 }
 
 extern "C"  __declspec(dllexport) void __cdecl someDllMain() {
+  if(!lib_IsLoaded()) {
+    exit(0xC0000135); // libs DLL not found
+  }
+
   addBotMethodsHooks();
 }
