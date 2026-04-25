@@ -650,3 +650,54 @@ void help_MoveSecondMethod(PVOID unit, Point target) {
   memcpy((PVOID)((size_t)unit + 0x1EC), &unitBuffer, sizeof(size_t));
   memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
 }
+
+PVOID helper_CreateCalamityStruct(Point pos, Ability ability) {
+  PVOID calamityBuffer = help_New(0x24);
+  int32_t xPos = (int32_t)pos.x;
+  int32_t yPos = (int32_t)pos.y;
+
+  builder_FillValue(calamityBuffer, 0x0, (size_t)lib_BaseAddress() + 0x438B98);
+  builder_FillValue(calamityBuffer, 0x4, 2);
+  builder_FillValue(calamityBuffer, 0x8, 0xFEFF75);
+  builder_FillValue(calamityBuffer, 0xC, 2);
+  builder_FillValue(calamityBuffer, 0x10, 0x1000004);
+  builder_FillValue(calamityBuffer, 0x14, 0xFFFFFFFF);
+  builder_FillValue(calamityBuffer, 0x18, xPos);
+  builder_FillValue(calamityBuffer, 0x1C, yPos);
+  builder_FillValue(calamityBuffer, 0x20, ability);
+
+  return calamityBuffer;
+}
+
+void helper_FillCalamityStruct(PVOID unit, PVOID calamityStruct, PVOID originalPointer) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
+  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(originalPointer, 
+         unit, 
+         0x0, 
+         (PVOID)*(size_t *)((size_t)calamityStruct + 0x18), 
+         (PVOID)*(size_t *)((size_t)calamityStruct + 0x1C),
+         (PVOID)*(size_t *)((size_t)calamityStruct + 0x20), 
+         (PVOID)0x1);
+}
+
+void helper_AddCommandToUnit(PVOID unit, PVOID calamityStruct) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
+  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(unit, calamityStruct, NULL, NULL);
+}
+
+void helper_UnknownMethod4BC7AF(PVOID unit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
+  void __thiscall (*method)(PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(unit, 
+         (PVOID)0x1F40);
+}
+
+void helper_CastAbility(PVOID unit, Point target, Ability ability) {
+  PVOID pntTarget = help_New(0x34);
+  PVOID calamityStruct = helper_CreateCalamityStruct(target, ability);
+  helper_FillCalamityStruct(unit, calamityStruct, pntTarget);
+  helper_AddCommandToUnit(unit, pntTarget);
+  helper_UnknownMethod4BC7AF(unit); // This is the method which makes the unit move.
+}

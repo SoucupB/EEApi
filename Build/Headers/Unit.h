@@ -10,3 +10,4 @@ int32_t unit_CurrentlyBuilding(Unit building);
 int8_t unit_IsBuilding(Unit unit);
 TilePoint unit_Tile_Position(Unit unit);
 uint16_t unit_GetPlaneID(Unit unit);
+void unit_CastAbility(Unit unit, Point target, Ability ability);

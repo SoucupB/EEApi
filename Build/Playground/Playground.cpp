@@ -200,8 +200,9 @@ __declspec(dllexport) void castEarthquake() {
   if(!eeTa_Unit_Reference(currentBuilding)) {
     return ;
   }
-  queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
-  eeTa_FilePrintf("Postal card plm\n");
+  // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
+  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
+  eeTa_FilePrintf("Some ability\n");
 }
 
 __declspec(dllexport) void castMalaria() {
@@ -213,8 +214,9 @@ __declspec(dllexport) void castMalaria() {
   if(!eeTa_Unit_Reference(currentenemy)) {
     return ;
   }
-  queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
-  eeTa_FilePrintf("Postal card plm\n");
+  // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
+  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
+  eeTa_FilePrintf("Some ability\n");
 }
 
 void bt_OnInit() {

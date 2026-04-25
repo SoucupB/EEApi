@@ -15,3 +15,4 @@ void help_MoveSecondMethod(PVOID unit, Point target);
 PVOID help_GetMapPointer();
 size_t help_Map_TileCount(PVOID mapPointer);
 PVOID help_Map_TilePointer(PVOID mapPointer);
+void helper_CastAbility(PVOID unit, Point target, Ability ability);

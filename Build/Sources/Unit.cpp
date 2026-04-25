@@ -77,6 +77,14 @@ TilePoint unit_Tile_Position(Unit unit) {
   };
 }
 
+PVOID unit_Reference(Unit unit) {
+  return unit._payload;
+}
+
 uint16_t unit_GetPlaneID(Unit unit) {
   return map_Tile_GetPlaneID(unit_Tile_Position(unit));
+}
+
+void unit_CastAbility(Unit unit, Point target, Ability ability) {
+  helper_CastAbility(unit_Reference(unit), target, ability);
 }
