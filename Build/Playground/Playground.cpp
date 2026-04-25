@@ -17,7 +17,8 @@ Unit getProphet();
 Unit getPriest();
 void printAllUnitTypes();
 void queueCommand(PVOID unit, Point target, Ability ability);
-__declspec(dllexport) void createCapacityVector();
+__declspec(dllexport) void castEarthquake();
+__declspec(dllexport) void castMalaria();
 
 PVOID createCalamityStruct(Point pos, Ability ability);
 
@@ -55,12 +56,13 @@ void execDataPengus() {
   }
   if(GetAsyncKeyState('F') & 0x8000) {
     // randomChecker();
-    createCapacityVector();
+    castEarthquake();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
     // printAllTiles();
     // printAllUnitTypes();
+    castMalaria();
     Beep (300, 250);
   }
 }
@@ -173,15 +175,23 @@ void addCommandToUnit(PVOID unit, PVOID calamityStruct) {
   method(unit, calamityStruct, NULL, NULL);
 }
 
+void unknownMethod4BC7AF(PVOID unit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
+  void __thiscall (*method)(PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(unit, 
+         (PVOID)0x1F40);
+}
+
 void queueCommand(PVOID unit, Point target, Ability ability) {
   PVOID pntTarget = help_New(0x34);
   PVOID calamityStruct = createCalamityStruct(target, ability);
   fillCalamityStruct(unit, calamityStruct, pntTarget);
   addCommandToUnit(unit, pntTarget);
+  unknownMethod4BC7AF(unit); // This is the method which makes the unit move.
 }
 
-__declspec(dllexport) void createCapacityVector() {
-  // PVOID unitBuffer = help_New(0xB8);
+// This method works YEEY, but it might contain memory leaks or access violations.
+__declspec(dllexport) void castEarthquake() {
   Unit currentProphet = getProphet();
   if(!eeTa_Unit_Reference(currentProphet)) {
     return ;
@@ -190,7 +200,20 @@ __declspec(dllexport) void createCapacityVector() {
   if(!eeTa_Unit_Reference(currentBuilding)) {
     return ;
   }
-  queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentProphet), PROPHET_EARTHQUAKE);
+  queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
+  eeTa_FilePrintf("Postal card plm\n");
+}
+
+__declspec(dllexport) void castMalaria() {
+  Unit currentProphet = getProphet();
+  if(!eeTa_Unit_Reference(currentProphet)) {
+    return ;
+  }
+  Unit currentenemy = getEnemy();
+  if(!eeTa_Unit_Reference(currentenemy)) {
+    return ;
+  }
+  queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
   eeTa_FilePrintf("Postal card plm\n");
 }
 
