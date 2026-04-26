@@ -425,41 +425,6 @@ int32_t help_DerefCounter(PVOID ecx) {
   return method(ecx);
 }
 
-PVOID help_GetMapPointer() {
-  PVOID basePointer = (PVOID)((size_t)lib_BaseAddress() + (size_t)0x530DFC);
-  return (PVOID)*(size_t *)basePointer;
-}
-
-size_t help_Map_TileCount(PVOID mapPointer) {
-  return *(size_t *)((size_t)mapPointer + 0x195618);
-}
-
-PVOID help_Map_TilePointer(PVOID mapPointer) {
-  return (PVOID)*(size_t *)((size_t)mapPointer + 0x1955F0);
-}
-
-vector<TileStruct> help_Map_GetTiles() {
-  vector<TileStruct> response;
-  PVOID mapPointer = help_GetMapPointer();
-  size_t count = help_Map_TileCount(mapPointer);
-  PVOID tileRef = help_Map_TilePointer(mapPointer);
-  for(size_t i = 0; i < count; i++) {
-    for(size_t j = 0; j < count; j++) {
-      size_t currentTile = *(size_t *)((size_t)tileRef + (count * i + j) * 4);
-      if(currentTile) {
-        response.push_back((TileStruct) {
-          .ref = (PVOID)currentTile,
-          .tile = (TilePoint) {
-            .x = (int32_t)j,
-            .y = (int32_t)i
-          }
-        });
-      }
-    }
-  }
-  return response;
-}
-
 int32_t derefPointer(PVOID ecx) {
   PVOID methodsAddress = (PVOID)((size_t)lib_BaseAddress() + 0x4371A8);
   PVOID methodsBundle = util_Pointer(methodsAddress, 0x0, POINTER_TYPE);

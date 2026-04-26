@@ -16,7 +16,6 @@ void bt_OnFrame();
 void eeta_FileClean();
 void eeTa_RebuildDTs();
 
-vector<TileStruct> help_Map_GetTiles();
 vector<TileStruct> map_GetTilesArray();
 
 using namespace std;
