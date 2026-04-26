@@ -525,3 +525,4 @@ uint8_t eeTypes_IsAirUnit(UnitType unitType);
 uint8_t eeTypes_CanProduceWorkers(UnitType type);
 
 UnitClassType eeTypes_UnitClass(UnitType unitType);
+uint8_t eeTypes_IsBuilding(UnitType unitType);

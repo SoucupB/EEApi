@@ -108,3 +108,9 @@ uint8_t eeTypes_IsAirUnit(UnitType unitType) {
 uint8_t eeTypes_CanProduceWorkers(UnitType unitType) {
   return unitType == B_TOWN_CENTER || unitType == B_CAPITOL;
 }
+
+uint8_t eeTypes_IsBuilding(UnitType unitType) {
+  return eeTypes_IsFromClass(CLASS_BUILDINGS, unitType) ||
+         eeTypes_IsFromClass(CLASS_TELEPORTER_FORTRESS, unitType) ||
+         eeTypes_IsFromClass(CLASS_SPECIAL_BUILDING, unitType);
+}
