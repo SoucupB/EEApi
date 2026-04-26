@@ -85,8 +85,26 @@ uint16_t unit_GetPlaneID(Unit unit) {
   return map_Tile_GetPlaneID(unit_Tile_Position(unit));
 }
 
+uint8_t unit_ProphetAbility_CanCast(Unit unit, Point target, Ability ability) {
+  if(ability == PROPHET_TORNADO && !map_Tile_IsWater(geom_Tile_FromPoint(target))) {
+    return 0;
+  }
+  return 1;
+}
+
+uint8_t unit_IsSpellValid(Unit unit, Point target, Ability ability) {
+  if(eeTa_UnitType(unit) == PROPHET) {
+    return unit_ProphetAbility_CanCast(unit, target, ability);
+  }
+
+  return 1;
+}
+
 // This method does not check whether it can cast things,
 // Need to fix this.
 void unit_CastAbility(Unit unit, Point target, Ability ability) {
+  if(!unit_IsSpellValid(unit, target, ability)) {
+    return ;
+  }
   helper_CastAbility(unit_Reference(unit), target, ability);
 }

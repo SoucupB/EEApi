@@ -121,7 +121,7 @@ Unit getEnemy() {
 Unit getEnemyBuilding() {
   vector<Unit> buildings = eeTa_Buildings(eeTa_AllPlayers());
   for(size_t i = 0; i < buildings.size(); i++) {
-    if(eeTa_Player(buildings[i]) != eeTa_SelfPlayer()) {
+    if(eeTa_Player(buildings[i]) != eeTa_SelfPlayer() && eeTa_UnitType(buildings[i]) == B_TEMPLE) {
       return buildings[i];
     }
   }

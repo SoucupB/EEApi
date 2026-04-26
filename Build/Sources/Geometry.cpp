@@ -35,3 +35,10 @@ Unit geom_GetClosestUnitFrom(Unit unit, int8_t player, uint8_t (*filter)(Unit)) 
 uint8_t geom_IsPointInCircle(Point p, Circle c) {
   return distanceEuclidf(p, c.p) <= c.radius;
 }
+
+TilePoint geom_Tile_FromPoint(Point target) {
+  return (TilePoint) {
+    .x = (int32_t)target.x,
+    .y = (int32_t)target.y
+  };
+}
