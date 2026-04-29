@@ -978,3 +978,9 @@ Create a 5C pointer
 call 0061E164. (With params) at 0060D1E7
 Call the method at 0060D1F7 after that.
 Call the method at 0060D203.
+
+
+For gathering stuff we can use the methods at
+005EDFD7.
+005EE0A5.
+I should pay attention to this method 004BF1B2.
