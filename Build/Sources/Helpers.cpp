@@ -666,3 +666,49 @@ void helper_CastAbility(PVOID unit, Point target, Ability ability) {
   helper_AddCommandToUnit(unit, pntTarget);
   helper_UnknownMethod4BC7AF(unit); // This is the method which makes the unit move.
 }
+
+PVOID helper_Unit_GetPlayer(PVOID player) {
+  size_t *buffer = (size_t *)((size_t)player + 0x18);
+  return (PVOID)*buffer;
+}
+
+PVOID helper_Method61E164(PVOID buffer, PVOID building, PVOID player) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x21E164);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(buffer,
+         player, 
+         building,
+        (PVOID)0x1);
+}
+
+__declspec(dllexport) PVOID helper_Repair_ClassInit(PVOID buffer, PVOID unit, PVOID building) {
+  PVOID player = helper_Unit_GetPlayer(unit);
+  return helper_Method61E164(buffer, building, player);
+}
+
+__declspec(dllexport) PVOID helper_Method5FE863(PVOID buffer, PVOID unit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(unit, 
+                buffer,
+                (PVOID)0x0,
+                (PVOID)0x0);
+}
+
+__declspec(dllexport) PVOID helper_Method5FDFA5(PVOID buffer, PVOID unit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(unit, 
+                (PVOID)0x1F51);
+}
+
+__declspec(dllexport) void helper_Repair_PushCommandToUnit(PVOID buffer, PVOID unit) {
+  helper_Method5FE863(buffer, unit);
+  helper_Method5FDFA5(buffer, unit);
+}
+
+__declspec(dllexport) void helper_RepairBuilding(PVOID unit, PVOID building) {
+  PVOID pntTarget = help_New(0x5C);
+  (void)helper_Repair_ClassInit(pntTarget, unit, building);
+  (void)helper_Repair_PushCommandToUnit(pntTarget, unit);
+}

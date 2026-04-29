@@ -16,6 +16,9 @@ void replaceCoc(Unit unit, Point pos);
 Unit getProphet();
 Unit getPriest();
 void printAllUnitTypes();
+Unit getBuilding();
+Unit getCitizen();
+void repairBuildings();
 void queueCommand(PVOID unit, Point target, Ability ability);
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
@@ -57,7 +60,8 @@ void execDataPengus() {
   }
   if(GetAsyncKeyState('F') & 0x8000) {
     // randomChecker();
-    castEarthquake();
+    // castEarthquake();
+    repairBuildings();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -69,21 +73,34 @@ void execDataPengus() {
   }
 }
 
+void repairBuildings() {
+  Unit building = getBuilding();
+  if(!unit_Reference(building)) {
+    return ;
+  }
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  } 
+  unit_Repair(citizen, building);
+}
+
 void test_PrintUnits() {
   vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
   if(units.size()) {
     for(int32_t i = 0; i < units.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(units[i]);
-      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p\n", units[i]._payload, 
-                      eeTa_UnitType(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(units[i])));
+      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", units[i]._payload, 
+                      eeTa_UnitType(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(units[i])), unit_TotalHP(units[i]));
     }
   }
   vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
   if(buildings.size()) {
     for(int32_t i = 0; i < buildings.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(buildings[i]);
-      eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p\n", 
-                      buildings[i]._payload, eeTa_UnitType(buildings[i]), eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(buildings[i])));
+      eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", 
+                      buildings[i]._payload, eeTa_UnitType(buildings[i]), 
+                      eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(buildings[i])), unit_TotalHP(buildings[i]));
     }
   }
 }
@@ -108,6 +125,16 @@ Unit getProphet() {
   return eeTa_Unit_Null();
 }
 
+Unit getCitizen() {
+  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTypes_IsCitizen(unit_Type(units[i]))) {
+      return units[i];
+    }
+  }
+  return eeTa_Unit_Null();
+}
+
 Unit getEnemy() {
   vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
   for(size_t i = 0; i < units.size(); i++) {
@@ -122,6 +149,16 @@ Unit getEnemyBuilding() {
   vector<Unit> buildings = eeTa_Buildings(eeTa_AllPlayers());
   for(size_t i = 0; i < buildings.size(); i++) {
     if(eeTa_Player(buildings[i]) != eeTa_SelfPlayer() && eeTa_UnitType(buildings[i]) != B_TEMPLE) {
+      return buildings[i];
+    }
+  }
+  return eeTa_Unit_Null();
+}
+
+Unit getBuilding() {
+  vector<Unit> buildings = eeTa_Buildings(eeTa_AllPlayers());
+  for(size_t i = 0; i < buildings.size(); i++) {
+    if(eeTa_Player(buildings[i]) == eeTa_SelfPlayer()) {
       return buildings[i];
     }
   }

@@ -108,3 +108,37 @@ void unit_CastAbility(Unit unit, Point target, Ability ability) {
   }
   helper_CastAbility(unit_Reference(unit), target, ability);
 }
+
+UnitType unit_Type(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
+  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
+}
+
+int32_t unit_CurrentHp(Unit unit) {
+  return *(int32_t *)util_Pointer((PVOID)unit._payload, 0x3C, INT32_T_TYPE);
+}
+
+int32_t unit_TotalHP(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
+  return *(int32_t *)util_Pointer((PVOID)unitMetaData, 0x144, INT32_T_TYPE);
+}
+
+uint8_t unit_GetPlayer(Unit unit) {
+  PVOID nextStruct = util_Pointer(unit_Reference(unit), 0x18, POINTER_TYPE);
+  return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
+}
+
+__declspec(dllexport) void unit_Repair(Unit unit, Unit target) {
+  UnitType unitType = unit_Type(unit);
+  UnitType targetType = unit_Type(target);
+  if(!eeTypes_IsCitizen(unitType) || !eeTypes_IsBuilding(targetType)) {
+    return ;
+  }
+  if(unit_CurrentHp(target) >= unit_TotalHP(target)) {
+    return ;
+  }
+  if(unit_GetPlayer(unit) != unit_GetPlayer(target)) {
+    return ;
+  }
+  helper_RepairBuilding(unit_Reference(unit), unit_Reference(target));
+}

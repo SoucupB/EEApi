@@ -969,3 +969,12 @@ building. (Caller from here 004B8F10).
 #############################################################################
 
 The method at 004C3EAE is probably the only caller. -> 0055322A
+The method for repairment seems important here 55321F.
+Also this is important 005FE863. The method executor is here 0060D1D4.
+
+#####################################################
+REPAIR UNITS
+Create a 5C pointer
+call 0061E164. (With params) at 0060D1E7
+Call the method at 0060D1F7 after that.
+Call the method at 0060D203.
