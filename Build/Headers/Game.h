@@ -39,6 +39,10 @@ typedef struct EETwa_t {
   int8_t playerPresence[30];
 } EETwa;
 
+typedef struct ResourceManager_t {
+  uint8_t used;
+} ResourceManager;
+
 typedef EETwa *PEETwa;
 typedef EETypes *PEETypes;
 typedef MapData *PMapData;

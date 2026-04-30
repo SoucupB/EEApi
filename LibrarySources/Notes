@@ -984,3 +984,25 @@ For gathering stuff we can use the methods at
 005EDFD7.
 005EE0A5.
 I should pay attention to this method 004BF1B2.
+(I need the super class which makes the 0x44 buffer).
+
+Let's find resources.
+[unit + 0x260]
+
+Here natural res are iterated 00628CF6
+This iterates over resources 0056F33E.
+
+00930D40 holds the WorldMap data.
+At there is [ecx] which holds a pointer some interesting data.
+Farm units belong to player even if they are farmable.
+
+To obtain the world player index is at [00930D40 + 0x74]
+Get resources from the first player.
+[ply + 0x30] counts
+[ply + 0x34] totalPossible
+[ply + 0x38 + index * 0x8] currentResource.
+
+Struct {
+  0x0 Res pointer,
+  0x4 is valid.
+}

@@ -14,4 +14,5 @@ g++ -std=gnu++11 -IHeaders/ -c Sources/LibManager.cpp -O9 -lPsapi -lgdi32 -luser
 g++ -std=gnu++11 -IHeaders/ -c Sources/Unit.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/Unit.o
 g++ -std=gnu++11 -IHeaders/ -c Sources/EETypes.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/EETypes.o
 g++ -std=gnu++11 -IHeaders/ -c Sources/Game.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/Game.o
+g++ -std=gnu++11 -IHeaders/ -c Sources/Resource.cpp -O9 -lPsapi -lgdi32 -luser32 -o lib/Resource.o
 ar rcs lib/Engine.a lib/*.o
