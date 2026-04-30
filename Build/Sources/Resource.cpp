@@ -50,13 +50,8 @@ uint8_t res_IsUnitResource(PVOID simpleUnit) {
 }
 
 uint8_t res_IsUnitComplexUnitResource(PVOID simpleUnit) {
-  size_t currentClass = *(size_t *)simpleUnit;
-  if(currentClass != 0x446DDC + (size_t)lib_BaseAddress()) {
-    return 0;
-  }
-  size_t resourceClass = *(size_t *)((size_t)simpleUnit + 0x2C);
-  if(*(size_t *)resourceClass != 0x449350 + (size_t)lib_BaseAddress()) {
-    return 0;
-  }
-  return 1;
+  char *resName = res_Name((Resource) {
+    ._payload = simpleUnit
+  });
+  return !memcmp(resName, "Res - Fish", min(strlen(resName), strlen("Res - Fish")));
 }
