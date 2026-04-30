@@ -54,7 +54,7 @@ void printResources() {
   vector<Resource> resources = res_All();
   eeTa_FilePrintf("Total fixed resources is %d\n", resources.size());
   for(size_t i = 0; i < resources.size(); i++) {
-    eeTa_FilePrintf("Resource pointer is %p\n", res_Reference(resources[i]));
+    eeTa_FilePrintf("Resource pointer is %p with name %s\n", res_Reference(resources[i]), res_Name(resources[i]));
   }
 }
 

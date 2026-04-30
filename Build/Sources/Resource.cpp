@@ -4,43 +4,19 @@
 #include "EETwa.h"
 
 uint8_t res_IsUnitResource(PVOID simpleUnit);
+uint8_t res_IsUnitComplexUnitResource(PVOID simpleUnit);
 
 void res_InitResource(PVOID unit) {
   PResourceManager manager = game_GetResourcesManager();
-  if(!res_IsUnitResource(unit)) {
+  if(!res_IsUnitResource(unit) && !res_IsUnitComplexUnitResource(unit)) {
     return ;
   }
   (*manager->resourcesRefs)[unit] = 1;
 }
 
-// PVOID res_GetNeutralPlayer() {
-//   size_t *resourceManager = (size_t *)((size_t)((size_t)lib_BaseAddress() + 0x530D40) + 0x74);
-//   return (PVOID)*resourceManager;
-// }
-
-// size_t res_TotalNetralUnits() {
-//   PVOID manager = res_GetNeutralPlayer();
-
-//   return *(size_t *)((size_t)manager + 0x460);
-// }
-
 PVOID res_Reference(Resource resource) {
   return resource._payload;
 }
-
-// Resource res_GetResource(PVOID manager, size_t index) {
-//   return (Resource) {
-//     ._payload = (PVOID)*(size_t *)((size_t)manager + 0x38 + index * 0x8)
-//   };
-// }
-
-// uint8_t res_IsValid(PVOID manager, size_t index) {
-//   Resource currentRes = res_GetResource(manager, index);
-//   if(!res_Reference(currentRes)) {
-//     return 0;
-//   }
-//   return 1;
-// }
 
 vector<Resource> res_All() {
   vector<Resource> response;
@@ -54,6 +30,13 @@ vector<Resource> res_All() {
   return response;
 }
 
+char *res_Name(Resource self) {
+  PVOID ref = res_Reference(self);
+  size_t classOffset = *(size_t *)((size_t)ref + 0x2C);
+  
+  return (char *)(*(size_t *)(classOffset + 0x1C));
+}
+
 uint8_t res_IsUnitResource(PVOID simpleUnit) {
   size_t currentClass = *(size_t *)simpleUnit;
   if(currentClass != 0x447A20 + (size_t)lib_BaseAddress()) {
@@ -61,6 +44,18 @@ uint8_t res_IsUnitResource(PVOID simpleUnit) {
   }
   size_t resourceClass = *(size_t *)((size_t)simpleUnit + 0x2C);
   if(*(size_t *)resourceClass != 0x449608 + (size_t)lib_BaseAddress()) {
+    return 0;
+  }
+  return 1;
+}
+
+uint8_t res_IsUnitComplexUnitResource(PVOID simpleUnit) {
+  size_t currentClass = *(size_t *)simpleUnit;
+  if(currentClass != 0x446DDC + (size_t)lib_BaseAddress()) {
+    return 0;
+  }
+  size_t resourceClass = *(size_t *)((size_t)simpleUnit + 0x2C);
+  if(*(size_t *)resourceClass != 0x449350 + (size_t)lib_BaseAddress()) {
     return 0;
   }
   return 1;
