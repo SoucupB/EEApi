@@ -981,10 +981,13 @@ Call the method at 0060D203.
 
 
 For gathering stuff we can use the methods at
+004BF192.
 005EDFD7.
 005EE0A5.
 I should pay attention to this method 004BF1B2.
 (I need the super class which makes the 0x44 buffer).
+This method is the super method 004BF1B2.
+
 
 Let's find resources.
 [unit + 0x260]
@@ -998,13 +1001,5 @@ Farm units belong to player even if they are farmable.
 
 To obtain the world player index is at [00930D40 + 0x74]
 Get resources from the first player.
-[ply + 0x30] counts
-[ply + 0x34] totalPossible
-[ply + 0x38 + index * 0x8] currentResource.
-
-Struct {
-  0x0 Res pointer,
-  0x4 is valid.
-}
 
 This method is called when a new res is added 0056F275.
