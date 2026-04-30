@@ -22,6 +22,11 @@ void game_MapData_Init(PGame game) {
   memset(game->mapData->planeMap, 0, sizeof(TilePlaneMap));
 }
 
+void game_Resources_Init(PGame game) {
+  game->resourceManager = (PResourceManager)malloc(sizeof(ResourceManager));
+  game->resourceManager->resourcesRefs = new unordered_map<PVOID, uint8_t>();
+}
+
 PPlayerState game_GetPlayerState() {
   return game->plyState;
 }
@@ -32,6 +37,10 @@ PMapData game_GetMapData() {
 
 PEETypes game_GetEETypes() {
   return game->types;
+}
+
+PResourceManager game_GetResourcesManager() {
+  return game->resourceManager;
 }
 
 void game_PlayerState_Delete(PGame game) {
@@ -68,6 +77,15 @@ void game_EETypes_Delete(PGame game) {
   game->types = NULL;
 }
 
+void game_Resources_Delete(PGame game) {
+  if(!game->resourceManager) {
+    return ;
+  }
+  delete game->resourceManager->resourcesRefs;
+  free(game->resourceManager);
+  game->resourceManager = NULL;
+}
+
 PGame game_Reference() {
   return game;
 }
@@ -79,6 +97,7 @@ void game_Delete(PGame *self) {
   game_PlayerState_Delete(*self);
   game_MapData_Delete(*self);
   game_EETypes_Delete(*self);
+  game_Resources_Delete(*self);
   free(*self);
   *self = NULL;
 }
@@ -89,4 +108,5 @@ void game_Init() {
   game_PlayerState_Init(game);
   game_MapData_Init(game);
   game_EETypes_Init(game);
+  game_Resources_Init(game);
 }

@@ -6,6 +6,7 @@
 #include "LibManager.h"
 #include "EETwa.h"
 #include "Helpers.h"
+#include "Resource.h"
 
 static uint8_t onInitFlag = 0;
 static size_t mapPolygons;
@@ -64,6 +65,12 @@ extern "C" {
     return eeTa_OnUnitBuy(multiplier, method);
   }
 
+  __declspec(dllexport) PVOID __thiscall onResourceInit(PVOID player, PVOID unit) {
+    PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x16F49E);
+    res_InitResource(unit);
+    return method(player, unit);
+  }
+
   __declspec(dllexport) int32_t __thiscall onGameStart(PVOID self, PVOID _a, PVOID _b) {
     rebuildDataStructures();
     int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)mapPolygons);
@@ -89,6 +96,7 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)0x13B8CF, (PVOID)onUnitDelete);
   builder_Definition((PVOID)0x1F5E09, (PVOID)onPlanePark);
   builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
+  builder_Definition((PVOID)0x16F275, (PVOID)onResourceInit);
   builder_ReplaceMMUMethods();
   setMapStart();
 }

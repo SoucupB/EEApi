@@ -8,3 +8,5 @@ typedef struct Resource_t {
 
 void res_OnInit();
 vector<Resource> res_All();
+PVOID res_Reference(Resource resource);
+void res_InitResource(PVOID resource);

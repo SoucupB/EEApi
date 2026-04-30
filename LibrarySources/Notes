@@ -1006,3 +1006,5 @@ Struct {
   0x0 Res pointer,
   0x4 is valid.
 }
+
+This method is called when a new res is added 0056F275.

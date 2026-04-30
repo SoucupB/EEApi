@@ -40,18 +40,20 @@ typedef struct EETwa_t {
 } EETwa;
 
 typedef struct ResourceManager_t {
-  uint8_t used;
+  unordered_map<PVOID, uint8_t> *resourcesRefs;
 } ResourceManager;
 
 typedef EETwa *PEETwa;
 typedef EETypes *PEETypes;
 typedef MapData *PMapData;
 typedef PlayerState *PPlayerState;
+typedef ResourceManager *PResourceManager;
 
 typedef struct Game_t {
   PPlayerState plyState;
   PMapData mapData;
   PEETypes types;
+  PResourceManager resourceManager;
 } Game;
 
 typedef Game *PGame;
@@ -60,3 +62,4 @@ void game_Init();
 PPlayerState game_GetPlayerState();
 PMapData game_GetMapData();
 PEETypes game_GetEETypes();
+PResourceManager game_GetResourcesManager();
