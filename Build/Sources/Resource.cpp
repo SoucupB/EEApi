@@ -53,3 +53,9 @@ uint8_t res_IsUnitResource(PVOID simpleUnit) {
   }
   return 0;
 }
+
+Resource res_Null() {
+  return (Resource) {
+    ._payload = NULL
+  };
+}

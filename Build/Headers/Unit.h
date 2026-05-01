@@ -1,6 +1,7 @@
 #pragma once
 #include "EETwa.h"
 #include <stdint.h>
+#include "Resource.h"
 
 typedef struct Unit_t Unit;
 

@@ -21,6 +21,7 @@ Unit getBuilding();
 Unit getCitizen();
 void repairBuildings();
 void queueCommand(PVOID unit, Point target, Ability ability);
+void farmUnit();
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
 __declspec(dllexport) void castHurricane();
@@ -29,14 +30,6 @@ __declspec(dllexport) void printAllUnitTypes();
 PVOID createCalamityStruct(Point pos, Ability ability);
 
 // I think I find the water tile.
-void pulas() {
-  Unit currentPriest = getPriest();
-  if(!eeTa_Unit_Reference(currentPriest)) {
-    return ;
-  }
-  eeTa_FilePrintf("Is water for %p tile %d\n", currentPriest, eeTa_Tile_IsWater(eeTa_Unit_TilePosition(currentPriest)));
-}
-
 void onLosingHealth(Unit unit) {
   eeTa_FilePrintf("Unit %p taking damage\n", eeTa_Unit_Reference(unit));
 }
@@ -47,8 +40,6 @@ __declspec(dllexport) void printAllTiles() {
     return ;
   }
   eeTa_FilePrintf("Current plane ID %d\n", unit_GetPlaneID(currentPriest));
-  // pulas();
-  // eeTa_Map_PrintBitMap();
 }
 
 void printResources() {
@@ -66,19 +57,14 @@ void execDataPengus() {
   }
   if(GetAsyncKeyState('P') & 0x8000) {
     // test_ConvertEnemy();
+    farmUnit();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {
-    // randomChecker();
-    // castEarthquake();
     repairBuildings();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
-    // printAllTiles();
-    // printAllUnitTypes();
-    // castMalaria();
-    // castHurricane();
     printResources();
     Beep (300, 250);
   }
@@ -176,9 +162,32 @@ Unit getBuilding() {
   return eeTa_Unit_Null();
 }
 
+Resource getFarmableRes() {
+  vector<Resource> units = res_All();
+  for(size_t i = 0; i < units.size(); i++) {
+    if(res_Type(units[i]) != RES_FISH) {
+      return units[i];
+    }
+  }
+  return res_Null();
+}
+
 uint8_t navalAttackFilter(Unit unit) {
   UnitType def = eeTa_EETypes_UnitType(unit);
   return eeTypes_IsWaterUnit(def);
+}
+
+void farmUnit() {
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  Resource res = getFarmableRes();
+  if(!res_Reference(res)) {
+    return ;
+  }
+  eeTa_FilePrintf("Farm init!\n");
+  unit_Farm(citizen, res);
 }
 
 Unit getEnemyShip() {
@@ -190,113 +199,6 @@ Unit getEnemyShip() {
     }
   }
   return eeTa_Unit_Null();
-}
-
-__declspec(dllexport) void randomChecker() {
-  Unit priest = getProphet();
-  if(!priest._payload) {
-    return ;
-  }
-  Unit building = getEnemyBuilding();
-  if(!building._payload) {
-    return ;
-  }
-  eeTa_Unit_CastPoint(priest, eeTa_CurrentPosition(building), PROPHET_EARTHQUAKE);
-  eeTa_FilePrintf("Moved\n");
-}
-
-PVOID createCalamityStruct(Point pos, Ability ability) {
-  PVOID calamityBuffer = help_New(0x24);
-  int32_t xPos = (int32_t)pos.x;
-  int32_t yPos = (int32_t)pos.y;
-
-  builder_FillValue(calamityBuffer, 0x0, (size_t)lib_BaseAddress() + 0x438B98);
-  builder_FillValue(calamityBuffer, 0x4, 2);
-  builder_FillValue(calamityBuffer, 0x8, 0xFEFF75);
-  builder_FillValue(calamityBuffer, 0xC, 2);
-  builder_FillValue(calamityBuffer, 0x10, 0x1000004);
-  builder_FillValue(calamityBuffer, 0x14, 0xFFFFFFFF);
-  builder_FillValue(calamityBuffer, 0x18, xPos);
-  builder_FillValue(calamityBuffer, 0x1C, yPos);
-  builder_FillValue(calamityBuffer, 0x20, ability);
-
-  return calamityBuffer;
-}
-
-void fillCalamityStruct(PVOID unit, PVOID calamityStruct, PVOID originalPointer) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
-  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
-  method(originalPointer, 
-         unit, 
-         0x0, 
-         (PVOID)*(size_t *)((size_t)calamityStruct + 0x18), 
-         (PVOID)*(size_t *)((size_t)calamityStruct + 0x1C),
-         (PVOID)*(size_t *)((size_t)calamityStruct + 0x20), 
-         (PVOID)0x1);
-}
-
-void addCommandToUnit(PVOID unit, PVOID calamityStruct) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
-  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
-  method(unit, calamityStruct, NULL, NULL);
-}
-
-void unknownMethod4BC7AF(PVOID unit) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
-  void __thiscall (*method)(PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
-  method(unit, 
-         (PVOID)0x1F40);
-}
-
-void queueCommand(PVOID unit, Point target, Ability ability) {
-  PVOID pntTarget = help_New(0x34);
-  PVOID calamityStruct = createCalamityStruct(target, ability);
-  fillCalamityStruct(unit, calamityStruct, pntTarget);
-  addCommandToUnit(unit, pntTarget);
-  unknownMethod4BC7AF(unit); // This is the method which makes the unit move.
-}
-
-// This method works YEEY, but it might contain memory leaks or access violations.
-__declspec(dllexport) void castEarthquake() {
-  Unit currentProphet = getProphet();
-  if(!eeTa_Unit_Reference(currentProphet)) {
-    return ;
-  }
-  Unit currentBuilding = getEnemyBuilding();
-  if(!eeTa_Unit_Reference(currentBuilding)) {
-    return ;
-  }
-  // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
-  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
-  eeTa_FilePrintf("Some ability\n");
-}
-
-__declspec(dllexport) void castMalaria() {
-  Unit currentProphet = getProphet();
-  if(!eeTa_Unit_Reference(currentProphet)) {
-    return ;
-  }
-  Unit currentenemy = getEnemy();
-  if(!eeTa_Unit_Reference(currentenemy)) {
-    return ;
-  }
-  // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
-  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
-  eeTa_FilePrintf("Some ability\n");
-}
-
-__declspec(dllexport) void castHurricane() {
-  Unit currentProphet = getProphet();
-  if(!eeTa_Unit_Reference(currentProphet)) {
-    return ;
-  }
-  // Unit currentenemy = getEnemyShip();
-  Unit currentenemy = getEnemy();
-  if(!eeTa_Unit_Reference(currentenemy)) {
-    return ;
-  }
-  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_TORNADO);
-  eeTa_FilePrintf("Some ability\n");
 }
 
 void bt_OnInit() {

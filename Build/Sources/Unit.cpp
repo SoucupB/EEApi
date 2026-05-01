@@ -2,7 +2,6 @@
 #include "LibManager.h"
 #include "MapData.h"
 #include <unordered_map>
-#include "Resource.h"
 
 unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence();
 

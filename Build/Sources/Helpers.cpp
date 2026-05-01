@@ -745,7 +745,7 @@ void helper_Gather_Citizen_QueueCommand(PVOID unit, PVOID buffer) {
   helper_Gather_Method5FDFA5(unit, (PVOID)0x1F40);
 }
 
-void helper_Citizen_Gather(PVOID unit, PVOID resource) {
+__declspec(dllexport) void helper_Citizen_Gather(PVOID unit, PVOID resource) {
   PVOID buffer = help_New(0x44);
   helper_Gather_ClassInit(buffer, resource);
   helper_Gather_Citizen_QueueCommand(unit, buffer);
