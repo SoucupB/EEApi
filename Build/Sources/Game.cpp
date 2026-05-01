@@ -64,7 +64,9 @@ void game_MapData_Delete(PGame game) {
 void game_EETypes_Init(PGame game) {
   game->types = (PEETypes)malloc(sizeof(EETypes));
   game->types->classTreeStructure = new map<UnitClassType, map<UnitType, uint8_t> >();
+  game->types->neutralClassTreeStructure = new map<NeutralClassType, map<NeutralUnitType, uint8_t> >();
   game->types->parentsClass = new map<UnitType, UnitClassType>();
+  game->types->neutralParentsClass = new map<NeutralUnitType, NeutralClassType>();
 }
 
 void game_EETypes_Delete(PGame game) {
@@ -73,6 +75,8 @@ void game_EETypes_Delete(PGame game) {
   }
   delete game->types->classTreeStructure;
   delete game->types->parentsClass;
+  delete game->types->neutralClassTreeStructure;
+  delete game->types->neutralParentsClass;
   free(game->types);
   game->types = NULL;
 }

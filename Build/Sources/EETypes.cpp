@@ -29,7 +29,7 @@ static map<UnitClassType, vector<UnitType> > classDefUnits = {
   {CLASS_EXTRA, {X_GASLIGHT, X_STREET_LAMP}},
 };
 
-map<NeutralClassTypeDef, vector<NeutralUnitTypeDef> > neutralClassDefUnits = {
+map<NeutralClassType, vector<NeutralUnitType> > neutralClassDefUnits = {
   {CLASS_BUTA_KWAI, {X_GENERAL_BUTA_KWAI}},
   {CLASS_FLYING_ANIMALS, {RES_EAGLE}},
   {CLASS_UNFARMABLE_MARINE_FAUNA, {RES_SHARK, RES_DOLPHIN}},
@@ -45,7 +45,7 @@ map<NeutralClassTypeDef, vector<NeutralUnitTypeDef> > neutralClassDefUnits = {
   {CLASS_AMBIENTAL, {AMB_SEAGRASS3, AMB_CATTAILS_2, PATHPOINT, A_VERSION_128, AMB_CORAL_1, AMB_LILLYPADS5, AMB_CORAL_FAN, AMB_GUYOT_1, AMB_GUYOT_2, AMB_GUOYT_3, AMB_DINOSAUR_BONES, AMB_SHIPWRECK_1492A, AMB_SHIPWRECK_1492B, AMB_SHIPWRECK_1492C, AMB_DEBRIS_1X, AMB_DEBRIS_2X, AMB_DEBRIS_4X, AMB_DEBRIS_3X, AMB_HOT_SPRINGS, RES_OIL, AMB_OIL_DRUM_1, AMB_OIL_DRUM_2, AMB_RUINED_ZERO_3, AMB_HYDROPONICS_LAB, AMB_CLUMP1, AMB_CLUMP2, AMB_SKELETON, AMB_GIANT_CLAM, AMB_CLAM_1, AMB_CLAM_2, AMB_STARFISH_01, AMB_STARFISH2, AMB_STARFISH3, AMB_ROCK_OUTCROP_2, AMB_ROCK_OUTCROP_1, AMB_ROCK_LARGE, AMB_TREE_STUMP_2, AMB_TREE_STUMP_4, AMB_TREE_STUMP_3, AMB_TREE_STUMP_1, AMB_ALGAE1, AMB_ALGAE2, AMB_SEAGRASS1, AMB_SEAGRASS2, AMB_SEASTALKS1, AMB_SEASTALKS2, AMB_SEASTALKS3, AMB_SEAWEED1, AMB_SEAWEED2, AMB_SEAWEED3, AMB_FERN_1, AMB_FERN_PATCH, AMB_BAMBOO, AMB_TALL_GRASS, AMB_LOG, AMB_BUSH, AMB_FERN_2, AMB_LILLYPADS1, AMB_LILLYPADS2, AMB_LILLYPADS3, AMB_LILLYPADS4, AMB_CATTAILS_1, AMB_CACTI1, AMB_CACTI2, AMB_CACTI3, AMB_COWSKULL, AMB_CACTI4, AMB_ALOE, AMB_FLOWERS01_ROSES, AMB_FLOWERS02_DAISIES, AMB_FLOWERS03_DAFFODILS, AMB_FLOWERS04_THISTLES, AMB_FLOWERS05_VIOLETS, AMB_FLOWERS06_VIOLETS_2, AMB_CORAL_2, AMB_ROCK_OUTCROP_3, AMB_ROCK_GRANITE, AMB_ROCK_3, AMB_ROCK_4, AMB_ROCK_5, AMB_ROCK_6, AMB_ROCK_7, AMB_SEAWEED4, AMB_SEAWEED5, AMB_TUMBLEWEED, AMB_CACTI5, AMB_ROCK_8, AMB_ROCK_9, AMB_ROCK_10, AMB_CRAB_GRASS, AMB_SWAMP_BUSH, AMB_TALL_GRASS_2, AMB_SWAMP_SCUM, AMB_RUINED_TANK_FACTORY, AMB_RUINED_CYBER_FACTORY, AMB_RUINED_TEMPLE, AMB_RUINED_HOUSE, AMB_RUINED_LST, AMB_RUINED_MECH_ZEUS_1, AMB_RUINED_MECH_ZEUS_2, AMB_RUINED_ZERO_1, AMB_RUINED_ZERO_2, AMB_RUINED_CARGO_TRUCK, AMB_RUINED_M1_TANK}},
 };
 
-void eeTypes_InitUnits() {
+void eeTypes_ComplexUnits_Inits() {
   PEETypes eTypes = game_GetEETypes();
   map<UnitClassType, map<UnitType, uint8_t> > *classTreeStructure = eTypes->classTreeStructure;
   map<UnitType, UnitClassType> *parentsClass = eTypes->parentsClass;
@@ -56,6 +56,35 @@ void eeTypes_InitUnits() {
       (*parentsClass)[it.second[i]] = it.first;
     }
   }
+}
+
+void eeTypes_NeutralUnits_Inits() {
+  PEETypes eTypes = game_GetEETypes();
+  map<NeutralClassType, map<NeutralUnitType, uint8_t> > *classTreeStructure = eTypes->neutralClassTreeStructure;
+  map<NeutralUnitType, NeutralClassType> *parentsClass = eTypes->neutralParentsClass;
+
+  for(auto &it : neutralClassDefUnits) {
+    for(size_t i = 0, c = it.second.size(); i < c; i++) {
+      (*classTreeStructure)[it.first][it.second[i]] = 1;
+      (*parentsClass)[it.second[i]] = it.first;
+    }
+  }
+}
+
+void eeTypes_InitUnits() {
+  eeTypes_ComplexUnits_Inits();
+  eeTypes_NeutralUnits_Inits();
+}
+
+NeutralClassType eeTypes_Neutral_Type(NeutralUnitType unitType) {
+  PEETypes eTypes = game_GetEETypes();
+  map<NeutralUnitType, NeutralClassType> *parentsClass = eTypes->neutralParentsClass;
+
+  if(parentsClass->find(unitType) == parentsClass->end()) {
+    return CLASS_NEUTRAL_UNDEFINED;
+  }
+
+  return (*parentsClass)[unitType];
 }
 
 uint8_t eeTypes_IsFromClass(UnitClassType unitClass, UnitType unitType) {

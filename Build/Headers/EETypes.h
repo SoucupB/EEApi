@@ -483,7 +483,7 @@ enum UnitType {
   X_TOWER_OF_LONDON = 0x00000450,
 };
 
-enum NeutralUnitTypeDef {
+enum NeutralUnitType {
   AMBIENT_CRATE = 0x00001035,
   AMBIENT_OBELISK = 0x00001036,
   AMBIENT_SANDBAG_01 = 0x00001038,
@@ -759,7 +759,8 @@ enum UnitClassType {
   CLASS_EXTRA,
 };
 
-enum NeutralClassTypeDef {
+enum NeutralClassType {
+  CLASS_NEUTRAL_UNDEFINED,
   CLASS_BUTA_KWAI,
   CLASS_FLYING_ANIMALS,
   CLASS_UNFARMABLE_MARINE_FAUNA,
@@ -789,3 +790,5 @@ uint8_t eeTypes_CanProduceWorkers(UnitType type);
 
 UnitClassType eeTypes_UnitClass(UnitType unitType);
 uint8_t eeTypes_IsBuilding(UnitType unitType);
+
+NeutralClassType eeTypes_Neutral_Type(NeutralUnitType unitType);

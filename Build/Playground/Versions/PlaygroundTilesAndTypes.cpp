@@ -245,13 +245,13 @@ __declspec(dllexport) void printAllUnitTypes() {
   }
   eeTa_FilePrintf("};\n\n");
   
-  eeTa_FilePrintf("enum NeutralUnitTypeDef {\n");
+  eeTa_FilePrintf("enum NeutralUnitType {\n");
   for(size_t i = 0; i < specialUnitTypes.size(); i++) {
     eeTa_FilePrintf("   %s = 0x%p,\n", specialUnitTypes[i].first, specialUnitTypes[i].second);
   }
   eeTa_FilePrintf("};\n\n");
   createClasses(unitsClass, (char *)"ClassTypeDef", (char *)"classDefUnits", (char *)"UnitTypeDef");
-  createClasses(specialUnitsClass, (char *)"NeutralClassTypeDef", (char *)"neutralClassDefUnits", (char *)"NeutralUnitTypeDef");
+  createClasses(specialUnitsClass, (char *)"NeutralClassType", (char *)"neutralClassDefUnits", (char *)"NeutralUnitType");
 }
 
 void test_ConvertEnemy() {
