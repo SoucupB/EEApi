@@ -128,7 +128,7 @@ uint8_t unit_GetPlayer(Unit unit) {
   return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
 }
 
-__declspec(dllexport) void unit_Repair(Unit unit, Unit target) {
+void unit_Repair(Unit unit, Unit target) {
   UnitType unitType = unit_Type(unit);
   UnitType targetType = unit_Type(target);
   if(!eeTypes_IsCitizen(unitType) || !eeTypes_IsBuilding(targetType)) {
