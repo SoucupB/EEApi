@@ -24,6 +24,7 @@ void queueCommand(PVOID unit, Point target, Ability ability);
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
 __declspec(dllexport) void castHurricane();
+__declspec(dllexport) void printAllUnitTypes();
 
 PVOID createCalamityStruct(Point pos, Ability ability);
 
@@ -65,6 +66,7 @@ void execDataPengus() {
   }
   if(GetAsyncKeyState('P') & 0x8000) {
     // test_ConvertEnemy();
+    printAllUnitTypes();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {

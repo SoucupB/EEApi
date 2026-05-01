@@ -129,6 +129,8 @@ void printPositions() {
   }
 }
 
+
+
 uint8_t isUnitChar(char element) {
   return isdigit(element) || isalpha(element);
 }
@@ -174,13 +176,17 @@ size_t unitTypeID(PVOID addr) {
   return *(size_t *)((size_t)addr + 0x1E4);
 }
 
-void createClasses(map<size_t, vector<size_t> > &unitsChecker) {
-  eeTa_FilePrintf("enum ClassTypeDef {\n");
+size_t neutralUnitTypeID(PVOID addr) {
+  return *(size_t *)((size_t)addr + 0x260);
+}
+
+void createClasses(map<size_t, vector<size_t> > &unitsChecker, char *className, char *classVariable, char *unitTypeDiff) {
+  eeTa_FilePrintf("enum %s {\n", className);
   for(auto &it : unitsChecker) {
     eeTa_FilePrintf("  CLASS_%p,\n", (PVOID)it.first);
   }
   eeTa_FilePrintf("};\n\n");
-  eeTa_FilePrintf("map<ClassTypeDef, vector<UnitTypeDef> > classDefUnits = {\n");
+  eeTa_FilePrintf("map<%s, vector<%s> > %s = {\n", className, unitTypeDiff, classVariable);
   for(auto &it : unitsChecker) {
     eeTa_FilePrintf(" {CLASS_%p, {", (PVOID)it.first);
     for(size_t i = 0; i < it.second.size(); i++) {
@@ -199,9 +205,10 @@ void createClasses(map<size_t, vector<size_t> > &unitsChecker) {
 __declspec(dllexport) void printAllUnitTypes() {
   size_t *startingPointer = (size_t *)((size_t)lib_BaseAddress() + 0x5636B0);
   int32_t total = 10000;
-  eeTa_FilePrintf("enum UnitTypeDef {\n");
   map<size_t, vector<size_t> > unitsClass;
+  map<size_t, vector<size_t> > specialUnitsClass;
   vector< pair<char *, size_t> > unitTypes;
+  vector< pair<char *, size_t> > specialUnitTypes;
   while(total--) {
     uint8_t valid;
     if(!builder_IsMemoryValid((PVOID)startingPointer)) {
@@ -218,19 +225,33 @@ __declspec(dllexport) void printAllUnitTypes() {
     }
     int32_t type = unitTypeID((PVOID)unitType);
     if(type != 0x186A0) {
-      // eeTa_FilePrintf("   %s = 0x%p,\n", getNumber((PVOID)unitType), type);
       unitsClass[*(size_t *)unitType].push_back(unitType);
       unitTypes.push_back(make_pair(getNumber((PVOID)unitType), type));
+    }
+    else {
+      specialUnitsClass[*(size_t *)unitType].push_back(unitType);
+      specialUnitTypes.push_back(make_pair(getNumber((PVOID)unitType), neutralUnitTypeID((PVOID)unitType)));
     }
   }
   sort(unitTypes.begin(), unitTypes.end(), [](const std::pair<char*, size_t>& a, const std::pair<char*, size_t>& b) {
     return strcmp(a.first, b.first) < 0;
   });
+  sort(specialUnitTypes.begin(), specialUnitTypes.end(), [](const std::pair<char*, size_t>& a, const std::pair<char*, size_t>& b) {
+    return strcmp(a.first, b.first) < 0;
+  });
+  eeTa_FilePrintf("enum UnitTypeDef {\n");
   for(size_t i = 0; i < unitTypes.size(); i++) {
     eeTa_FilePrintf("   %s = 0x%p,\n", unitTypes[i].first, unitTypes[i].second);
   }
   eeTa_FilePrintf("};\n\n");
-  createClasses(unitsClass);
+  
+  eeTa_FilePrintf("enum NeutralUnitTypeDef {\n");
+  for(size_t i = 0; i < specialUnitTypes.size(); i++) {
+    eeTa_FilePrintf("   %s = 0x%p,\n", specialUnitTypes[i].first, specialUnitTypes[i].second);
+  }
+  eeTa_FilePrintf("};\n\n");
+  createClasses(unitsClass, (char *)"ClassTypeDef", (char *)"classDefUnits", (char *)"UnitTypeDef");
+  createClasses(specialUnitsClass, (char *)"NeutralClassTypeDef", (char *)"neutralClassDefUnits", (char *)"NeutralUnitTypeDef");
 }
 
 void test_ConvertEnemy() {
