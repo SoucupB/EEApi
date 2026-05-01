@@ -712,3 +712,41 @@ void helper_RepairBuilding(PVOID unit, PVOID building) {
   (void)helper_Repair_ClassInit(pntTarget, unit, building);
   (void)helper_Repair_PushCommandToUnit(pntTarget, unit);
 }
+
+void helper_Gather_Method621E95(PVOID self, PVOID targetResource) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x221E95);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+        targetResource,
+        (PVOID)0x0,
+        (PVOID)0x1);
+}
+
+void helper_Gather_Method5FE863(PVOID self, PVOID buffer) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+         buffer);
+}
+
+void helper_Gather_Method5FDFA5(PVOID self, PVOID buffer) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+         buffer);
+}
+
+PVOID helper_Gather_ClassInit(PVOID buffer, PVOID targetResource) {
+  helper_Gather_Method621E95(buffer, targetResource);
+}
+
+void helper_Gather_Citizen_QueueCommand(PVOID unit, PVOID buffer) {
+  helper_Gather_Method5FE863(unit, buffer);
+  helper_Gather_Method5FDFA5(unit, (PVOID)0x1F40);
+}
+
+void helper_Citizen_Gather(PVOID unit, PVOID resource) {
+  PVOID buffer = help_New(0x44);
+  helper_Gather_ClassInit(buffer, resource);
+  helper_Gather_Citizen_QueueCommand(unit, buffer);
+}
