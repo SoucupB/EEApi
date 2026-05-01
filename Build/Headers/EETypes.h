@@ -25,6 +25,7 @@ enum DefaultType {
 };
 
 enum UnitType {
+  UNIT_UNDEFINED = 0x186A0,
   A10_AA_TANK = 0x0000272F,
   A13_AA_TANK_SKYWATCHER = 0x000032F5,
   A14_ANTI_MISSILE_BATTERY = 0x00003395,
@@ -792,3 +793,4 @@ UnitClassType eeTypes_UnitClass(UnitType unitType);
 uint8_t eeTypes_IsBuilding(UnitType unitType);
 
 NeutralClassType eeTypes_Neutral_Type(NeutralUnitType unitType);
+uint8_t eeTypes_Neutral_IsResource(NeutralUnitType unitType);

@@ -87,6 +87,12 @@ NeutralClassType eeTypes_Neutral_Type(NeutralUnitType unitType) {
   return (*parentsClass)[unitType];
 }
 
+uint8_t eeTypes_Neutral_IsResource(NeutralUnitType unitType) {
+  return eeTypes_Neutral_Type(unitType) == CLASS_FARMABLE_LAND_ANIMALS ||
+         eeTypes_Neutral_Type(unitType) == CLASS_STATIC_RESOURCES ||
+         unitType == RES_FISH;
+}
+
 uint8_t eeTypes_IsFromClass(UnitClassType unitClass, UnitType unitType) {
   PEETypes eTypes = game_GetEETypes();
   map<UnitClassType, map<UnitType, uint8_t> > *classTreeStructure = eTypes->classTreeStructure;

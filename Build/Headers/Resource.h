@@ -11,3 +11,4 @@ vector<Resource> res_All();
 PVOID res_Reference(Resource resource);
 void res_InitResource(PVOID resource);
 char *res_Name(Resource self);
+NeutralUnitType res_Type(Resource unit);

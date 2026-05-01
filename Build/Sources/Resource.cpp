@@ -2,13 +2,13 @@
 #include "LibManager.h"
 #include "Game.h"
 #include "EETwa.h"
+#include "Unit.h"
 
 uint8_t res_IsUnitResource(PVOID simpleUnit);
-uint8_t res_IsUnitComplexUnitResource(PVOID simpleUnit);
 
 void res_InitResource(PVOID unit) {
   PResourceManager manager = game_GetResourcesManager();
-  if(!res_IsUnitResource(unit) && !res_IsUnitComplexUnitResource(unit)) {
+  if(!res_IsUnitResource(unit)) {
     return ;
   }
   (*manager->resourcesRefs)[unit] = 1;
@@ -37,21 +37,19 @@ char *res_Name(Resource self) {
   return (char *)(*(size_t *)(classOffset + 0x1C));
 }
 
-uint8_t res_IsUnitResource(PVOID simpleUnit) {
-  size_t currentClass = *(size_t *)simpleUnit;
-  if(currentClass != 0x447A20 + (size_t)lib_BaseAddress()) {
-    return 0;
-  }
-  size_t resourceClass = *(size_t *)((size_t)simpleUnit + 0x2C);
-  if(*(size_t *)resourceClass != 0x449608 + (size_t)lib_BaseAddress()) {
-    return 0;
-  }
-  return 1;
+NeutralUnitType res_Type(Resource unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
+  return (NeutralUnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x260, INT32_T_TYPE);
 }
 
-uint8_t res_IsUnitComplexUnitResource(PVOID simpleUnit) {
-  char *resName = res_Name((Resource) {
+uint8_t res_IsUnitResource(PVOID simpleUnit) {
+  UnitType type = unit_Type((Unit) {
     ._payload = simpleUnit
   });
-  return !memcmp(resName, "Res - Fish", min(strlen(resName), strlen("Res - Fish")));
+  if(type == UNIT_UNDEFINED && eeTypes_Neutral_IsResource(res_Type((Resource) {
+    ._payload = simpleUnit
+  }))) {
+    return 1;
+  }
+  return 0;
 }
