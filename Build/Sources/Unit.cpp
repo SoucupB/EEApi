@@ -2,6 +2,7 @@
 #include "LibManager.h"
 #include "MapData.h"
 #include <unordered_map>
+#include "Resource.h"
 
 unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence();
 
@@ -141,4 +142,17 @@ void unit_Repair(Unit unit, Unit target) {
     return ;
   }
   helper_RepairBuilding(unit_Reference(unit), unit_Reference(target));
+}
+
+void unit_Citizen_Farm(Unit unit, Resource resource) {
+  UnitType unitType = unit_Type(unit);
+  NeutralUnitType neutralRes = res_Type(resource);
+  if(!eeTypes_IsCitizen(unitType) || neutralRes == RES_FISH) {
+    return ;
+  }
+  helper_Citizen_Gather(unit_Reference(unit), res_Reference(resource));
+}
+
+void unit_Farm(Unit unit, Resource resource) {
+  unit_Citizen_Farm(unit, resource);
 }

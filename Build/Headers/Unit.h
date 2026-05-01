@@ -17,3 +17,4 @@ void unit_Repair(Unit unit, Unit target);
 int32_t unit_TotalHP(Unit unit);
 PVOID unit_Reference(Unit unit);
 uint8_t unit_GetPlayer(Unit unit);
+void unit_Farm(Unit unit, Resource resource);
