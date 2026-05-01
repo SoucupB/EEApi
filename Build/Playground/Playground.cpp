@@ -57,11 +57,11 @@ void execDataPengus() {
   }
   if(GetAsyncKeyState('P') & 0x8000) {
     // test_ConvertEnemy();
-    farmUnit();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {
-    repairBuildings();
+    // repairBuildings();
+    farmUnit();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {

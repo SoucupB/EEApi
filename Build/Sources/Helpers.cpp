@@ -747,8 +747,31 @@ __declspec(dllexport) void helper_Gather_Citizen_QueueCommand(PVOID unit, PVOID 
   helper_Gather_Method5FDFA5(unit);
 }
 
+PVOID helper_Gather_UnitClassStruct(PVOID unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer(unit, 0x2C, POINTER_TYPE);
+  return (PVOID)*unitMetaData;
+}
+
+PVOID helper_Gather_UnitClass(PVOID unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer(unit, 0x2C, POINTER_TYPE);
+  return (PVOID)unitMetaData;
+}
+
+PVOID helper_Gather_UnitClassMethod(PVOID unit) {
+  size_t rsp = *(size_t *)helper_Gather_UnitClass(unit);
+  return (PVOID)*(size_t *)(rsp + 0x74);
+}
+
+__declspec(dllexport) void helper_Gather_Register(PVOID unit) {
+  PVOID className = helper_Gather_UnitClass(unit);
+  PVOID methodStruct = helper_Gather_UnitClassMethod(unit);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(className, unit);
+}
+
 __declspec(dllexport) void helper_Citizen_Gather(PVOID unit, PVOID resource) {
   PVOID buffer = help_New(0x44);
   helper_Gather_ClassInit(buffer, resource);
   helper_Gather_Citizen_QueueCommand(unit, buffer);
+  helper_Gather_Register(unit);
 }
