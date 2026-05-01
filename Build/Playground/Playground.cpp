@@ -186,7 +186,7 @@ void farmUnit() {
   if(!res_Reference(res)) {
     return ;
   }
-  eeTa_FilePrintf("Farm init!\n");
+  eeTa_FilePrintf("Farm init %s!\n", res_Name(res));
   unit_Farm(citizen, res);
 }
 
