@@ -277,55 +277,6 @@ void helper_CastPoint(PVOID unit, Point target, Ability ability) {
   helper_ReplaceOrder(unit, target, ability);
 }
 
-
-
-void helper_ReplaceECOrder(PVOID unit, Point target, Ability ability) {
-  PVOID unitBuffer = help_New(0x34);
-  builder_FillValue(unitBuffer, 0x0, 0x44748C + (size_t)lib_BaseAddress());
-  builder_FillValue(unitBuffer, 0x4, 2817);
-  builder_FillValue(unitBuffer, 0x8, 8000);
-  builder_FillValue(unitBuffer, 0xc, 0x0);
-  builder_FillValue(unitBuffer, 0x10, 0xA5CB);
-  builder_FillValue(unitBuffer, 0x14, 4);
-  builder_FillValue(unitBuffer, 0x18, 2);
-  builder_FillValue(unitBuffer, 0x1C, 0x101);
-  builder_FillValue(unitBuffer, 0x20, (size_t)unit);
-  builder_FillValue(unitBuffer, 0x24, 0);
-  builder_FillValue(unitBuffer, 0x28, 32);
-  builder_FillValue(unitBuffer, 0x2C, 38);
-  builder_FillValue(unitBuffer, 0x30, ability);
-  memcpy((PVOID)((size_t)unit + 0x1EC), &unitBuffer, sizeof(size_t));
-  // memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
-}
-
-void helper_ReplaceF0Order(PVOID unit, Point target, Ability ability) {
-  PVOID unitBuffer = help_New(0x38);
-  float valX = (float)(int32_t)target.x + 0.5f;
-  float valY = (float)(int32_t)target.y + 0.5f;
-  builder_FillValue(unitBuffer, 0x0, 0x4478A0 + (size_t)lib_BaseAddress());
-  builder_FillValue(unitBuffer, 0x4, 0x101);
-  builder_FillValue(unitBuffer, 0x8, 5000);
-  builder_FillValue(unitBuffer, 0xc, 0x1A0B1);
-  builder_FillValue(unitBuffer, 0x10, 0x19980);
-  builder_FillValue(unitBuffer, 0x14, 0x13);
-  builder_FillValue(unitBuffer, 0x18, 1);
-  builder_FillValue(unitBuffer, 0x1C, 0x1);
-  builder_FillValue(unitBuffer, 0x20, valX);
-  builder_FillValue(unitBuffer, 0x24, valY);
-  builder_FillValue(unitBuffer, 0x28, 0);
-  builder_FillValue(unitBuffer, 0x2C, 0);
-  builder_FillValue(unitBuffer, 0x30, 0x00010001);
-  builder_FillValue(unitBuffer, 0x34, 0);
-  memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
-  // memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
-}
-
-void helper_CastPointInTesting(PVOID unit, Point target, Ability ability) {
-  help_UnitMove(unit, target, UNIT_ATTACK);
-  helper_ReplaceECOrder(unit, target, ability);
-  helper_ReplaceF0Order(unit, target, ability);
-}
-
 PVOID __fastcall help_SearchUnits(PVOID self) {
   PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EDCC0);
   return method(self);
