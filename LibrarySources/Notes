@@ -1006,3 +1006,8 @@ This method is called when a new res is added 0056F275.
 The res class might actually be at [[unit + 0x2C] + 0x260]
 
 Here might be the 0056F335 die method for resources.
+
+###################################
+Rebuilding moving units
+###################################
+Here 005ED231 is the set the creator for the 0x38 size buffer.

@@ -20,3 +20,4 @@ PVOID unit_Reference(Unit unit);
 uint8_t unit_GetPlayer(Unit unit);
 void unit_Farm(Unit unit, Resource resource);
 int8_t unit_IsIdle(Unit unit);
+void unit_Action(Unit unit, Point point);

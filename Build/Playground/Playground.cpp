@@ -25,6 +25,7 @@ void farmUnit();
 Unit getFishboat();
 Resource getFish();
 void farmFish();
+void moveUnit();
 
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
@@ -65,8 +66,9 @@ void execDataPengus() {
   }
   if(GetAsyncKeyState('F') & 0x8000) {
     // repairBuildings();
-    farmUnit();
-    farmFish();
+    // farmUnit();
+    // farmFish();
+    moveUnit();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -213,6 +215,17 @@ void farmUnit() {
   }
   eeTa_FilePrintf("Farm init %s!\n", res_Name(res));
   unit_Farm(citizen, res);
+}
+
+void moveUnit() {
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  unit_Action(citizen, (Point) {
+    .x = 80.044f,
+    .y = 45.0445
+  });
 }
 
 void farmFish() {

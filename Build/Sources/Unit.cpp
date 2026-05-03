@@ -169,3 +169,7 @@ void unit_Farm(Unit unit, Resource resource) {
   unit_Citizen_Farm(unit, resource);
   unit_Fishboat_Farm(unit, resource);
 }
+
+void unit_Action(Unit unit, Point point) {
+  helper_Unit_Command(unit_Reference(unit), point);
+}
