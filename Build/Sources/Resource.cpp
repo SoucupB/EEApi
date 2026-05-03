@@ -59,3 +59,21 @@ Resource res_Null() {
     ._payload = NULL
   };
 }
+
+TilePoint res_Tile_Position(Resource self) {
+  int32_t x = *(int32_t *)util_Pointer(res_Reference(self), 0x1C, INT32_T_TYPE);
+  int32_t y = *(int32_t *)util_Pointer(res_Reference(self), 0x20, INT32_T_TYPE);
+  return (TilePoint) {
+    .x = x,
+    .y = y
+  };
+}
+
+Point res_Point_Position(Resource self) {
+  float *x = (float *)util_Pointer(res_Reference(self), 0x13C, FLOAT_TYPE);
+  float *y = (float *)util_Pointer(res_Reference(self), 0x14C, FLOAT_TYPE);
+  return (Point) {
+    .x = *x,
+    .y = *y
+  };
+}

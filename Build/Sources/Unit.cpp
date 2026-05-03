@@ -69,8 +69,8 @@ int8_t unit_IsBuilding(Unit unit) {
 }
 
 TilePoint unit_Tile_Position(Unit unit) {
-  int32_t x = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x1C, INT32_T_TYPE);
-  int32_t y = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x20, INT32_T_TYPE);
+  int32_t x = *(int32_t *)util_Pointer(unit_Reference(unit), 0x1C, INT32_T_TYPE);
+  int32_t y = *(int32_t *)util_Pointer(unit_Reference(unit), 0x20, INT32_T_TYPE);
   return (TilePoint) {
     .x = x,
     .y = y
