@@ -77,3 +77,8 @@ Point res_Point_Position(Resource self) {
     .y = *y
   };
 }
+
+void res_OnRelease(Resource resource) {
+  PResourceManager manager = game_GetResourcesManager();
+  manager->resourcesRefs->erase(res_Reference(resource));
+}

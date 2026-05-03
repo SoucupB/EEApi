@@ -7,6 +7,7 @@
 #include "EETwa.h"
 #include "Helpers.h"
 #include "Resource.h"
+#include "Resource.h"
 
 static uint8_t onInitFlag = 0;
 static size_t mapPolygons;
@@ -60,6 +61,14 @@ extern "C" {
     return method(self);
   }
 
+  __declspec(dllexport) int32_t __thiscall onResourceRelease(PVOID self) {
+    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1DB4);
+    res_OnRelease((Resource) {
+      ._payload = self
+    });
+    return method(self);
+  }
+
   __declspec(dllexport) int32_t onUnitBuy(long double multiplier) {
     int32_t (*method)(long double) = (int32_t (*)(long double)) ((uint8_t *)lib_BaseAddress() + 0x148291);
     return eeTa_OnUnitBuy(multiplier, method);
@@ -97,6 +106,7 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)0x1F5E09, (PVOID)onPlanePark);
   builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
   builder_Definition((PVOID)0x16F275, (PVOID)onResourceInit);
+  builder_Definition((PVOID)0x16F33E, (PVOID)onResourceRelease);
   builder_ReplaceMMUMethods();
   setMapStart();
 }

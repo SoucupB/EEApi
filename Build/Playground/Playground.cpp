@@ -216,16 +216,17 @@ void farmUnit() {
 }
 
 void farmFish() {
-  Unit citizen = getFishboat();
-  if(!unit_Reference(citizen)) {
-    return ;
-  }
   Resource res = getFish();
   if(!res_Reference(res)) {
     return ;
   }
+  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTypes_IsFishBoat(unit_Type(units[i]))) {
+      unit_Farm(units[i], res);
+    }
+  }
   eeTa_FilePrintf("Farm fish init %s!\n", res_Name(res));
-  unit_Farm(citizen, res);
 }
 
 

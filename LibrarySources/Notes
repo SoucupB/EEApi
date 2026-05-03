@@ -1004,3 +1004,5 @@ Get resources from the first player.
 
 This method is called when a new res is added 0056F275.
 The res class might actually be at [[unit + 0x2C] + 0x260]
+
+Here might be the 0056F335 die method for resources.

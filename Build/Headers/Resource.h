@@ -15,3 +15,4 @@ NeutralUnitType res_Type(Resource unit);
 Resource res_Null();
 TilePoint res_Tile_Position(Resource self);
 Point res_Point_Position(Resource self);
+void res_OnRelease(Resource resource);
