@@ -22,6 +22,10 @@ Unit getCitizen();
 void repairBuildings();
 void queueCommand(PVOID unit, Point target, Ability ability);
 void farmUnit();
+Unit getFishboat();
+Resource getFish();
+void farmFish();
+
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
 __declspec(dllexport) void castHurricane();
@@ -62,6 +66,7 @@ void execDataPengus() {
   if(GetAsyncKeyState('F') & 0x8000) {
     // repairBuildings();
     farmUnit();
+    farmFish();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -132,6 +137,16 @@ Unit getCitizen() {
   return eeTa_Unit_Null();
 }
 
+Unit getFishboat() {
+  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTypes_IsFishBoat(unit_Type(units[i]))) {
+      return units[i];
+    }
+  }
+  return eeTa_Unit_Null();
+}
+
 Unit getEnemy() {
   vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
   for(size_t i = 0; i < units.size(); i++) {
@@ -172,6 +187,16 @@ Resource getFarmableRes() {
   return res_Null();
 }
 
+Resource getFish() {
+  vector<Resource> units = res_All();
+  for(size_t i = 0; i < units.size(); i++) {
+    if(res_Type(units[i]) == RES_FISH) {
+      return units[i];
+    }
+  }
+  return res_Null();
+}
+
 uint8_t navalAttackFilter(Unit unit) {
   UnitType def = eeTa_EETypes_UnitType(unit);
   return eeTypes_IsWaterUnit(def);
@@ -189,6 +214,20 @@ void farmUnit() {
   eeTa_FilePrintf("Farm init %s!\n", res_Name(res));
   unit_Farm(citizen, res);
 }
+
+void farmFish() {
+  Unit citizen = getFishboat();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  Resource res = getFish();
+  if(!res_Reference(res)) {
+    return ;
+  }
+  eeTa_FilePrintf("Farm fish init %s!\n", res_Name(res));
+  unit_Farm(citizen, res);
+}
+
 
 Unit getEnemyShip() {
   vector<Unit> units = eeTa_Units(eeTa_AllPlayers());

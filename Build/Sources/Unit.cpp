@@ -152,6 +152,16 @@ void unit_Citizen_Farm(Unit unit, Resource resource) {
   helper_Citizen_Gather(unit_Reference(unit), res_Reference(resource));
 }
 
+void unit_Fishboat_Farm(Unit unit, Resource resource) {
+  UnitType unitType = unit_Type(unit);
+  NeutralUnitType neutralRes = res_Type(resource);
+  if(eeTypes_IsFishBoat(unitType) && neutralRes != RES_FISH) {
+    return ;
+  }
+  helper_Citizen_Gather(unit_Reference(unit), res_Reference(resource));
+}
+
 void unit_Farm(Unit unit, Resource resource) {
   unit_Citizen_Farm(unit, resource);
+  unit_Fishboat_Farm(unit, resource);
 }
