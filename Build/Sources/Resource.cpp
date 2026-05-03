@@ -78,6 +78,11 @@ Point res_Point_Position(Resource self) {
   };
 }
 
+uint8_t res_IsPresent(Resource resource) {
+  PResourceManager manager = game_GetResourcesManager();
+  return manager->resourcesRefs->find(res_Reference(resource)) != manager->resourcesRefs->end();
+}
+
 void res_OnRelease(Resource resource) {
   PResourceManager manager = game_GetResourcesManager();
   manager->resourcesRefs->erase(res_Reference(resource));

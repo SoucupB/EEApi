@@ -166,6 +166,9 @@ void unit_Fishboat_Farm(Unit unit, Resource resource) {
 }
 
 void unit_Farm(Unit unit, Resource resource) {
+  if(!res_IsPresent(resource)) {
+    return ;
+  }
   unit_Citizen_Farm(unit, resource);
   unit_Fishboat_Farm(unit, resource);
 }
