@@ -215,7 +215,7 @@ void addPositionDiff(PVOID pos, string &current, size_t size) {
   }
 }
 
-__declspec(dllexport) void help_AddSelectedUnitToBuffer(PVOID self, PVOID unit) {
+void help_AddSelectedUnitToBuffer(PVOID self, PVOID unit) {
   PVOID derefStruct = util_Pointer(self, 0x0, POINTER_TYPE);
   PVOID methodStruct = util_Pointer(derefStruct, 0x4, POINTER_TYPE);
   void __thiscall (*method)(PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -320,15 +320,13 @@ void helper_ReplaceF0Order(PVOID unit, Point target, Ability ability) {
   // memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
 }
 
-__declspec(dllexport) void helper_CastPointInTesting(PVOID unit, Point target, Ability ability) {
+void helper_CastPointInTesting(PVOID unit, Point target, Ability ability) {
   help_UnitMove(unit, target, UNIT_ATTACK);
   helper_ReplaceECOrder(unit, target, ability);
   helper_ReplaceF0Order(unit, target, ability);
 }
 
-
-
-__declspec(dllexport)  PVOID __fastcall help_SearchUnits(PVOID self) {
+PVOID __fastcall help_SearchUnits(PVOID self) {
   PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EDCC0);
   return method(self);
 }
@@ -762,14 +760,14 @@ PVOID helper_Gather_UnitClassMethod(PVOID unit) {
   return (PVOID)*(size_t *)(rsp + 0x74);
 }
 
-__declspec(dllexport) void helper_Gather_Register(PVOID unit) {
+void helper_Gather_Register(PVOID unit) {
   PVOID className = helper_Gather_UnitClass(unit);
   PVOID methodStruct = helper_Gather_UnitClassMethod(unit);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(className, unit);
 }
 
-__declspec(dllexport) void helper_Citizen_Gather(PVOID unit, PVOID resource) {
+void helper_Citizen_Gather(PVOID unit, PVOID resource) {
   PVOID buffer = help_New(0x44);
   helper_Gather_ClassInit(buffer, resource);
   helper_Gather_Citizen_QueueCommand(unit, buffer);
