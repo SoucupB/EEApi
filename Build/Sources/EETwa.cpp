@@ -64,6 +64,7 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
   (*unitPresence[playerTeam])[unit._payload] = 1;
   (*unitPresence[eeTwa->all_players])[unit._payload] = 1;
   pls_ProcessHealth(unit._payload);
+  ply_Inits(unit_Reference(unit));
 }
 
 int8_t eeTa_AllPlayers() {

@@ -12,6 +12,7 @@ void res_InitResource(PVOID unit) {
     return ;
   }
   (*manager->resourcesRefs)[unit] = 1;
+  ply_Inits(unit);
 }
 
 PVOID res_Reference(Resource resource) {
