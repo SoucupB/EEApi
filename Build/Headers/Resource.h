@@ -2,10 +2,7 @@
 #include <windows.h>
 #include "Game.h"
 #include "Geometry.h"
-
-typedef struct Resource_t {
-  PVOID _payload;
-} Resource;
+#include "EETypes.h"
 
 vector<Resource> res_All();
 PVOID res_Reference(Resource resource);

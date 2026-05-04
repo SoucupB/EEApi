@@ -5,9 +5,17 @@
 
 using namespace std;
 
+typedef struct Resource_t {
+  PVOID _payload;
+} Resource;
+
 typedef struct Unit_t {
   PVOID _payload;
 } Unit;
+
+typedef struct Player_t {
+  PVOID _payload;
+} Player;
 
 enum UnitAction {
   UNIT_MOVE = 0x101,

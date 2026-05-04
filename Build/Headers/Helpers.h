@@ -16,4 +16,4 @@ void helper_CastAbility(PVOID unit, Point target, Ability ability);
 void helper_RepairBuilding(PVOID unit, PVOID building);
 void helper_Citizen_Gather(PVOID unit, PVOID resource);
 void helper_Unit_Command(PVOID unit, Point position, UnitAction action);
-// PVOID helper_Player_FromUnit(PVOID unit);
+PVOID helper_Player_FromUnit(PVOID unit);
