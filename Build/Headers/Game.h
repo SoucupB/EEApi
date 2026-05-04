@@ -56,6 +56,7 @@ typedef struct Game_t {
   PMapData mapData;
   PEETypes types;
   PResourceManager resourceManager;
+  PEETwa eeTwa;
 } Game;
 
 typedef Game *PGame;
@@ -64,4 +65,5 @@ void game_Init();
 PPlayerState game_GetPlayerState();
 PMapData game_GetMapData();
 PEETypes game_GetEETypes();
+PEETwa game_EETwa();
 PResourceManager game_GetResourcesManager();
