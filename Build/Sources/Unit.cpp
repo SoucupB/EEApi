@@ -59,7 +59,7 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
       ._payload = it.first
     }) && unit_IsBuilding((Unit) {
       ._payload = it.first
-    }) && eeTa_IsIdle((Unit) {
+    }) && eeTa_Building_IsIdle((Unit) {
       ._payload = it.first
     })) {
       buildingsPointer.push_back((Unit) {
@@ -68,6 +68,10 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
     }
   }
   return buildingsPointer;
+}
+
+int8_t eeTa_Building_IsIdle(Unit building) {
+  return eeTa_CurrentlyBuilding(building) == IDLE;
 }
 
 int8_t unit_IsBuildingComplete(Unit unit) {

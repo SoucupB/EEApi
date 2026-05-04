@@ -144,16 +144,6 @@ int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double)) {
   return method(resources);
 }
 
-int8_t eeTa_AreAllies(uint8_t plySrc, uint8_t plyDst) {
-  PVOID _1 = util_Pointer(lib_BaseAddress(), 0x530DB4 + 0x4 * plySrc, POINTER_TYPE);
-  if(!_1) {
-    return 0;
-  }
-  uint8_t *_2 = (uint8_t *)util_Pointer(_1, 0x4 * plyDst + 0x9DC, INT8_T_TYPE);
-
-  return !*_2;
-}
-
 void eeTa_SetCvCAggression(uint8_t botIndex, float aggression) {
   PVOID _1 = util_Pointer(lib_BaseAddress(), 0x530DB4 + 0x4 * botIndex, POINTER_TYPE);
   if(!_1) {
@@ -360,10 +350,6 @@ int32_t eeTa_CurrentHp(Unit unit) {
 int64_t eeTa_CurrentFrame() {
   PEETwa eeTwa = game_EETwa();
   return eeTwa->frames;
-}
-
-int8_t eeTa_IsUnitIdle(Unit unit) {
-  return !util_Pointer(unit._payload, 0x1F0, POINTER_TYPE);
 }
 
 PVOID eeTa_Unit_Sample(int8_t player) {
