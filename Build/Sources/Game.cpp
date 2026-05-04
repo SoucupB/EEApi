@@ -22,6 +22,30 @@ void game_MapData_Init(PGame game) {
   memset(game->mapData->planeMap, 0, sizeof(TilePlaneMap));
 }
 
+void game_Resources_Init(PGame game) {
+  game->resourceManager = (PResourceManager)malloc(sizeof(ResourceManager));
+  game->resourceManager->resourcesRefs = new unordered_map<PVOID, uint8_t>();
+}
+
+void game_Player_Init(PGame game) {
+  game->players = (PPlayers)malloc(sizeof(Players));
+  game->players->playerData = new unordered_map<PVOID, uint8_t>();
+}
+
+void game_EETwa_Init(PGame game) {
+  game->eeTwa = (PEETwa)malloc(sizeof(EETwa));
+  memset(game->eeTwa, 0, sizeof(EETwa));
+  for(size_t i = 0; i < sizeof(game->eeTwa->unitPresence) / sizeof(unordered_map<PVOID, uint8_t> *); i++) {
+    game->eeTwa->unitPresence[i] = new unordered_map<PVOID, uint8_t>();
+  }
+  game->eeTwa->playersCount = (int8_t)(sizeof(game->eeTwa->unitPresence) / sizeof(unordered_map<PVOID, uint8_t> *));
+  game->eeTwa->all_players = 20;
+  game->eeTwa->playerIndex = 1;
+  game->eeTwa->neutralPlayer = 0;
+  game->eeTwa->shouldCostBeReduced = 0;
+  game->eeTwa->timers = tmr_Init();
+}
+
 PPlayerState game_GetPlayerState() {
   return game->plyState;
 }
@@ -34,6 +58,18 @@ PEETypes game_GetEETypes() {
   return game->types;
 }
 
+PEETwa game_EETwa() {
+  return game->eeTwa;
+}
+
+PPlayers game_Players() {
+  return game->players;
+}
+
+PResourceManager game_GetResourcesManager() {
+  return game->resourceManager;
+}
+
 void game_PlayerState_Delete(PGame game) {
   if(!game->plyState) {
     return ;
@@ -41,6 +77,29 @@ void game_PlayerState_Delete(PGame game) {
   delete game->plyState->unitsHealth;
   free(game->plyState);
   game->plyState = NULL;
+}
+
+void game_Players_Delete(PGame game) {
+  if(!game->players) {
+    return ;
+  }
+  delete game->players->playerData;
+  free(game->players);
+  game->players = NULL;
+}
+
+void game_EETwa_Delete(PGame game) {
+  if(!game->eeTwa) {
+    return ;
+  }
+  for(size_t i = 0, c = game->eeTwa->playersCount; i < c; i++) {
+    if(game->eeTwa->unitPresence[i]) {
+      delete game->eeTwa->unitPresence[i];
+    }
+  }
+  tmrs_Delete(game->eeTwa->timers);
+  free(game->eeTwa);
+  game->eeTwa = NULL;
 }
 
 void game_MapData_Delete(PGame game) {
@@ -55,7 +114,9 @@ void game_MapData_Delete(PGame game) {
 void game_EETypes_Init(PGame game) {
   game->types = (PEETypes)malloc(sizeof(EETypes));
   game->types->classTreeStructure = new map<UnitClassType, map<UnitType, uint8_t> >();
+  game->types->neutralClassTreeStructure = new map<NeutralClassType, map<NeutralUnitType, uint8_t> >();
   game->types->parentsClass = new map<UnitType, UnitClassType>();
+  game->types->neutralParentsClass = new map<NeutralUnitType, NeutralClassType>();
 }
 
 void game_EETypes_Delete(PGame game) {
@@ -64,8 +125,19 @@ void game_EETypes_Delete(PGame game) {
   }
   delete game->types->classTreeStructure;
   delete game->types->parentsClass;
+  delete game->types->neutralClassTreeStructure;
+  delete game->types->neutralParentsClass;
   free(game->types);
   game->types = NULL;
+}
+
+void game_Resources_Delete(PGame game) {
+  if(!game->resourceManager) {
+    return ;
+  }
+  delete game->resourceManager->resourcesRefs;
+  free(game->resourceManager);
+  game->resourceManager = NULL;
 }
 
 PGame game_Reference() {
@@ -79,6 +151,9 @@ void game_Delete(PGame *self) {
   game_PlayerState_Delete(*self);
   game_MapData_Delete(*self);
   game_EETypes_Delete(*self);
+  game_Resources_Delete(*self);
+  game_EETwa_Delete(*self);
+  game_Players_Delete(*self);
   free(*self);
   *self = NULL;
 }
@@ -89,4 +164,7 @@ void game_Init() {
   game_PlayerState_Init(game);
   game_MapData_Init(game);
   game_EETypes_Init(game);
+  game_Resources_Init(game);
+  game_EETwa_Init(game);
+  game_Player_Init(game);
 }

@@ -18,4 +18,6 @@ typedef struct Circle_t {
 
 Unit geom_GetClosestUnitFrom(Unit unit, int8_t player, uint8_t (*filter)(Unit));
 uint8_t geom_IsPointInCircle(Point p, Circle c);
-
+TilePoint geom_Tile_FromPoint(Point target);
+Point geom_Point_Invalid();
+uint8_t geom_Point_IsInvalid(Point point);

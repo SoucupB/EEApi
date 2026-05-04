@@ -6,7 +6,7 @@
 typedef struct TimeAtom_t {
   PVOID method;
   size_t time;
-  PVOID arguments; // Arguments should be alocated on the heap and the calee should take care of freeing the object.
+  PVOID arguments; // Arguments should be alocated on the heap or static memory and the calee should take care of freeing the object.
   size_t _lastCheckedTime;
 } TimeAtom;
 

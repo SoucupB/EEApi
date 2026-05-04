@@ -6,7 +6,6 @@
 
 using namespace std;
 
-#define INVALID_TILE_ID UINT16_MAX
 #define PLANE_MARK_BIT (1<<15)
 
 static const size_t mapPointer = 0x530DFC;

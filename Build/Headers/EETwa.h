@@ -57,7 +57,6 @@ int8_t eeTa_PlayerCount();
 int8_t *eeTa_PlayerIDs(); // 30 elements max
 int8_t eeTa_PlayerIndex(); // needs to be fixed.
 void eeTa_FilePrintf(const char *format, ...);
-void eeTa_Unit_Convert(Unit src, Unit dst);
 void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability);
 TilePoint eeTa_Unit_TilePosition(Unit unit);
 UnitType eeTa_EETypes_UnitType(Unit unit);

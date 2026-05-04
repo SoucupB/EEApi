@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "PlayerState.h"
 #include "Game.h"
+#include "Unit.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ void pls_ProcessHealth(PVOID unit) {
   PPlayerState ps = game_GetPlayerState();
   unordered_map<PVOID, UnitHealth> *unitsHealth = ps->unitsHealth;
   
-  int32_t health = eeTa_CurrentHp((Unit) {._payload = unit});
+  int32_t health = unit_CurrentHp((Unit) {._payload = unit});
   if(unitsHealth->find(unit) == unitsHealth->end()) {
     (*unitsHealth)[unit] = (UnitHealth) {
       .isBeingAttacked = 0,

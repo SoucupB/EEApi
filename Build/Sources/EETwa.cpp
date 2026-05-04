@@ -6,8 +6,7 @@
 #include "MapData.h"
 #include "LibManager.h"
 #include "Game.h"
-
-static PTimerHelper timers;
+#include "Unit.h"
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
@@ -16,34 +15,9 @@ void bt_OnFrame();
 void eeta_FileClean();
 void eeTa_RebuildDTs();
 
-vector<TileStruct> help_Map_GetTiles();
-vector<TileStruct> map_GetTilesArray();
-
 using namespace std;
-static unordered_map<PVOID, uint8_t> unitPresence[24];
-static int64_t frames;
-static int8_t all_players = 20;
-static int8_t playerIndex = 1;
-static int8_t neutralPlayer = 0;
-static int8_t shouldCostBeReduced = 0;
-static int8_t playerPresence[30];
-
-void eeTypes_Clean();
-
-void eeTa_Clear() {
-  eeTypes_Clean();
-  for(uint8_t i = 0; i < 24; i++) {
-    unitPresence[i].clear();
-  }
-  tmrs_Delete(timers);
-}
-
-unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence() {
-  return unitPresence;
-}
 
 void eeTa_RebuildExtraDataStructure() {
-  eeTa_Clear();
   eeTa_RebuildDTs();
 }
 
@@ -62,34 +36,40 @@ PVOID eeTa_Unit_Reference(Unit unit) {
 }
 
 uint8_t eeTa_NeutralPlayer() {
-  return neutralPlayer;
+  PEETwa eeTwa = game_EETwa();
+  return eeTwa->neutralPlayer;
 }
 
 uint8_t eeTa_IsNeutral(Unit unit) {
-  return eeTa_Player(unit) == neutralPlayer;
+  PEETwa eeTwa = game_EETwa();
+  return eeTa_Player(unit) == eeTwa->neutralPlayer;
 }
 
 // Money pointer is at ["EE-AOC.exe"+530DB8 + 0xAFC]
 
 void __cdecl eeTa_OnUnitFrame(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   int8_t playerTeam = eeTa_Player(unit);
   if(playerTeam < 0 || playerTeam >= 24) {
     return ;
   }
-  playerPresence[playerTeam] = 1;
+  eeTwa->playerPresence[playerTeam] = 1;
   if(eeTa_IsUnitDead(unit)) {
-    unitPresence[playerTeam].erase(unit._payload);
-    unitPresence[all_players].erase(unit._payload);
+    unitPresence[playerTeam]->erase(unit._payload);
+    unitPresence[eeTwa->all_players]->erase(unit._payload);
     bt_OnUnitDestroy(unit);
     return ;
   }
-  unitPresence[playerTeam][unit._payload] = 1;
-  unitPresence[all_players][unit._payload] = 1;
+  (*unitPresence[playerTeam])[unit._payload] = 1;
+  (*unitPresence[eeTwa->all_players])[unit._payload] = 1;
   pls_ProcessHealth(unit._payload);
+  ply_Inits(unit_Reference(unit));
 }
 
 int8_t eeTa_AllPlayers() {
-  return all_players;
+  PEETwa eeTwa = game_EETwa();
+  return eeTwa->all_players;
 }
 
 void eeTa_Map_Init() {
@@ -112,52 +92,29 @@ void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability) {
   helper_CastPoint(eeTa_Unit_Reference(src), target, ability);
 }
 
-void eeTa_Unit_Convert(Unit src, Unit dst) {
-  if(!eeTypes_IsPriest(eeTa_UnitType(src))) {
-    return ;
-  }
-  if(eeTa_IsBuilding(dst) || eeTa_IsUnitDead(dst)) {
-    return ;
-  }
-  helper_Convert(eeTa_Unit_Reference(src), eeTa_Unit_Reference(dst));
-}
-
 uint8_t eeTa_CurrentEnergy(Unit unit) {
   uint8_t *energyPointer = (uint8_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x2D4, INT8_T_TYPE);
   return *energyPointer;
 }
 
-vector<Unit> eeTa_Units(int8_t player) {
-  vector<Unit> units;
-  for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead((Unit) {
-      ._payload = it.first
-    }) && eeTa_IsUnit((Unit) {
-      ._payload = (PVOID)it.first
-    })) {
-      units.push_back((Unit) {
-        ._payload = (PVOID)it.first
-      });
-    }
-  }
-  return units;
-}
-
 void __cdecl eeTa_OnUnitDeath(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   for(int8_t i = 0; i < 24; i++) {
-    unitPresence[i].erase(unit._payload);
+    unitPresence[i]->erase(unit._payload);
   }
   bt_OnUnitDestroy(unit);
 }
 
 void eeTa_BuildUnit(Unit building, PVOID unitType) {
-  if(eeTa_CurrentPopulation() > eeTa_TotalPop()) {
+  if(eeTa_CurrentPopulation() >= eeTa_TotalPop()) {
     return ;
   }
   int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1F5F97);
-  shouldCostBeReduced = 1;
+  PEETwa eeTwa = game_EETwa();
+  eeTwa->shouldCostBeReduced = 1;
   method(building._payload, unitType, 0);
-  shouldCostBeReduced = 0;
+  eeTwa->shouldCostBeReduced = 0;
 }
 
 int32_t eeTa_UnitPopulation(Unit unit) {
@@ -180,7 +137,8 @@ int32_t eeTa_CurrentPopulation() {
 }
 
 int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double)) {
-  if(shouldCostBeReduced) {
+  PEETwa eeTwa = game_EETwa();
+  if(eeTwa->shouldCostBeReduced) {
     return (int32_t)(method(resources) * 0.05f);
   }
   return method(resources);
@@ -224,19 +182,6 @@ int32_t eeTa_TotalPop() {
   return method(unitTypeStruct, NULL, NULL);
 }
 
-vector<Unit> eeTa_Buildings(int8_t player) {
-  vector<Unit> buildingsPointer;
-  for(auto &it : unitPresence[player]) {
-    Unit currentUnit = (Unit) {
-      ._payload = it.first
-    };
-    if(!eeTa_IsUnitDead(currentUnit) && eeTa_IsBuilding(currentUnit)) {
-      buildingsPointer.push_back(currentUnit);
-    }
-  }
-  return buildingsPointer;
-}
-
 int8_t eeTa_IsIdle(Unit building) {
   return eeTa_CurrentlyBuilding(building) == IDLE;
 }
@@ -258,28 +203,9 @@ void eeTa_FilePrintf(const char *format, ...) {
   fclose(f);
 }
 
-vector<Unit> eeTa_IdleBuildings(int8_t player) {
-  vector<Unit> buildingsPointer;
-  for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead((Unit) {
-      ._payload = it.first
-    }) && eeTa_IsBuildingComplete((Unit) {
-      ._payload = it.first
-    }) && eeTa_IsBuilding((Unit) {
-      ._payload = it.first
-    }) && eeTa_IsIdle((Unit) {
-      ._payload = it.first
-    })) {
-      buildingsPointer.push_back((Unit) {
-        ._payload = it.first
-      });
-    }
-  }
-  return buildingsPointer;
-}
-
 int8_t eeTa_SelfPlayer() {
-  return playerIndex;
+  PEETwa eeTwa = game_EETwa();
+  return eeTwa->playerIndex;
 }
 
 vector<PVOID> eeTa_UnitTypes(Unit building) {
@@ -337,13 +263,15 @@ __declspec(dllexport) uint8_t eeTa_CanBuild(Unit building, PVOID type) {
 }
 
 int8_t *eeTa_PlayerIDs() {
-  return playerPresence;
+  PEETwa eeTwa = game_EETwa();
+  return eeTwa->playerPresence;
 }
 
 int8_t eeTa_PlayerCount() {
   int8_t total = 0;
+  PEETwa eeTwa = game_EETwa();
   for(size_t i = 0; i < 20; i++) {
-    if(playerPresence[i]) {
+    if(eeTwa->playerPresence[i]) {
       total++;
     }
   }
@@ -354,7 +282,6 @@ void eeTa_RebuildDTs() {
   game_Init();
   eeta_FileClean();
   eeTypes_InitUnits();
-  timers = tmr_Init();
 }
 
 void eeTa_OnInit() {
@@ -373,13 +300,14 @@ UnitType eeTa_EETypes_UnitType(Unit unit) {
 }
 
 void eeTa_OnFrame() {
+  PEETwa eeTwa = game_EETwa();
   bt_OnFrame();
-  tmr_OnFrame(timers);
-  frames++;
+  tmr_OnFrame(eeTwa->timers);
+  eeTwa->frames++;
 }
 
 void eeTa_AddFrameMethod(TimeAtom atom) {
-  tmrs_AddMethod(timers, atom);
+  tmrs_AddMethod(game_EETwa()->timers, atom);
 }
 
 int8_t eeTa_IsBuilding(Unit unit) {
@@ -445,7 +373,8 @@ int8_t eeTa_IsUnitDead(Unit unit) {
 }
 
 int64_t eeTa_CurrentFrame() {
-  return frames;
+  PEETwa eeTwa = game_EETwa();
+  return eeTwa->frames;
 }
 
 Point eeTa_CurrentPosition(Unit unit) {
@@ -462,7 +391,7 @@ int8_t eeTa_IsUnitIdle(Unit unit) {
 }
 
 PVOID eeTa_Unit_Sample(int8_t player) {
-  vector<Unit> units = eeTa_Units(player);
+  vector<Unit> units = unit_GetUnits(player);
   if(!units.size()) {
     return NULL;
   }

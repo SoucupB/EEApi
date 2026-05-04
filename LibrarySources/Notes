@@ -962,3 +962,55 @@ Calling this shit 004BC7BA sets the address for 1F0
 Calling this shit at 004BC7C5 sets the address for 1C8
 
 The setting the callamity workflow is between 004BC75A and 004BC787.
+
+############################################################################
+The method at 004C3E31 is called only when the citizen wants to repair a
+building. (Caller from here 004B8F10).
+#############################################################################
+
+The method at 004C3EAE is probably the only caller. -> 0055322A
+The method for repairment seems important here 55321F.
+Also this is important 005FE863. The method executor is here 0060D1D4.
+
+#####################################################
+REPAIR UNITS
+Create a 5C pointer
+call 0061E164. (With params) at 0060D1E7
+Call the method at 0060D1F7 after that.
+Call the method at 0060D203.
+
+
+For gathering stuff we can use the methods at
+004BF192.
+005EDFD7.
+005EE0A5.
+I should pay attention to this method 004BF1B2.
+(I need the super class which makes the 0x44 buffer).
+This method is the super method 004BF1B2.
+This 005FF31C resets the gather command.
+
+Let's find resources.
+[unit + 0x260]
+
+Here natural res are iterated 00628CF6
+This iterates over resources 0056F33E.
+
+00930D40 holds the WorldMap data.
+At there is [ecx] which holds a pointer some interesting data.
+Farm units belong to player even if they are farmable.
+
+To obtain the world player index is at [00930D40 + 0x74]
+Get resources from the first player.
+
+This method is called when a new res is added 0056F275.
+The res class might actually be at [[unit + 0x2C] + 0x260]
+
+Here might be the 0056F335 die method for resources.
+
+###################################
+Rebuilding moving units
+###################################
+Here 005ED231 is the set the creator for the 0x38 size buffer.
+
+This is the method which sets the data 005EE7D4.
+005ED524 -> 004C2A95

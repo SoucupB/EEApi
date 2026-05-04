@@ -215,7 +215,7 @@ void addPositionDiff(PVOID pos, string &current, size_t size) {
   }
 }
 
-__declspec(dllexport) void help_AddSelectedUnitToBuffer(PVOID self, PVOID unit) {
+void help_AddSelectedUnitToBuffer(PVOID self, PVOID unit) {
   PVOID derefStruct = util_Pointer(self, 0x0, POINTER_TYPE);
   PVOID methodStruct = util_Pointer(derefStruct, 0x4, POINTER_TYPE);
   void __thiscall (*method)(PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -277,58 +277,7 @@ void helper_CastPoint(PVOID unit, Point target, Ability ability) {
   helper_ReplaceOrder(unit, target, ability);
 }
 
-
-
-void helper_ReplaceECOrder(PVOID unit, Point target, Ability ability) {
-  PVOID unitBuffer = help_New(0x34);
-  builder_FillValue(unitBuffer, 0x0, 0x44748C + (size_t)lib_BaseAddress());
-  builder_FillValue(unitBuffer, 0x4, 2817);
-  builder_FillValue(unitBuffer, 0x8, 8000);
-  builder_FillValue(unitBuffer, 0xc, 0x0);
-  builder_FillValue(unitBuffer, 0x10, 0xA5CB);
-  builder_FillValue(unitBuffer, 0x14, 4);
-  builder_FillValue(unitBuffer, 0x18, 2);
-  builder_FillValue(unitBuffer, 0x1C, 0x101);
-  builder_FillValue(unitBuffer, 0x20, (size_t)unit);
-  builder_FillValue(unitBuffer, 0x24, 0);
-  builder_FillValue(unitBuffer, 0x28, 32);
-  builder_FillValue(unitBuffer, 0x2C, 38);
-  builder_FillValue(unitBuffer, 0x30, ability);
-  memcpy((PVOID)((size_t)unit + 0x1EC), &unitBuffer, sizeof(size_t));
-  // memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
-}
-
-void helper_ReplaceF0Order(PVOID unit, Point target, Ability ability) {
-  PVOID unitBuffer = help_New(0x38);
-  float valX = (float)(int32_t)target.x + 0.5f;
-  float valY = (float)(int32_t)target.y + 0.5f;
-  builder_FillValue(unitBuffer, 0x0, 0x4478A0 + (size_t)lib_BaseAddress());
-  builder_FillValue(unitBuffer, 0x4, 0x101);
-  builder_FillValue(unitBuffer, 0x8, 5000);
-  builder_FillValue(unitBuffer, 0xc, 0x1A0B1);
-  builder_FillValue(unitBuffer, 0x10, 0x19980);
-  builder_FillValue(unitBuffer, 0x14, 0x13);
-  builder_FillValue(unitBuffer, 0x18, 1);
-  builder_FillValue(unitBuffer, 0x1C, 0x1);
-  builder_FillValue(unitBuffer, 0x20, valX);
-  builder_FillValue(unitBuffer, 0x24, valY);
-  builder_FillValue(unitBuffer, 0x28, 0);
-  builder_FillValue(unitBuffer, 0x2C, 0);
-  builder_FillValue(unitBuffer, 0x30, 0x00010001);
-  builder_FillValue(unitBuffer, 0x34, 0);
-  memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
-  // memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
-}
-
-__declspec(dllexport) void helper_CastPointInTesting(PVOID unit, Point target, Ability ability) {
-  help_UnitMove(unit, target, UNIT_ATTACK);
-  helper_ReplaceECOrder(unit, target, ability);
-  helper_ReplaceF0Order(unit, target, ability);
-}
-
-
-
-__declspec(dllexport)  PVOID __fastcall help_SearchUnits(PVOID self) {
+PVOID __fastcall help_SearchUnits(PVOID self) {
   PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1EDCC0);
   return method(self);
 }
@@ -423,41 +372,6 @@ int32_t help_DerefCounter(PVOID ecx) {
   int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)derefMethod);
 
   return method(ecx);
-}
-
-PVOID help_GetMapPointer() {
-  PVOID basePointer = (PVOID)((size_t)lib_BaseAddress() + (size_t)0x530DFC);
-  return (PVOID)*(size_t *)basePointer;
-}
-
-size_t help_Map_TileCount(PVOID mapPointer) {
-  return *(size_t *)((size_t)mapPointer + 0x195618);
-}
-
-PVOID help_Map_TilePointer(PVOID mapPointer) {
-  return (PVOID)*(size_t *)((size_t)mapPointer + 0x1955F0);
-}
-
-vector<TileStruct> help_Map_GetTiles() {
-  vector<TileStruct> response;
-  PVOID mapPointer = help_GetMapPointer();
-  size_t count = help_Map_TileCount(mapPointer);
-  PVOID tileRef = help_Map_TilePointer(mapPointer);
-  for(size_t i = 0; i < count; i++) {
-    for(size_t j = 0; j < count; j++) {
-      size_t currentTile = *(size_t *)((size_t)tileRef + (count * i + j) * 4);
-      if(currentTile) {
-        response.push_back((TileStruct) {
-          .ref = (PVOID)currentTile,
-          .tile = (TilePoint) {
-            .x = (int32_t)j,
-            .y = (int32_t)i
-          }
-        });
-      }
-    }
-  }
-  return response;
 }
 
 int32_t derefPointer(PVOID ecx) {
@@ -700,4 +614,155 @@ void helper_CastAbility(PVOID unit, Point target, Ability ability) {
   helper_FillCalamityStruct(unit, calamityStruct, pntTarget);
   helper_AddCommandToUnit(unit, pntTarget);
   helper_UnknownMethod4BC7AF(unit); // This is the method which makes the unit move.
+}
+
+PVOID helper_Unit_GetPlayer(PVOID player) {
+  size_t *buffer = (size_t *)((size_t)player + 0x18);
+  return (PVOID)*buffer;
+}
+
+PVOID helper_Method61E164(PVOID buffer, PVOID building, PVOID player) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x21E164);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(buffer,
+         player, 
+         building,
+        (PVOID)0x1);
+}
+
+PVOID helper_Repair_ClassInit(PVOID buffer, PVOID unit, PVOID building) {
+  PVOID player = helper_Unit_GetPlayer(unit);
+  return helper_Method61E164(buffer, building, player);
+}
+
+PVOID helper_Method5FE863(PVOID buffer, PVOID unit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(unit, 
+                buffer,
+                (PVOID)0x0,
+                (PVOID)0x0);
+}
+
+PVOID helper_Method5FDFA5(PVOID unit, PVOID command) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(unit, 
+                command);
+}
+
+void helper_Repair_PushCommandToUnit(PVOID buffer, PVOID unit) {
+  helper_Method5FE863(buffer, unit);
+  helper_Method5FDFA5(unit, (PVOID)0x1F51);
+}
+
+void helper_RepairBuilding(PVOID unit, PVOID building) {
+  PVOID pntTarget = help_New(0x5C);
+  (void)helper_Repair_ClassInit(pntTarget, unit, building);
+  (void)helper_Repair_PushCommandToUnit(pntTarget, unit);
+}
+
+void helper_Gather_Method621E95(PVOID self, PVOID targetResource) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x221E95);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+        targetResource,
+        (PVOID)0x0,
+        (PVOID)0x1);
+}
+
+void helper_Gather_Method5FE863(PVOID self, PVOID buffer) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+         buffer,
+         (PVOID)0x0,
+         (PVOID)0x0);
+}
+
+void helper_Gather_Method5FDFA5(PVOID self) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+        (PVOID)0xFB7);
+}
+
+PVOID helper_Gather_ClassInit(PVOID buffer, PVOID targetResource) {
+  helper_Gather_Method621E95(buffer, targetResource);
+}
+
+void helper_Gather_Citizen_QueueCommand(PVOID unit, PVOID buffer) {
+  helper_Gather_Method5FE863(unit, buffer);
+  helper_Gather_Method5FDFA5(unit);
+}
+
+PVOID helper_Gather_UnitClassStruct(PVOID unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer(unit, 0x2C, POINTER_TYPE);
+  return (PVOID)*unitMetaData;
+}
+
+PVOID helper_Gather_UnitClass(PVOID unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer(unit, 0x2C, POINTER_TYPE);
+  return (PVOID)unitMetaData;
+}
+
+PVOID helper_Gather_UnitClassMethod(PVOID unit) {
+  size_t rsp = *(size_t *)helper_Gather_UnitClass(unit);
+  return (PVOID)*(size_t *)(rsp + 0x74);
+}
+
+void helper_Register(PVOID unit) {
+  PVOID className = helper_Gather_UnitClass(unit);
+  PVOID methodStruct = helper_Gather_UnitClassMethod(unit);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(className, unit);
+}
+
+void helper_Citizen_Gather(PVOID unit, PVOID resource) {
+  PVOID buffer = help_New(0x44);
+  helper_Gather_ClassInit(buffer, resource);
+  helper_Gather_Citizen_QueueCommand(unit, buffer);
+  helper_Register(unit);
+}
+
+void helper_Command_Method627742(PVOID self, Point point, uint8_t move) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227742);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  PVOID specialConst = (PVOID)(0x26080500 ^ move);
+  method(self, 
+         (PVOID)&point,
+         specialConst,
+         specialConst,
+         specialConst,
+         (PVOID)0x3F594D40,
+         (PVOID)0x0,
+         (PVOID)(0x1 ^ (!move)));
+}
+
+void helper_IssueCommand(PVOID unit, PVOID buffer, PVOID command) {
+  helper_Gather_Method5FE863(unit, buffer);
+  helper_Method5FDFA5(unit, command);
+  helper_Register(unit);
+}
+
+void helper_Unit_Command(PVOID unit, Point position, UnitAction action) {
+  PVOID buffer = help_New(0x38);
+  switch (action)
+  {
+    case UNIT_ATTACK:
+      helper_Command_Method627742(buffer, position, 0);
+      break;
+    case UNIT_MOVE:
+      helper_Command_Method627742(buffer, position, 1);
+      break;
+    
+    default:
+      break;
+  }
+  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
+}
+
+PVOID helper_Player_FromUnit(PVOID unit) {
+  return util_Pointer((PVOID)unit, 0x18, POINTER_TYPE);
 }
