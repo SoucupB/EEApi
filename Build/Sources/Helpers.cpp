@@ -737,7 +737,7 @@ __declspec(dllexport) void helper_Command_Method627742(PVOID self, Point point, 
          specialConst,
          (PVOID)0x3F594D40,
          (PVOID)0x0,
-         (PVOID)(0x1 ^ (~move)));
+         (PVOID)(0x1 ^ (!move)));
 }
 
 void helper_IssueCommand(PVOID unit, PVOID buffer, PVOID command) {
