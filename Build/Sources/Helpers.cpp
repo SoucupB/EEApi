@@ -711,7 +711,7 @@ PVOID helper_Gather_UnitClassMethod(PVOID unit) {
   return (PVOID)*(size_t *)(rsp + 0x74);
 }
 
-void helper_Gather_Register(PVOID unit) {
+void helper_Register(PVOID unit) {
   PVOID className = helper_Gather_UnitClass(unit);
   PVOID methodStruct = helper_Gather_UnitClassMethod(unit);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -722,7 +722,7 @@ void helper_Citizen_Gather(PVOID unit, PVOID resource) {
   PVOID buffer = help_New(0x44);
   helper_Gather_ClassInit(buffer, resource);
   helper_Gather_Citizen_QueueCommand(unit, buffer);
-  helper_Gather_Register(unit);
+  helper_Register(unit);
 }
 
 __declspec(dllexport) void helper_Command_Method627742(PVOID self, Point point, uint8_t move) {
@@ -743,7 +743,7 @@ __declspec(dllexport) void helper_Command_Method627742(PVOID self, Point point, 
 void helper_IssueCommand(PVOID unit, PVOID buffer, PVOID command) {
   helper_Gather_Method5FE863(unit, buffer);
   helper_Method5FDFA5(unit, command);
-  helper_Gather_Register(unit);
+  helper_Register(unit);
 }
 
 void helper_Unit_Command(PVOID unit, Point position, UnitAction action) {

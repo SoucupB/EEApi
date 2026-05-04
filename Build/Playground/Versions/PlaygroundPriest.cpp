@@ -231,15 +231,11 @@ void test_Convert(Unit src, Unit dst) {
   PVOID secondary = help_New(0x44);
   memset(actionMove, 0x0, 0xB8);
   memset(secondary, 0x0, 0x44);
-  // builder_Store(actionMove, 0xB8);
-  // builder_Store(secondary, 0x44);
   test_Convert_Fill(actionMove, secondary, src);
   builder_FillValue(actionMove, 0x68, (size_t)secondary);
   test_Convert_Secondary(secondary, src, dst);
   builder_FillValue(actionMove, 0x6C, (size_t)0x7D1);
   test_MoveToUnit(actionMove);
-  // builder_CheckChanges(actionMove);
-  // builder_CheckChanges(secondary);
 }
 
 void test_Move() {
