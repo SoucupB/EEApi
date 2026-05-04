@@ -21,10 +21,6 @@ void eeTa_RebuildExtraDataStructure() {
   eeTa_RebuildDTs();
 }
 
-PVOID eeTa_Unit_Reference(Unit unit) {
-  return unit._payload;
-}
-
 uint8_t eeTa_NeutralPlayer() {
   PEETwa eeTwa = game_EETwa();
   return eeTwa->neutralPlayer;
@@ -76,11 +72,6 @@ void eeTa_Map_PrintBitMap() {
     eeTa_FilePrintf("\n");
   }
   map_BitMapDelete(map, mapSizeInTiles);
-}
-
-uint8_t eeTa_CurrentEnergy(Unit unit) {
-  uint8_t *energyPointer = (uint8_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x2D4, INT8_T_TYPE);
-  return *energyPointer;
 }
 
 void __cdecl eeTa_OnUnitDeath(Unit unit) {

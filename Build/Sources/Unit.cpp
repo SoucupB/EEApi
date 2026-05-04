@@ -59,7 +59,7 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
       ._payload = it.first
     }) && unit_IsBuilding((Unit) {
       ._payload = it.first
-    }) && eeTa_Building_IsIdle((Unit) {
+    }) && unit_Building_IsIdle((Unit) {
       ._payload = it.first
     })) {
       buildingsPointer.push_back((Unit) {
@@ -70,7 +70,7 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
   return buildingsPointer;
 }
 
-int8_t eeTa_Building_IsIdle(Unit building) {
+int8_t unit_Building_IsIdle(Unit building) {
   return eeTa_CurrentlyBuilding(building) == IDLE;
 }
 
@@ -104,6 +104,11 @@ TilePoint unit_Tile_Position(Unit unit) {
     .x = x,
     .y = y
   };
+}
+
+uint8_t unit_CurrentEnergy(Unit unit) {
+  uint8_t *energyPointer = (uint8_t *)util_Pointer(unit_Reference(unit), 0x2D4, INT8_T_TYPE);
+  return *energyPointer;
 }
 
 Unit unit_Null() {

@@ -18,7 +18,6 @@ vector<Unit> eeTa_IdleBuildings(int8_t player);
 int64_t eeTa_CurrentFrame();
 void eeTa_OnUnitDeath(Unit unit);
 int8_t eeTa_Player(Unit unit);
-PVOID eeTa_Unit_Reference(Unit unit);
 void eeTa_Printf(const char *format, ...);
 int8_t eeTa_SelfPlayer();
 int8_t eeTa_AllPlayers();

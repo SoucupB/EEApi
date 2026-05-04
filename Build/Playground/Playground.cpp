@@ -35,7 +35,7 @@ PVOID createCalamityStruct(Point pos, Ability ability);
 
 // I think I find the water tile.
 void onLosingHealth(Unit unit) {
-  eeTa_FilePrintf("Unit %p taking damage\n", eeTa_Unit_Reference(unit));
+  eeTa_FilePrintf("Unit %p taking damage\n", unit_Reference(unit));
 }
 
 void printResources() {
