@@ -1013,4 +1013,4 @@ Rebuilding moving units
 Here 005ED231 is the set the creator for the 0x38 size buffer.
 
 This is the method which sets the data 005EE7D4.
-005ED524
+005ED524 -> 004C2A95

@@ -725,10 +725,11 @@ void helper_Citizen_Gather(PVOID unit, PVOID resource) {
   helper_Gather_Register(unit);
 }
 
-__declspec(dllexport) void helper_Command_Method627742(PVOID self, Point point) {
+__declspec(dllexport) void helper_Command_Method627742(PVOID self, Point point, uint8_t move) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227742);
-  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
-  PVOID specialConst = (PVOID)0x26080501;
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  PVOID specialConst = (PVOID)(0x26080500 ^ move);
   method(self, 
          (PVOID)&point,
          specialConst,
@@ -736,17 +737,28 @@ __declspec(dllexport) void helper_Command_Method627742(PVOID self, Point point) 
          specialConst,
          (PVOID)0x3F594D40,
          (PVOID)0x0,
-         (PVOID)0x1);
+         (PVOID)(0x1 ^ (~move)));
 }
 
 void helper_IssueCommand(PVOID unit, PVOID buffer, PVOID command) {
   helper_Gather_Method5FE863(unit, buffer);
-  helper_Method5FDFA5(unit, (PVOID)0x1F40);
+  helper_Method5FDFA5(unit, command);
   helper_Gather_Register(unit);
 }
 
-__declspec(dllexport) void helper_Unit_Command(PVOID unit, Point position) {
+void helper_Unit_Command(PVOID unit, Point position, UnitAction action) {
   PVOID buffer = help_New(0x38);
-  helper_Command_Method627742(buffer, position);
+  switch (action)
+  {
+    case UNIT_ATTACK:
+      helper_Command_Method627742(buffer, position, 0);
+      break;
+    case UNIT_MOVE:
+      helper_Command_Method627742(buffer, position, 1);
+      break;
+    
+    default:
+      break;
+  }
   helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
 }

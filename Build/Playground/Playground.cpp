@@ -236,7 +236,7 @@ void moveUnit() {
   unit_Action(citizen, (Point) {
     .x = 84.399f,
     .y = 47.001f
-  });
+  }, UNIT_MOVE);
 }
 
 void farmFish() {
