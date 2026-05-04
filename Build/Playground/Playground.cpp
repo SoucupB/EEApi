@@ -152,10 +152,9 @@ void repairBuildings(vector<Unit> &units) {
   if(!unit_Reference(currentCitizen)) {
     return ;
   }
-  vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
+  vector<Unit> buildings = unit_GetBuildings(eeTa_SelfPlayer());
   for(size_t i = 0; i < buildings.size(); i++) {
     if(unit_CurrentHp(buildings[i]) < unit_TotalHP(buildings[i])) {
-      eeTa_FilePrintf("Started repairing!\n");
       unit_Repair(currentCitizen, buildings[i]);
       break;
     }
@@ -163,7 +162,7 @@ void repairBuildings(vector<Unit> &units) {
 }
 
 void bt_MoveUnitsRandomly() {
-  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
   repairBuildings(units);
   for(size_t i = 0; i < units.size(); i++) {
     moveUnit(units[i]);
