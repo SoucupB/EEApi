@@ -163,5 +163,6 @@ uint8_t eeTypes_CanProduceWorkers(UnitType unitType) {
 uint8_t eeTypes_IsBuilding(UnitType unitType) {
   return eeTypes_IsFromClass(CLASS_BUILDINGS, unitType) ||
          eeTypes_IsFromClass(CLASS_TELEPORTER_FORTRESS, unitType) ||
-         eeTypes_IsFromClass(CLASS_SPECIAL_BUILDING, unitType);
+         eeTypes_IsFromClass(CLASS_SPECIAL_BUILDING, unitType) ||
+         eeTypes_IsFromClass(CLASS_GATES, unitType);
 }

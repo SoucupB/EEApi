@@ -77,9 +77,7 @@ Point unit_Point_Position(Unit unit) {
 }
 
 int8_t unit_IsBuilding(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  size_t *callerStruct = (size_t *)util_Pointer((PVOID)unitMetaData[0], 0xB8, POINTER_TYPE);
-  return (size_t)callerStruct == (size_t)lib_BaseAddress() + 0x20FD9D;
+  return eeTypes_IsBuilding(unit_Type(unit));
 }
 
 TilePoint unit_Tile_Position(Unit unit) {
