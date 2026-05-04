@@ -143,8 +143,9 @@ int32_t unit_TotalHP(Unit unit) {
 }
 
 uint8_t unit_GetPlayerIndex(Unit unit) {
-  PVOID nextStruct = util_Pointer(unit_Reference(unit), 0x18, POINTER_TYPE);
-  return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
+  // PVOID nextStruct = util_Pointer(unit_Reference(unit), 0x18, POINTER_TYPE);
+  // return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
+  return ply_GetPlayerIndex(unit);
 }
 
 void unit_Repair(Unit unit, Unit target) {
