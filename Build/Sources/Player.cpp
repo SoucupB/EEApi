@@ -38,6 +38,17 @@ Player ply_GetPlayer(Unit unit) {
   };
 }
 
+vector<Player> ply_All() {
+  vector<Player> response;
+  PPlayers playerData = game_Players();
+  for(auto &iter : *playerData->playerData) {
+    response.push_back((Player) {
+      ._payload = iter.first
+    });
+  }
+  return response;
+}
+
 PVOID ply_Reference(Player self) {
   return self._payload;
 }
