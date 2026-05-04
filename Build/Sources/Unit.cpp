@@ -194,6 +194,20 @@ uint8_t unit_IsPresent(Unit unit) {
   return 0;
 }
 
+int8_t unit_IsUnitDead(Unit unit) {
+  return !eeTa_CurrentHp(unit);
+}
+
+void unit_Convert(Unit src, Unit dst) {
+  if(!eeTypes_IsPriest(unit_Type(src))) {
+    return ;
+  }
+  if(unit_IsBuilding(dst) || unit_IsUnitDead(dst)) {
+    return ;
+  }
+  helper_Convert(unit_Reference(src), unit_Reference(dst));
+}
+
 void unit_Action(Unit unit, Point point, UnitAction action) {
   if(!unit_IsPresent(unit)) {
     return ;

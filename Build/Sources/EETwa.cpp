@@ -19,8 +19,6 @@ void eeTa_RebuildDTs();
 
 using namespace std;
 
-void eeTypes_Clean();
-
 void eeTa_Clear() {
   tmrs_Delete(timers);
 }
@@ -98,16 +96,6 @@ void eeTa_Map_PrintBitMap() {
 
 void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability) {
   helper_CastPoint(eeTa_Unit_Reference(src), target, ability);
-}
-
-void eeTa_Unit_Convert(Unit src, Unit dst) {
-  if(!eeTypes_IsPriest(eeTa_UnitType(src))) {
-    return ;
-  }
-  if(eeTa_IsBuilding(dst) || eeTa_IsUnitDead(dst)) {
-    return ;
-  }
-  helper_Convert(eeTa_Unit_Reference(src), eeTa_Unit_Reference(dst));
 }
 
 uint8_t eeTa_CurrentEnergy(Unit unit) {

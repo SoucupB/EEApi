@@ -241,9 +241,3 @@ uint8_t eeTypes_CanProduceWorkers(UnitTypeDef type) {
 uint8_t eeTypes_IsPriest(UnitTypeDef type) {
   return type == UNIT_PREHISTORIC_PRIEST; // The code does not change.
 }
-
-void eeTypes_Clean() {
-  navalUnits.clear();
-  airUnits.clear();
-  transportUnits.clear();
-}
