@@ -21,16 +21,6 @@ void eeTa_RebuildExtraDataStructure() {
   eeTa_RebuildDTs();
 }
 
-void eeTa_MoveTo(Unit src, Unit dst) {
-  help_MoveToTarget(eeTa_Unit_Reference(src), eeTa_Unit_Reference(dst));
-}
-
-Unit eeTa_Unit_Null() {
-  return (Unit) {
-    ._payload = NULL
-  };
-}
-
 PVOID eeTa_Unit_Reference(Unit unit) {
   return unit._payload;
 }
@@ -86,10 +76,6 @@ void eeTa_Map_PrintBitMap() {
     eeTa_FilePrintf("\n");
   }
   map_BitMapDelete(map, mapSizeInTiles);
-}
-
-void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability) {
-  helper_CastPoint(eeTa_Unit_Reference(src), target, ability);
 }
 
 uint8_t eeTa_CurrentEnergy(Unit unit) {
@@ -280,11 +266,6 @@ void eeTa_OnInit() {
   bt_OnInit();
 }
 
-UnitType eeTa_EETypes_UnitType(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
-}
-
 void eeTa_OnFrame() {
   PEETwa eeTwa = game_EETwa();
   bt_OnFrame();
@@ -326,21 +307,8 @@ Point eeTa_GetDestinationCommand(Unit unit) {
   };
 }
 
-TilePoint eeTa_Unit_TilePosition(Unit unit) {
-  int32_t x = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x1C, INT32_T_TYPE);
-  int32_t y = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x20, INT32_T_TYPE);
-  return (TilePoint) {
-    .x = x,
-    .y = y
-  };
-}
-
 int32_t eeTa_CurrentlyBuilding(Unit building) {
   return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
-}
-
-int32_t eeTa_CurrentHp(Unit unit) {
-  return *(int32_t *)util_Pointer((PVOID)unit._payload, 0x3C, INT32_T_TYPE);
 }
 
 int64_t eeTa_CurrentFrame() {

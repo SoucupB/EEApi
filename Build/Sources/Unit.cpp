@@ -106,6 +106,12 @@ TilePoint unit_Tile_Position(Unit unit) {
   };
 }
 
+Unit unit_Null() {
+  return (Unit) {
+    ._payload = NULL
+  };
+}
+
 PVOID unit_Reference(Unit unit) {
   return unit._payload;
 }

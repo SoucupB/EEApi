@@ -52,7 +52,7 @@ void test_PrintUnits() {
     for(int32_t i = 0; i < units.size(); i++) {
       Point currentPoint = unit_Point_Position(units[i]);
       eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", units[i]._payload, 
-                      unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(units[i])), unit_TotalHP(units[i]));
+                      unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]));
     }
   }
   vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
@@ -61,7 +61,7 @@ void test_PrintUnits() {
       Point currentPoint = unit_Point_Position(buildings[i]);
       eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", 
                       buildings[i]._payload, unit_Type(buildings[i]), 
-                      eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(buildings[i])), unit_TotalHP(buildings[i]));
+                      eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
     }
   }
 }
@@ -146,7 +146,7 @@ Unit getIdleCitizen(vector<Unit> &units) {
       return units[i];
     }
   }
-  return eeTa_Unit_Null();
+  return unit_Null();
 }
 
 void repairBuildings(vector<Unit> &units) {

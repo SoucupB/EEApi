@@ -26,3 +26,4 @@ Point unit_Point_Position(Unit unit);
 void unit_Convert(Unit src, Unit dst);
 int8_t unit_IsBuildingComplete(Unit unit);
 int8_t eeTa_Building_IsIdle(Unit building);
+Unit unit_Null();
