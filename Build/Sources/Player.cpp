@@ -44,6 +44,16 @@ Player ply_Null() {
   };
 }
 
+Player ply_Self() {
+  PPlayers playerData = game_Players();
+  return playerData->self;
+}
+
+Player ply_Neutral() {
+  PPlayers playerData = game_Players();
+  return playerData->neutral;
+}
+
 void ply_RegisterSelf(PPlayers playerData, Player self) {
   size_t playerClass = *(size_t *)ply_Reference(self);
   if(playerClass != 0x43C330 + (size_t)lib_BaseAddress()) {
