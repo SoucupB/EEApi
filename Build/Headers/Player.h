@@ -12,3 +12,4 @@ uint8_t ply_AreAllies(Player a, Player b);
 void ply_Print();
 Player ply_Self();
 Player ply_Neutral();
+int8_t ply_PlayerCount();

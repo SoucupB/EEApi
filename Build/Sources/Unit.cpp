@@ -122,10 +122,9 @@ uint8_t unit_ProphetAbility_CanCast(Unit unit, Point target, Ability ability) {
 }
 
 uint8_t unit_IsSpellValid(Unit unit, Point target, Ability ability) {
-  if(eeTa_UnitType(unit) == PROPHET) {
+  if(unit_Type(unit) == PROPHET) {
     return unit_ProphetAbility_CanCast(unit, target, ability);
   }
-
   return 1;
 }
 

@@ -20,6 +20,10 @@ void ply_Inits(PVOID self) {
   });
 }
 
+int8_t ply_PlayerCount() {
+  return game_Players()->playerData->size();
+}
+
 uint8_t ply_PlayerIndex(Player player) {
   return *(uint8_t *)util_Pointer(ply_Reference(player), 0x45C, INT8_T_TYPE);
 }

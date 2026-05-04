@@ -258,14 +258,15 @@ int8_t *eeTa_PlayerIDs() {
 }
 
 int8_t eeTa_PlayerCount() {
-  int8_t total = 0;
-  PEETwa eeTwa = game_EETwa();
-  for(size_t i = 0; i < 20; i++) {
-    if(eeTwa->playerPresence[i]) {
-      total++;
-    }
-  }
-  return total;
+  // int8_t total = 0;
+  // PEETwa eeTwa = game_EETwa();
+  // for(size_t i = 0; i < 20; i++) {
+  //   if(eeTwa->playerPresence[i]) {
+  //     total++;
+  //   }
+  // }
+  // return total;
+  return ply_PlayerCount();
 }
 
 void eeTa_RebuildDTs() {
@@ -277,11 +278,6 @@ void eeTa_RebuildDTs() {
 void eeTa_OnInit() {
   eeTa_Map_Init();
   bt_OnInit();
-}
-
-UnitType eeTa_UnitType(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
 }
 
 UnitType eeTa_EETypes_UnitType(Unit unit) {
