@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence();
+uint8_t unit_IsPresent(Unit unit);
 
 vector<Unit> unit_GetBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
@@ -182,6 +183,15 @@ void unit_Farm(Unit unit, Resource resource) {
   unit_Fishboat_Farm(unit, resource);
 }
 
+uint8_t unit_IsPresent(Unit unit) {
+  return 1;
+  unordered_map<PVOID, uint8_t> *unitPresence = eeTa_GetUnitPresence();
+  return unitPresence->find(unit_Reference(unit)) != unitPresence->end();
+}
+
 void unit_Action(Unit unit, Point point, UnitAction action) {
+  if(!unit_IsPresent(unit)) {
+    return ;
+  }
   helper_Unit_Command(unit_Reference(unit), point, action);
 }

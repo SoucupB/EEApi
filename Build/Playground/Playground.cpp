@@ -90,15 +90,35 @@ void bt_OnInit() {
   eeTa_FilePrintf("Changing at %p\n", (size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0xBB9D8);
 }
 
+Point airNextPosition(Unit unit) {
+  Point currentPosition = unit_Point_Position(unit);
+  Point copyPosition = currentPosition;
+  currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
+  currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
+  int32_t index = 5;
+  while(index && map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition)) == INVALID_TILE_ID) {
+    currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
+    currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
+    index--;
+  }
+  if(!index) {
+    return geom_Point_Invalid();
+  }
+  return currentPosition;
+}
+
 Point getNextPosition(Unit unit) {
+  if(eeTypes_IsAirUnit(unit_Type(unit))) {
+    return airNextPosition(unit);
+  }
   Point currentPosition = unit_Point_Position(unit);
   Point copyPosition = currentPosition;
   currentPosition.x += sinf(rand()) * 20.0f;
   currentPosition.y += sinf(rand()) * 20.0f;
   int32_t index = 5;
   while(index && map_Tile_GetPlaneID(geom_Tile_FromPoint(copyPosition)) != map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition))) {
-    currentPosition.x += sinf(rand()) * 20.0f;
-    currentPosition.y += sinf(rand()) * 20.0f;
+    currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
+    currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
     index--;
   }
   if(!index) {
@@ -115,11 +135,35 @@ void moveUnit(Unit unit) {
   if(geom_Point_IsInvalid(nextPosition)) {
     return ;
   }
-  unit_Action(unit, nextPosition, UNIT_MOVE);
+  unit_Action(unit, nextPosition, UNIT_ATTACK);
+}
+
+Unit getIdleCitizen(vector<Unit> &units) {
+  for(size_t i = 0; i < units.size(); i++) {
+    if(unit_IsIdle(units[i]) && eeTypes_IsCitizen(unit_Type(units[i]))) {
+      return units[i];
+    }
+  }
+  return eeTa_Unit_Null();
+}
+
+void repairBuildings(vector<Unit> &units) {
+  Unit currentCitizen = getIdleCitizen(units);
+  if(!unit_Reference(currentCitizen)) {
+    return ;
+  }
+  vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
+  for(size_t i = 0; i < buildings.size(); i++) {
+    if(unit_CurrentHp(buildings[i]) < unit_TotalHP(buildings[i])) {
+      unit_Repair(currentCitizen, buildings[i]);
+      break;
+    }
+  }
 }
 
 void bt_MoveUnitsRandomly() {
   vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  repairBuildings(units);
   for(size_t i = 0; i < units.size(); i++) {
     moveUnit(units[i]);
   }

@@ -1,6 +1,8 @@
 #pragma once
 #include "Helpers.h"
 
+#define INVALID_TILE_ID UINT16_MAX
+
 typedef struct TileStruct_t {
   PVOID ref;
   TilePoint tile;
