@@ -32,7 +32,6 @@ int32_t eeTa_Buildables(Unit unit);
 vector<int32_t> eeTa_AllBuildableTypes(Unit unit);
 int8_t eeTa_IsBuildingComplete(Unit unit);
 Point eeTa_GetDestinationCommand(Unit unit);
-Point eeTa_CurrentPosition(Unit unit);
 PVOID eeTa_Unit_Sample(int8_t player);
 int8_t eeTa_IsUnitIdle(Unit unit);
 int32_t eeTa_UnitPopulation(Unit unit);

@@ -362,15 +362,6 @@ int64_t eeTa_CurrentFrame() {
   return eeTwa->frames;
 }
 
-Point eeTa_CurrentPosition(Unit unit) {
-  float *x = (float *)util_Pointer(unit._payload, 0x13C, FLOAT_TYPE);
-  float *y = (float *)util_Pointer(unit._payload, 0x14C, FLOAT_TYPE);
-  return (Point) {
-    .x = *x,
-    .y = *y
-  };
-}
-
 int8_t eeTa_IsUnitIdle(Unit unit) {
   return !util_Pointer(unit._payload, 0x1F0, POINTER_TYPE);
 }

@@ -9,15 +9,11 @@
 #include "LibManager.h"
 #include "EETypes.h"
 #include "Geometry.h"
+#include "Unit.h"
 
 #define ACTION_BUFFER_SIZE 0xB8
 
 using namespace std;
-
-typedef struct TileStruct_t {
-  PVOID ref;
-  TilePoint tile;
-} TileStruct;
 
 typedef struct MoveAction_t {
   PVOID methodsBundle; // 0x0
@@ -468,7 +464,7 @@ void help_FillData_Air(PVOID buffer) {
 }
 
 MoveActionUnit *help_GetActionUnit(PVOID parent, PVOID unit) {
-  Point pos = eeTa_CurrentPosition((Unit) {._payload = unit});
+  Point pos = unit_Point_Position((Unit) {._payload = unit});
   MoveActionUnit *self = (MoveActionUnit *)help_New(0x44);
   self->methodsBundle = (PVOID)((size_t)lib_BaseAddress() + 0x4475A8); // 8478A0
   self->_const_1 = (PVOID)0x601;
