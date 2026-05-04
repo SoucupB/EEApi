@@ -162,32 +162,6 @@ PVOID _cdecl builder_EnchantedFree(const PVOID buffer) {
   return method(buffer);
 }
 
-void builder_PrintMemoryTree_t(PVOID mem, uint8_t offset, std::map<size_t, uint8_t > &memory) {
-  if(offset > 2) {
-    return ;
-  }
-  if(!hasBeenAllocked(mem) || (memory.find((size_t)mem) != memory.end())) {
-    return ;
-  }
-  memory[(size_t)mem] = 1;
-  for(size_t i = 0, c = bufferSize(mem); i < c; i += sizeof(size_t)) {
-    PVOID pntBuffer = (PVOID)*(size_t *)((size_t)mem + i);
-    if(!pntBuffer) {
-      continue;
-    }
-    for(size_t p = 0; p < offset; p++) {
-      eeTa_FilePrintf(" ");
-    }
-    eeTa_FilePrintf("%p - %p\n", i, pntBuffer);
-    builder_PrintMemoryTree_t(pntBuffer, offset + 2, memory);
-  }
-}
-
-void builder_PrintMemoryTree(PVOID mem) {
-  std::map<size_t, uint8_t > memory;
-  builder_PrintMemoryTree_t(mem, 0, memory);
-}
-
 void builder_ReplaceMMUMethods() {
   builder_ReplaceNew();
   builder_ReplaceFree();
