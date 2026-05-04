@@ -12,6 +12,17 @@ float distanceEuclidf(Point a, Point b) {
   return sqrtf((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
+Point geom_Point_Invalid() {
+  return (Point) {
+    .x = -10000.0f,
+    .y = -10000.0f
+  };
+}
+
+uint8_t geom_Point_IsInvalid(Point point) {
+  return point.x == -10000.0f && point.y == -10000.0f;
+}
+
 Unit geom_GetClosestUnitFrom(Unit unit, int8_t player, uint8_t (*filter)(Unit)) {
   vector<Unit> units = eeTa_Units(player);
   float minDist = FLT_MAX;
