@@ -34,6 +34,10 @@ void game_EETwa_Init(PGame game) {
     game->eeTwa->unitPresence[i] = new unordered_map<PVOID, uint8_t>();
   }
   game->eeTwa->playersCount = (int8_t)(sizeof(game->eeTwa->unitPresence) / sizeof(unordered_map<PVOID, uint8_t> *));
+  game->eeTwa->all_players = 20;
+  game->eeTwa->playerIndex = 1;
+  game->eeTwa->neutralPlayer = 0;
+  game->eeTwa->shouldCostBeReduced = 0;
 }
 
 PPlayerState game_GetPlayerState() {
