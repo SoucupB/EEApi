@@ -644,16 +644,16 @@ PVOID helper_Method5FE863(PVOID buffer, PVOID unit) {
                 (PVOID)0x0);
 }
 
-PVOID helper_Method5FDFA5(PVOID buffer, PVOID unit) {
+PVOID helper_Method5FDFA5(PVOID unit, PVOID command) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(unit, 
-                (PVOID)0x1F51);
+                command);
 }
 
 void helper_Repair_PushCommandToUnit(PVOID buffer, PVOID unit) {
   helper_Method5FE863(buffer, unit);
-  helper_Method5FDFA5(buffer, unit);
+  helper_Method5FDFA5(unit, (PVOID)0x1F51);
 }
 
 void helper_RepairBuilding(PVOID unit, PVOID building) {
@@ -739,7 +739,14 @@ __declspec(dllexport) void helper_Command_Method627742(PVOID self, Point point) 
          (PVOID)0x1);
 }
 
+void helper_IssueCommand(PVOID unit, PVOID buffer, PVOID command) {
+  helper_Gather_Method5FE863(unit, buffer);
+  helper_Method5FDFA5(unit, (PVOID)0x1F40);
+  helper_Gather_Register(unit);
+}
+
 __declspec(dllexport) void helper_Unit_Command(PVOID unit, Point position) {
   PVOID buffer = help_New(0x38);
   helper_Command_Method627742(buffer, position);
+  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
 }

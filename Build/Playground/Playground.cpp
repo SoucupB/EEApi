@@ -139,6 +139,16 @@ Unit getCitizen() {
   return eeTa_Unit_Null();
 }
 
+Unit getCavalry() {
+  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(unit_Type(units[i]) == CAV04_BRONZE_SPEAR_CAVALRY) {
+      return units[i];
+    }
+  }
+  return eeTa_Unit_Null();
+}
+
 Unit getFishboat() {
   vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
   for(size_t i = 0; i < units.size(); i++) {
@@ -204,6 +214,7 @@ uint8_t navalAttackFilter(Unit unit) {
   return eeTypes_IsWaterUnit(def);
 }
 
+// CAV04_BRONZE_SPEAR_CAVALRY
 void farmUnit() {
   Unit citizen = getCitizen();
   if(!unit_Reference(citizen)) {
@@ -218,13 +229,13 @@ void farmUnit() {
 }
 
 void moveUnit() {
-  Unit citizen = getCitizen();
+  Unit citizen = getCavalry();
   if(!unit_Reference(citizen)) {
     return ;
   }
   unit_Action(citizen, (Point) {
-    .x = 80.044f,
-    .y = 45.0445
+    .x = 84.399f,
+    .y = 47.001f
   });
 }
 
