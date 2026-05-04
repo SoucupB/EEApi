@@ -55,7 +55,7 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
     return ;
   }
   eeTwa->playerPresence[playerTeam] = 1;
-  if(eeTa_IsUnitDead(unit)) {
+  if(unit_IsUnitDead(unit)) {
     unitPresence[playerTeam]->erase(unit._payload);
     unitPresence[eeTwa->all_players]->erase(unit._payload);
     bt_OnUnitDestroy(unit);
@@ -250,7 +250,7 @@ int8_t eeTa_IsBuildingComplete(Unit unit) {
   return *isBuildingRef;
 }
 
-__declspec(dllexport) uint8_t eeTa_CanBuild(Unit building, PVOID type) {
+uint8_t eeTa_CanBuild(Unit building, PVOID type) {
   size_t *epochStruct = (size_t *)_eeTa_EpochStruct(building._payload, type);
   if(!epochStruct) {
     return 0;
@@ -310,13 +310,6 @@ void eeTa_AddFrameMethod(TimeAtom atom) {
   tmrs_AddMethod(game_EETwa()->timers, atom);
 }
 
-int8_t eeTa_IsBuilding(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  size_t *callerStruct = (size_t *)util_Pointer((PVOID)unitMetaData[0], 0xB8, POINTER_TYPE);
-
-  return (size_t)callerStruct == (size_t)lib_BaseAddress() + 0x20FD9D;
-}
-
 PVOID eeTa_CreateDestionationPointer() {
   size_t totalSize = 0x38;
   PVOID response = help_New(totalSize);
@@ -328,10 +321,6 @@ PVOID eeTa_SetPlayers(PVOID unit) {
   PVOID selectedUnits = help_New(sizeof(PVOID));
   memcpy(selectedUnits, &unit, sizeof(PVOID));
   return selectedUnits;
-}
-
-int8_t eeTa_IsUnit(Unit unit) {
-  return !eeTa_IsBuilding(unit);
 }
 
 Point eeTa_GetDestinationCommand(Unit unit) {
@@ -366,10 +355,6 @@ int32_t eeTa_CurrentlyBuilding(Unit building) {
 
 int32_t eeTa_CurrentHp(Unit unit) {
   return *(int32_t *)util_Pointer((PVOID)unit._payload, 0x3C, INT32_T_TYPE);
-}
-
-int8_t eeTa_IsUnitDead(Unit unit) {
-  return !eeTa_CurrentHp(unit);
 }
 
 int64_t eeTa_CurrentFrame() {
