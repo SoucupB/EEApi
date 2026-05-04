@@ -5,6 +5,7 @@
 
 typedef struct Unit_t Unit;
 
+int8_t unit_IsUnitDead(Unit unit);
 vector<Unit> unit_GetBuildings(int8_t player);
 vector<Unit> unit_GetUnits(int8_t player);
 int32_t unit_CurrentlyBuilding(Unit building);
@@ -17,7 +18,7 @@ int32_t unit_CurrentHp(Unit unit);
 void unit_Repair(Unit unit, Unit target);
 int32_t unit_TotalHP(Unit unit);
 PVOID unit_Reference(Unit unit);
-uint8_t unit_GetPlayer(Unit unit);
+uint8_t unit_GetPlayerIndex(Unit unit);
 void unit_Farm(Unit unit, Resource resource);
 int8_t unit_IsIdle(Unit unit);
 void unit_Action(Unit unit, Point point, UnitAction action);

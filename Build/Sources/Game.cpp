@@ -62,6 +62,10 @@ PEETwa game_EETwa() {
   return game->eeTwa;
 }
 
+PPlayers game_Players() {
+  return game->players;
+}
+
 PResourceManager game_GetResourcesManager() {
   return game->resourceManager;
 }

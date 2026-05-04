@@ -7,7 +7,6 @@
 #include "EETwa.h"
 #include "Helpers.h"
 #include "Resource.h"
-#include "Resource.h"
 
 static uint8_t onInitFlag = 0;
 static size_t mapPolygons;

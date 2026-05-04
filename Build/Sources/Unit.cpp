@@ -1,7 +1,12 @@
-#include "Unit.h"
 #include "LibManager.h"
 #include "MapData.h"
 #include <unordered_map>
+#include "Unit.h"
+#include "InjectUtilities.h"
+#include "Resource.h"
+#include "EETwa.h"
+#include "Player.h"
+#include "Game.h"
 
 uint8_t unit_IsPresent(Unit unit);
 
@@ -14,7 +19,7 @@ vector<Unit> unit_GetBuildings(int8_t player) {
     Unit currentUnit = (Unit) {
       ._payload = it.first
     };
-    if(!eeTa_IsUnitDead(currentUnit) && unit_IsBuilding(currentUnit)) {
+    if(!unit_IsUnitDead(currentUnit) && unit_IsBuilding(currentUnit)) {
       buildingsPointer.push_back(currentUnit);
     }
   }
@@ -26,7 +31,7 @@ vector<Unit> unit_GetUnits(int8_t player) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   for(auto &it : *(unitPresence[player])) {
-    if(!eeTa_IsUnitDead((Unit) {
+    if(!unit_IsUnitDead((Unit) {
       ._payload = it.first
     }) && !unit_IsBuilding((Unit) {
       ._payload = (PVOID)it.first
@@ -137,7 +142,7 @@ int32_t unit_TotalHP(Unit unit) {
   return *(int32_t *)util_Pointer((PVOID)unitMetaData, 0x144, INT32_T_TYPE);
 }
 
-uint8_t unit_GetPlayer(Unit unit) {
+uint8_t unit_GetPlayerIndex(Unit unit) {
   PVOID nextStruct = util_Pointer(unit_Reference(unit), 0x18, POINTER_TYPE);
   return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
 }
@@ -151,7 +156,7 @@ void unit_Repair(Unit unit, Unit target) {
   if(unit_CurrentHp(target) >= unit_TotalHP(target)) {
     return ;
   }
-  if(unit_GetPlayer(unit) != unit_GetPlayer(target)) {
+  if(unit_GetPlayerIndex(unit) != unit_GetPlayerIndex(target)) {
     return ;
   }
   helper_RepairBuilding(unit_Reference(unit), unit_Reference(target));

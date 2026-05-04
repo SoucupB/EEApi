@@ -47,6 +47,8 @@ typedef struct EETwa_t {
 
 typedef struct Players_t {
   unordered_map<PVOID, uint8_t> *playerData;
+  Player self;
+  Player neutral;
 } Players;
 
 typedef struct ResourceManager_t {
@@ -77,3 +79,4 @@ PMapData game_GetMapData();
 PEETypes game_GetEETypes();
 PEETwa game_EETwa();
 PResourceManager game_GetResourcesManager();
+PPlayers game_Players();
