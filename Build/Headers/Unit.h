@@ -5,7 +5,7 @@
 
 typedef struct Unit_t Unit;
 
-int8_t unit_IsUnitDead(Unit unit);
+int8_t unit_IsDead(Unit unit);
 vector<Unit> unit_GetBuildings(int8_t player);
 vector<Unit> unit_GetUnits(int8_t player);
 int32_t unit_CurrentlyBuilding(Unit building);

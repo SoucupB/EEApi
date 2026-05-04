@@ -19,7 +19,7 @@ vector<Unit> unit_GetBuildings(int8_t player) {
     Unit currentUnit = (Unit) {
       ._payload = it.first
     };
-    if(!unit_IsUnitDead(currentUnit) && unit_IsBuilding(currentUnit)) {
+    if(!unit_IsDead(currentUnit) && unit_IsBuilding(currentUnit)) {
       buildingsPointer.push_back(currentUnit);
     }
   }
@@ -31,7 +31,7 @@ vector<Unit> unit_GetUnits(int8_t player) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   for(auto &it : *(unitPresence[player])) {
-    if(!unit_IsUnitDead((Unit) {
+    if(!unit_IsDead((Unit) {
       ._payload = it.first
     }) && !unit_IsBuilding((Unit) {
       ._payload = (PVOID)it.first
@@ -53,7 +53,7 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   for(auto &it : *(unitPresence[player])) {
-    if(!unit_IsUnitDead((Unit) {
+    if(!unit_IsDead((Unit) {
       ._payload = it.first
     }) && unit_IsBuildingComplete((Unit) {
       ._payload = it.first
@@ -206,7 +206,7 @@ uint8_t unit_IsPresent(Unit unit) {
   return 0;
 }
 
-int8_t unit_IsUnitDead(Unit unit) {
+int8_t unit_IsDead(Unit unit) {
   return !unit_CurrentHp(unit);
 }
 
@@ -214,7 +214,7 @@ void unit_Convert(Unit src, Unit dst) {
   if(!eeTypes_IsPriest(unit_Type(src))) {
     return ;
   }
-  if(unit_IsBuilding(dst) || unit_IsUnitDead(dst)) {
+  if(unit_IsBuilding(dst) || unit_IsDead(dst)) {
     return ;
   }
   helper_Convert(unit_Reference(src), unit_Reference(dst));

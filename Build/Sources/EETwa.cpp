@@ -55,7 +55,7 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
     return ;
   }
   eeTwa->playerPresence[playerTeam] = 1;
-  if(unit_IsUnitDead(unit)) {
+  if(unit_IsDead(unit)) {
     unitPresence[playerTeam]->erase(unit._payload);
     unitPresence[eeTwa->all_players]->erase(unit._payload);
     bt_OnUnitDestroy(unit);
