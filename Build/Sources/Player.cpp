@@ -3,6 +3,7 @@
 #include "InjectUtilities.h"
 #include "Helpers.h"
 #include "LibManager.h"
+#include "EETwa.h"
 
 void ply_RegisterSelf(PPlayers playerData, Player self);
 void ply_RegisterNeutral(PPlayers playerData, Player self);
@@ -12,10 +13,10 @@ void ply_Inits(PVOID self) {
   PVOID currentPlayer = helper_Player_FromUnit(self);
   (*playerData->playerData)[currentPlayer] = 1;
   ply_RegisterSelf(playerData, (Player) {
-    ._payload = self
+    ._payload = currentPlayer
   });
   ply_RegisterNeutral(playerData, (Player) {
-    ._payload = self
+    ._payload = currentPlayer
   });
 }
 
@@ -79,4 +80,38 @@ uint8_t ply_AreAllies(Player a, Player b) {
   uint8_t indexA = ply_PlayerIndex(a);
   uint8_t indexB = ply_PlayerIndex(b);
   return ply_Index_AreAllies(indexA, indexB);
+}
+
+void ply_Print() {
+  PPlayers playerData = game_Players();
+  eeTa_FilePrintf("Self player is %p\n", ply_Reference(playerData->self));
+  eeTa_FilePrintf("Neutral player is %p\n", ply_Reference(playerData->neutral));
+  unordered_map<PVOID, uint8_t> *dt = playerData->playerData;
+  eeTa_FilePrintf("Total players count is %d\n", dt->size());
+  for(auto &iter : *dt) {
+    eeTa_FilePrintf("Player %p with index %d\n", iter.first, ply_PlayerIndex((Player) {
+      ._payload = iter.first
+    }));
+  }
+
+  for(auto &iter : *dt) {
+    eeTa_FilePrintf("Player %p is allied with: ", iter.first);
+    for(auto &index : *dt) {
+      if(index.first == iter.first) {
+        continue;
+      }
+      Player a = (Player) {
+        ._payload = iter.first
+      };
+      Player b = (Player) {
+        ._payload = index.first
+      };
+      if(ply_AreAllies(a, b)) {
+        eeTa_FilePrintf("%d ", ply_PlayerIndex((Player) {
+          ._payload = index.first
+        }));
+      }
+    }
+    eeTa_FilePrintf("\n");
+  }
 }

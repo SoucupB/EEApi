@@ -9,3 +9,4 @@ PVOID ply_Reference(Player self);
 void ply_Inits(PVOID self);
 Player ply_Null();
 uint8_t ply_AreAllies(Player a, Player b);
+void ply_Print();

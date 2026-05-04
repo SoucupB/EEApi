@@ -7,6 +7,7 @@
 #include <map>
 #include <algorithm>
 #include "Resource.h"
+#include "Player.h"
 
 void test_PrintUnits();
 void test_ConvertEnemy();
@@ -72,6 +73,7 @@ void execDataPengus() {
   }
   if(GetAsyncKeyState('P') & 0x8000) {
     // test_ConvertEnemy();
+    ply_Print();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {
