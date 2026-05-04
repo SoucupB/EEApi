@@ -38,6 +38,7 @@ void game_EETwa_Init(PGame game) {
   game->eeTwa->playerIndex = 1;
   game->eeTwa->neutralPlayer = 0;
   game->eeTwa->shouldCostBeReduced = 0;
+  game->eeTwa->timers = tmr_Init();
 }
 
 PPlayerState game_GetPlayerState() {
@@ -78,6 +79,7 @@ void game_EETwa_Delete(PGame game) {
       delete game->eeTwa->unitPresence[i];
     }
   }
+  tmrs_Delete(game->eeTwa->timers);
   free(game->eeTwa);
   game->eeTwa = NULL;
 }

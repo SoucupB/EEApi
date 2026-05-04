@@ -8,8 +8,6 @@
 #include "Game.h"
 #include "Unit.h"
 
-static PTimerHelper timers;
-
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
 void bt_OnFrame();
@@ -19,12 +17,7 @@ void eeTa_RebuildDTs();
 
 using namespace std;
 
-void eeTa_Clear() {
-  tmrs_Delete(timers);
-}
-
 void eeTa_RebuildExtraDataStructure() {
-  eeTa_Clear();
   eeTa_RebuildDTs();
 }
 
@@ -288,7 +281,6 @@ void eeTa_RebuildDTs() {
   game_Init();
   eeta_FileClean();
   eeTypes_InitUnits();
-  timers = tmr_Init();
 }
 
 void eeTa_OnInit() {
@@ -309,12 +301,12 @@ UnitType eeTa_EETypes_UnitType(Unit unit) {
 void eeTa_OnFrame() {
   PEETwa eeTwa = game_EETwa();
   bt_OnFrame();
-  tmr_OnFrame(timers);
+  tmr_OnFrame(eeTwa->timers);
   eeTwa->frames++;
 }
 
 void eeTa_AddFrameMethod(TimeAtom atom) {
-  tmrs_AddMethod(timers, atom);
+  tmrs_AddMethod(game_EETwa()->timers, atom);
 }
 
 int8_t eeTa_IsBuilding(Unit unit) {

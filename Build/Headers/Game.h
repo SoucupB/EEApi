@@ -6,6 +6,7 @@
 #include <map>
 #include "MapData.h"
 #include "EETypes.h"
+#include "TimerHelper.h"
 
 using namespace std;
 
@@ -40,6 +41,7 @@ typedef struct EETwa_t {
   int8_t shouldCostBeReduced;
   int8_t playerPresence[30];
   int8_t playersCount;
+  PTimerHelper timers;
 } EETwa;
 
 typedef struct ResourceManager_t {
