@@ -6,6 +6,7 @@
 #include "MapData.h"
 #include "LibManager.h"
 #include "Game.h"
+#include "Unit.h"
 
 static PTimerHelper timers;
 
@@ -19,7 +20,6 @@ void eeTa_RebuildDTs();
 vector<TileStruct> map_GetTilesArray();
 
 using namespace std;
-static unordered_map<PVOID, uint8_t> unitPresence[24];
 static int64_t frames;
 static int8_t all_players = 20;
 static int8_t playerIndex = 1;
@@ -30,15 +30,7 @@ static int8_t playerPresence[30];
 void eeTypes_Clean();
 
 void eeTa_Clear() {
-  eeTypes_Clean();
-  for(uint8_t i = 0; i < 24; i++) {
-    unitPresence[i].clear();
-  }
   tmrs_Delete(timers);
-}
-
-unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence() {
-  return unitPresence;
 }
 
 void eeTa_RebuildExtraDataStructure() {
@@ -71,19 +63,21 @@ uint8_t eeTa_IsNeutral(Unit unit) {
 // Money pointer is at ["EE-AOC.exe"+530DB8 + 0xAFC]
 
 void __cdecl eeTa_OnUnitFrame(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   int8_t playerTeam = eeTa_Player(unit);
   if(playerTeam < 0 || playerTeam >= 24) {
     return ;
   }
   playerPresence[playerTeam] = 1;
   if(eeTa_IsUnitDead(unit)) {
-    unitPresence[playerTeam].erase(unit._payload);
-    unitPresence[all_players].erase(unit._payload);
+    unitPresence[playerTeam]->erase(unit._payload);
+    unitPresence[all_players]->erase(unit._payload);
     bt_OnUnitDestroy(unit);
     return ;
   }
-  unitPresence[playerTeam][unit._payload] = 1;
-  unitPresence[all_players][unit._payload] = 1;
+  (*unitPresence[playerTeam])[unit._payload] = 1;
+  (*unitPresence[all_players])[unit._payload] = 1;
   pls_ProcessHealth(unit._payload);
 }
 
@@ -126,25 +120,11 @@ uint8_t eeTa_CurrentEnergy(Unit unit) {
   return *energyPointer;
 }
 
-vector<Unit> eeTa_Units(int8_t player) {
-  vector<Unit> units;
-  for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead((Unit) {
-      ._payload = it.first
-    }) && eeTa_IsUnit((Unit) {
-      ._payload = (PVOID)it.first
-    })) {
-      units.push_back((Unit) {
-        ._payload = (PVOID)it.first
-      });
-    }
-  }
-  return units;
-}
-
 void __cdecl eeTa_OnUnitDeath(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   for(int8_t i = 0; i < 24; i++) {
-    unitPresence[i].erase(unit._payload);
+    unitPresence[i]->erase(unit._payload);
   }
   bt_OnUnitDestroy(unit);
 }
@@ -223,19 +203,6 @@ int32_t eeTa_TotalPop() {
   return method(unitTypeStruct, NULL, NULL);
 }
 
-vector<Unit> eeTa_Buildings(int8_t player) {
-  vector<Unit> buildingsPointer;
-  for(auto &it : unitPresence[player]) {
-    Unit currentUnit = (Unit) {
-      ._payload = it.first
-    };
-    if(!eeTa_IsUnitDead(currentUnit) && eeTa_IsBuilding(currentUnit)) {
-      buildingsPointer.push_back(currentUnit);
-    }
-  }
-  return buildingsPointer;
-}
-
 int8_t eeTa_IsIdle(Unit building) {
   return eeTa_CurrentlyBuilding(building) == IDLE;
 }
@@ -255,26 +222,6 @@ void eeTa_FilePrintf(const char *format, ...) {
   va_end(args);
 
   fclose(f);
-}
-
-vector<Unit> eeTa_IdleBuildings(int8_t player) {
-  vector<Unit> buildingsPointer;
-  for(auto &it : unitPresence[player]) {
-    if(!eeTa_IsUnitDead((Unit) {
-      ._payload = it.first
-    }) && eeTa_IsBuildingComplete((Unit) {
-      ._payload = it.first
-    }) && eeTa_IsBuilding((Unit) {
-      ._payload = it.first
-    }) && eeTa_IsIdle((Unit) {
-      ._payload = it.first
-    })) {
-      buildingsPointer.push_back((Unit) {
-        ._payload = it.first
-      });
-    }
-  }
-  return buildingsPointer;
 }
 
 int8_t eeTa_SelfPlayer() {
@@ -461,7 +408,7 @@ int8_t eeTa_IsUnitIdle(Unit unit) {
 }
 
 PVOID eeTa_Unit_Sample(int8_t player) {
-  vector<Unit> units = eeTa_Units(player);
+  vector<Unit> units = unit_GetUnits(player);
   if(!units.size()) {
     return NULL;
   }

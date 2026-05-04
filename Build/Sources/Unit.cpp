@@ -3,14 +3,14 @@
 #include "MapData.h"
 #include <unordered_map>
 
-unordered_map<PVOID, uint8_t> *eeTa_GetUnitPresence();
 uint8_t unit_IsPresent(Unit unit);
 
 vector<Unit> unit_GetBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
-  unordered_map<PVOID, uint8_t> *unitPresence = eeTa_GetUnitPresence();
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
 
-  for(auto &it : unitPresence[player]) {
+  for(auto &it : *(unitPresence[player])) {
     Unit currentUnit = (Unit) {
       ._payload = it.first
     };
@@ -23,8 +23,9 @@ vector<Unit> unit_GetBuildings(int8_t player) {
 
 vector<Unit> unit_GetUnits(int8_t player) {
   vector<Unit> units;
-  unordered_map<PVOID, uint8_t> *unitPresence = eeTa_GetUnitPresence();
-  for(auto &it : unitPresence[player]) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  for(auto &it : *(unitPresence[player])) {
     if(!eeTa_IsUnitDead((Unit) {
       ._payload = it.first
     }) && eeTa_IsUnit((Unit) {
@@ -44,8 +45,9 @@ int32_t unit_CurrentlyBuilding(Unit building) {
 
 vector<Unit> unit_IdleBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
-  unordered_map<PVOID, uint8_t> *unitPresence = eeTa_GetUnitPresence();
-  for(auto &it : unitPresence[player]) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  for(auto &it : *(unitPresence[player])) {
     if(!eeTa_IsUnitDead((Unit) {
       ._payload = it.first
     }) && eeTa_IsBuildingComplete((Unit) {
@@ -64,7 +66,7 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
 }
 
 int8_t unit_IsIdle(Unit unit) {
-  return !util_Pointer(unit._payload, 0x1F0, POINTER_TYPE);
+  return !util_Pointer(unit_Reference(unit), 0x1F0, POINTER_TYPE);
 }
 
 Point unit_Point_Position(Unit unit) {
@@ -182,9 +184,14 @@ void unit_Farm(Unit unit, Resource resource) {
 }
 
 uint8_t unit_IsPresent(Unit unit) {
-  return 1;
-  unordered_map<PVOID, uint8_t> *unitPresence = eeTa_GetUnitPresence();
-  return unitPresence->find(unit_Reference(unit)) != unitPresence->end();
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  for(size_t i = 0, c = eeTwa->playersCount; i < c; i++) {
+    if(unitPresence[i]->find(unit_Reference(unit)) != unitPresence[i]->end()) {
+      return 1;
+    }
+  }
+  return 0;
 }
 
 void unit_Action(Unit unit, Point point, UnitAction action) {

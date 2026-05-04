@@ -3,6 +3,7 @@
 #include <float.h>
 #include <iterator>
 #include "EETwa.h"
+#include "Unit.h"
 
 float distancef(Point a, Point b) {
   return fabs(a.x - b.x) + fabs(a.y - b.y);
@@ -24,7 +25,7 @@ uint8_t geom_Point_IsInvalid(Point point) {
 }
 
 Unit geom_GetClosestUnitFrom(Unit unit, int8_t player, uint8_t (*filter)(Unit)) {
-  vector<Unit> units = eeTa_Units(player);
+  vector<Unit> units = unit_GetUnits(player);
   float minDist = FLT_MAX;
   Unit selectedUnit;
   selectedUnit._payload = NULL;

@@ -33,6 +33,7 @@ void game_EETwa_Init(PGame game) {
   for(size_t i = 0; i < sizeof(game->eeTwa->unitPresence) / sizeof(unordered_map<PVOID, uint8_t> *); i++) {
     game->eeTwa->unitPresence[i] = new unordered_map<PVOID, uint8_t>();
   }
+  game->eeTwa->playersCount = (int8_t)(sizeof(game->eeTwa->unitPresence) / sizeof(unordered_map<PVOID, uint8_t> *));
 }
 
 PPlayerState game_GetPlayerState() {
@@ -68,7 +69,7 @@ void game_EETwa_Delete(PGame game) {
   if(!game->eeTwa) {
     return ;
   }
-  for(size_t i = 0; i < sizeof(game->eeTwa->unitPresence) / sizeof(unordered_map<PVOID, uint8_t> *); i++) {
+  for(size_t i = 0, c = game->eeTwa->playersCount; i < c; i++) {
     if(game->eeTwa->unitPresence[i]) {
       delete game->eeTwa->unitPresence[i];
     }
