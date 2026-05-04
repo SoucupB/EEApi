@@ -155,6 +155,7 @@ void repairBuildings(vector<Unit> &units) {
   vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
   for(size_t i = 0; i < buildings.size(); i++) {
     if(unit_CurrentHp(buildings[i]) < unit_TotalHP(buildings[i])) {
+      eeTa_FilePrintf("Started repairing!\n");
       unit_Repair(currentCitizen, buildings[i]);
       break;
     }
