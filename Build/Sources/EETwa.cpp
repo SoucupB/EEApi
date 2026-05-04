@@ -106,7 +106,7 @@ void __cdecl eeTa_OnUnitDeath(Unit unit) {
 }
 
 void eeTa_BuildUnit(Unit building, PVOID unitType) {
-  if(eeTa_CurrentPopulation() > eeTa_TotalPop()) {
+  if(eeTa_CurrentPopulation() >= eeTa_TotalPop()) {
     return ;
   }
   int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1F5F97);

@@ -64,3 +64,19 @@ void ply_RegisterNeutral(PPlayers playerData, Player player) {
     playerData->neutral = player;
   }
 }
+
+int8_t ply_Index_AreAllies(uint8_t plySrc, uint8_t plyDst) {
+  PVOID _1 = util_Pointer(lib_BaseAddress(), 0x530DB4 + 0x4 * plySrc, POINTER_TYPE);
+  if(!_1) {
+    return 0;
+  }
+  uint8_t *_2 = (uint8_t *)util_Pointer(_1, 0x4 * plyDst + 0x9DC, INT8_T_TYPE);
+
+  return !*_2;
+}
+
+uint8_t ply_AreAllies(Player a, Player b) {
+  uint8_t indexA = ply_PlayerIndex(a);
+  uint8_t indexB = ply_PlayerIndex(b);
+  return ply_Index_AreAllies(indexA, indexB);
+}
