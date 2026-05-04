@@ -7,6 +7,7 @@
 #include "MapData.h"
 #include "EETypes.h"
 #include "TimerHelper.h"
+#include "Player.h"
 
 using namespace std;
 
@@ -44,6 +45,10 @@ typedef struct EETwa_t {
   PTimerHelper timers;
 } EETwa;
 
+typedef struct Players_t {
+  unordered_map<PVOID, uint8_t> *playerData;
+} Players;
+
 typedef struct ResourceManager_t {
   unordered_map<PVOID, uint8_t> *resourcesRefs;
 } ResourceManager;
@@ -53,6 +58,7 @@ typedef EETypes *PEETypes;
 typedef MapData *PMapData;
 typedef PlayerState *PPlayerState;
 typedef ResourceManager *PResourceManager;
+typedef Players *PPlayers;
 
 typedef struct Game_t {
   PPlayerState plyState;
@@ -60,6 +66,7 @@ typedef struct Game_t {
   PEETypes types;
   PResourceManager resourceManager;
   PEETwa eeTwa;
+  PPlayers players;
 } Game;
 
 typedef Game *PGame;

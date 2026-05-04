@@ -27,6 +27,11 @@ void game_Resources_Init(PGame game) {
   game->resourceManager->resourcesRefs = new unordered_map<PVOID, uint8_t>();
 }
 
+void game_Player_Init(PGame game) {
+  game->players = (PPlayers)malloc(sizeof(Players));
+  game->players->playerData = new unordered_map<PVOID, uint8_t>();
+}
+
 void game_EETwa_Init(PGame game) {
   game->eeTwa = (PEETwa)malloc(sizeof(EETwa));
   memset(game->eeTwa, 0, sizeof(EETwa));
@@ -68,6 +73,15 @@ void game_PlayerState_Delete(PGame game) {
   delete game->plyState->unitsHealth;
   free(game->plyState);
   game->plyState = NULL;
+}
+
+void game_Players_Delete(PGame game) {
+  if(!game->players) {
+    return ;
+  }
+  delete game->players->playerData;
+  free(game->players);
+  game->players = NULL;
 }
 
 void game_EETwa_Delete(PGame game) {
@@ -135,6 +149,7 @@ void game_Delete(PGame *self) {
   game_EETypes_Delete(*self);
   game_Resources_Delete(*self);
   game_EETwa_Delete(*self);
+  game_Players_Delete(*self);
   free(*self);
   *self = NULL;
 }
@@ -147,4 +162,5 @@ void game_Init() {
   game_EETypes_Init(game);
   game_Resources_Init(game);
   game_EETwa_Init(game);
+  game_Player_Init(game);
 }

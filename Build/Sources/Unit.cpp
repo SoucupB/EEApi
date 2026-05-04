@@ -28,7 +28,7 @@ vector<Unit> unit_GetUnits(int8_t player) {
   for(auto &it : *(unitPresence[player])) {
     if(!eeTa_IsUnitDead((Unit) {
       ._payload = it.first
-    }) && eeTa_IsUnit((Unit) {
+    }) && !unit_IsBuilding((Unit) {
       ._payload = (PVOID)it.first
     })) {
       units.push_back((Unit) {

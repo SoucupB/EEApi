@@ -171,7 +171,8 @@ void bt_MoveUnitsRandomly() {
 
 void bt_OnFrame() {
   execDataPengus();
-  bt_MoveUnitsRandomly();
+  // bt_MoveUnitsRandomly();
+
   // pls_OnInit((PVOID)onLosingHealth);
 }
 
