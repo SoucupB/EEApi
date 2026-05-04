@@ -725,7 +725,7 @@ void helper_Citizen_Gather(PVOID unit, PVOID resource) {
   helper_Register(unit);
 }
 
-__declspec(dllexport) void helper_Command_Method627742(PVOID self, Point point, uint8_t move) {
+void helper_Command_Method627742(PVOID self, Point point, uint8_t move) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227742);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -761,4 +761,8 @@ void helper_Unit_Command(PVOID unit, Point position, UnitAction action) {
       break;
   }
   helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
+}
+
+PVOID helper_Player_FromUnit(PVOID unit) {
+  return util_Pointer((PVOID)unit, 0x18, POINTER_TYPE);
 }
