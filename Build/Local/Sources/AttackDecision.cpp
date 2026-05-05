@@ -51,17 +51,17 @@ uint8_t enemyUnits(Unit unit) {
 
 uint8_t idleAttackingGroundUnits(Unit unit) {
   UnitType def = unit_Type(unit);
-  return eeTypes_IsGroundUnit(def) && !eeTypes_IsFromClass(CLASS_CITIZENS, def);
+  return unit_IsIdle(unit) && eeTypes_IsGroundUnit(def) && !eeTypes_IsFromClass(CLASS_CITIZENS, def);
 }
 
 uint8_t idleAttackingAirUnits(Unit unit) {
   UnitType def = unit_Type(unit);
-  return eeTypes_IsAirUnit(def) && !eeTypes_IsFromClass(CLASS_AIR_TRANSPORT, def);
+  return unit_IsIdle(unit) && eeTypes_IsAirUnit(def) && !eeTypes_IsFromClass(CLASS_AIR_TRANSPORT, def);
 }
 
 uint8_t idleAttackingWaterUnits(Unit unit) {
   UnitType def = unit_Type(unit);
-  return eeTypes_IsFromClass(CLASS_WATER_BOATS, def);
+  return unit_IsIdle(unit) && eeTypes_IsFromClass(CLASS_WATER_BOATS, def);
 }
 
 void att_AddDamagedUnits(Unit unit) {
@@ -72,7 +72,6 @@ void att_AddDamagedUnits(Unit unit) {
   if(!unit_IsBuilding(unit) && !eeTypes_IsCitizen(def)) {
     return ;
   }
-  
   Point pos = unit_Point_Position(unit);
   attackedUnits[make_pair(pos.x, pos.y)] = 1;
 }
@@ -159,7 +158,6 @@ void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(Uni
   Point randomPos = att_RandomMove(filteredUnits[0]);
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
     maxCommands--;
-    // help_UnitMove(filteredUnits[i]._payload, randomPos, UNIT_ATTACK);
     unit_Action(filteredUnits[i], randomPos, UNIT_ATTACK);
     if(!maxCommands) {
       return ;
