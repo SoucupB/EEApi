@@ -2,37 +2,46 @@
 #include "EETwa.h"
 #include <vector>
 #include "Geometry.h"
+#include "Unit.h"
+#include "Resource.h"
 
 using namespace std;
 
 uint8_t fishBoatsFilter(Unit unit) {
-  UnitTypeDef def = eeTa_UnitType(unit);
+  UnitType def = unit_Type(unit);
   return eeTypes_IsFishBoat(def);
 }
 
-uint8_t fishFilter(Unit unit) {
-  UnitTypeDef def = eeTa_UnitType(unit);
-  return def == IDLE; // Fishes don't have a type for some reason.
-}
-
-void fishTheFishes(PVOID fishBoat) {
-  Unit unit = geom_GetClosestUnitFrom((Unit) {._payload = fishBoat}, eeTa_NeutralPlayer(), fishFilter);
-  if(!unit._payload) {
+void fishTheFishes(Unit fishBoat) {
+  vector<Resource> fishes = res_All();
+  Resource currentFish = res_Null();
+  float currentDist = 100000.0f;
+  for(size_t i = 0, c = fishes.size(); i < c; i++) {
+    if(res_Type(fishes[i]) != RES_FISH) {
+      continue;
+    }
+    float currentPositionDist = distanceEuclidf(res_Point_Position(fishes[i]), unit_Point_Position(fishBoat));
+    if(currentDist >= currentPositionDist) {
+      currentDist = currentPositionDist;
+      currentFish = fishes[i];
+    }
+  }
+  if(!res_Reference(currentFish)) {
     return ;
   }
-  help_MoveToTarget(fishBoat, unit._payload);
+  unit_Farm(fishBoat, currentFish);
 }
 
 void res_MoveResourceBoats() {
-  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
   vector<Unit> fishBoats = eeTa_Filter(units, fishBoatsFilter);
 
   int32_t maxSearches = 5;
 
   for(size_t i = 0, c = fishBoats.size(); i < c; i++) {
     Unit unit = fishBoats[i];
-    if(eeTa_IsUnitIdle(unit)) {
-      fishTheFishes(unit._payload);
+    if(unit_IsIdle(unit)) {
+      fishTheFishes(unit);
       maxSearches--;
     }
     if(!maxSearches) {
