@@ -261,7 +261,7 @@ void bt_OnInit() {
   bt_InitPortNaval();
   bt_InitFisherBoats();
   bt_RepairBuildings();
-  bt_InitAggresiveness();
+  // bt_InitAggresiveness();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();
 }

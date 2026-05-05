@@ -61,7 +61,7 @@ uint8_t idleAttackingAirUnits(Unit unit) {
 
 uint8_t idleAttackingWaterUnits(Unit unit) {
   UnitType def = unit_Type(unit);
-  return unit_IsIdle(unit) && eeTypes_IsFromClass(CLASS_WATER_BOATS, def);
+  return unit_IsIdle(unit) && (eeTypes_IsFromClass(CLASS_WATER_BOATS, def) || eeTypes_IsFromClass(CLASS_SUBMARINES, def));
 }
 
 void att_AddDamagedUnits(Unit unit) {
@@ -110,11 +110,45 @@ void att_ConvertIfNecessary(vector<Unit> &units) {
   }
 }
 
-Point att_RandomMove(Unit unit) {
+Point airNextPosition(Unit unit) {
   Point currentPosition = unit_Point_Position(unit);
+  Point copyPosition = currentPosition;
+  currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
+  currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
+  int32_t index = 5;
+  while(index && map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition)) == INVALID_TILE_ID) {
+    currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
+    currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
+    index--;
+  }
+  if(!index) {
+    return geom_Point_Invalid();
+  }
+  return currentPosition;
+}
+
+Point getNextPosition(Unit unit) {
+  if(eeTypes_IsAirUnit(unit_Type(unit))) {
+    return airNextPosition(unit);
+  }
+  Point currentPosition = unit_Point_Position(unit);
+  Point copyPosition = currentPosition;
   currentPosition.x += sinf(rand()) * 20.0f;
   currentPosition.y += sinf(rand()) * 20.0f;
+  int32_t index = 5;
+  while(index && map_Tile_GetPlaneID(geom_Tile_FromPoint(copyPosition)) != map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition))) {
+    currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
+    currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
+    index--;
+  }
+  if(!index) {
+    return geom_Point_Invalid();
+  }
   return currentPosition;
+}
+
+Point att_RandomMove(Unit unit) {
+  return getNextPosition(unit);
 }
 
 uint8_t att_ScanAndAttack(vector<Unit> &selfUnits) {
