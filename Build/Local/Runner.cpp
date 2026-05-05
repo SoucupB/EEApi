@@ -5,6 +5,7 @@
 #include "EETwa.h"
 #include "Unit.h"
 #include "EETypes.h"
+#include "CitizenManager.h"
 
 __declspec(dllexport) PVOID fakeStdin;
 
@@ -227,6 +228,14 @@ void bt_InitFisherBoats() {
   eeTa_AddFrameMethod(atom);
 }
 
+void bt_RepairBuildings() {
+  TimeAtom atom;
+  atom.method = (PVOID)citizen_RepairBuildings;
+  atom.arguments = NULL;
+  atom.time = 2450;
+  eeTa_AddFrameMethod(atom);
+}
+
 void bt_OnUnitIteration(Unit unit) {
   pls_OnUnitIteration(unit);
 }
@@ -251,6 +260,7 @@ void bt_OnInit() {
   bt_InitWorkerCreators();
   bt_InitPortNaval();
   bt_InitFisherBoats();
+  bt_RepairBuildings();
   bt_InitAggresiveness();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();
