@@ -139,13 +139,10 @@ uint8_t unit_IsSpellValid(Unit unit, Point target, Ability ability) {
   return 1;
 }
 
-// This method does not check whether it can cast things,
-// Need to fix this.
 void unit_CastAbility(Unit unit, Point target, Ability ability) {
   if(!unit_IsSpellValid(unit, target, ability)) {
     return ;
   }
-  // helper_CastAbility(unit_Reference(unit), target, ability);
   helper_CastAbility_Remade(unit_Reference(unit), target, ability);
 }
 
@@ -232,7 +229,6 @@ void unit_Convert(Unit src, Unit dst) {
   if(unit_IsBuilding(dst) || unit_IsDead(dst)) {
     return ;
   }
-  // helper_Convert(unit_Reference(src), unit_Reference(dst));
   helper_Convert_Remade(unit_Reference(src), unit_Reference(dst));
 }
 
@@ -246,4 +242,8 @@ void unit_Action(Unit unit, Point point, UnitAction action) {
 float unit_Range(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
   return *(float *)util_Pointer((PVOID)unitMetaData, 0x9C, FLOAT_TYPE);
+}
+
+float unit_Distance(Unit first, Unit dst) {
+  return distanceEuclidf(unit_Point_Position(first), unit_Point_Position(dst));
 }

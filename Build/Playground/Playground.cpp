@@ -26,6 +26,7 @@ Unit getFishboat();
 Resource getFish();
 void farmFish();
 void convertUnit();
+void addProphetSpells();
 
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
@@ -66,6 +67,45 @@ void test_PrintUnits() {
                       eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
     }
   }
+}
+
+Unit getBuilding(Unit prophet) {
+  vector<Unit> units = unit_GetBuildings(eeTa_AllPlayers());
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    if(eeTa_Player(units[i]) != eeTa_SelfPlayer()) {
+      eeTa_FilePrintf("Some Dist %f %f\n", unit_Distance(prophet, units[i]), unit_Range(prophet));
+    }
+    if(eeTa_Player(units[i]) != eeTa_SelfPlayer() && unit_Distance(prophet, units[i]) <= unit_Range(prophet)) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
+void castEarthQuake(Unit prophet) {
+  Unit building = getBuilding(prophet);
+  eeTa_FilePrintf("Building found at %p\n", unit_Reference(building));
+  if(!unit_Reference(building)) {
+    return ;
+  }
+  unit_CastAbility(prophet, unit_Point_Position(building), PROPHET_EARTHQUAKE);
+}
+
+void prophetCommandSpells(PVOID _) {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    if(unit_Type(units[i]) == PROPHET) {
+      castEarthQuake(units[i]);
+    }
+  }
+}
+
+void addProphetSpells() {
+  TimeAtom atom;
+  atom.method = (PVOID)prophetCommandSpells;
+  atom.arguments = NULL;
+  atom.time = 4144;
+  eeTa_AddFrameMethod(atom);
 }
 
 Unit getProphet() {
@@ -150,7 +190,7 @@ void execDataPengus() {
     // farmUnit();
     // farmFish();
     // castEarthquake();
-    convertUnit();
+    // convertUnit();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -160,7 +200,8 @@ void execDataPengus() {
 }
 
 void bt_OnInit() {
-  eeTa_FilePrintf("Changing at %p\n", (size_t)GetModuleHandleA("EE-AOC.exe") + (size_t)0xBB9D8);
+  addProphetSpells();
+  eeTa_FilePrintf("Added prophet spells\n");
 }
 
 Point airNextPosition(Unit unit) {
@@ -244,7 +285,7 @@ void bt_MoveUnitsRandomly() {
 
 void bt_OnFrame() {
   execDataPengus();
-  // bt_MoveUnitsRandomly();
+  bt_MoveUnitsRandomly();
 }
 
 void bt_OnUnitDestroy(Unit unit) {
