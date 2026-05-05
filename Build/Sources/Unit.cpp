@@ -145,7 +145,8 @@ void unit_CastAbility(Unit unit, Point target, Ability ability) {
   if(!unit_IsSpellValid(unit, target, ability)) {
     return ;
   }
-  helper_CastAbility(unit_Reference(unit), target, ability);
+  // helper_CastAbility(unit_Reference(unit), target, ability);
+  helper_CastAbility_Remade(unit_Reference(unit), target, ability);
 }
 
 UnitType unit_Type(Unit unit) {

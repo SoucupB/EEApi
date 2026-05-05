@@ -762,3 +762,23 @@ void helper_Unit_Command(PVOID unit, Point position, UnitAction action) {
 PVOID helper_Player_FromUnit(PVOID unit) {
   return util_Pointer((PVOID)unit, 0x18, POINTER_TYPE);
 }
+
+void helper_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, Ability ability) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+         unit,
+         (PVOID)0x0,
+         (PVOID)tile.x,
+         (PVOID)tile.y,
+         (PVOID)ability,
+         (PVOID)0x1);
+}
+
+void helper_CastAbility_Remade(PVOID unit, Point target, Ability ability) {
+  PVOID buffer = help_New(0x34);
+  TilePoint tile = geom_Tile_FromPoint(target);
+  helper_Command_Method6209C9(buffer, unit, tile, ability);
+  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
+}

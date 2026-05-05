@@ -51,8 +51,9 @@ void test_PrintUnits() {
   if(units.size()) {
     for(int32_t i = 0; i < units.size(); i++) {
       Point currentPoint = unit_Point_Position(units[i]);
-      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", units[i]._payload, 
-                      unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]));
+      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d and range %f\n", units[i]._payload, 
+                      unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, 
+                      eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]));
     }
   }
   vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
@@ -64,6 +65,39 @@ void test_PrintUnits() {
                       eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
     }
   }
+}
+
+Unit getProphet() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(unit_Type(units[i]) == PROPHET) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
+Unit getEnemyBuilding() {
+  vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
+  for(size_t i = 0; i < buildings.size(); i++) {
+    if(eeTa_Player(buildings[i]) != eeTa_SelfPlayer() && unit_Type(buildings[i]) != B_TEMPLE) {
+      return buildings[i];
+    }
+  }
+  return unit_Null();
+}
+
+void castEarthquake() {
+  Unit currentProphet = getProphet();
+  if(!unit_Reference(currentProphet)) {
+    return ;
+  }
+  Unit currentBuilding = getEnemyBuilding();
+  if(!unit_Reference(currentBuilding)) {
+    return ;
+  }
+  unit_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_EARTHQUAKE);
+  eeTa_FilePrintf("Some ability is casted lolol\n");
 }
 
 void execDataPengus() {
@@ -80,6 +114,7 @@ void execDataPengus() {
     // repairBuildings();
     // farmUnit();
     // farmFish();
+    castEarthquake();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -173,9 +208,7 @@ void bt_MoveUnitsRandomly() {
 
 void bt_OnFrame() {
   execDataPengus();
-  bt_MoveUnitsRandomly();
-
-  // pls_OnInit((PVOID)onLosingHealth);
+  // bt_MoveUnitsRandomly();
 }
 
 void bt_OnUnitDestroy(Unit unit) {
