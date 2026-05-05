@@ -131,7 +131,7 @@ uint8_t eeTypes_IsWaterTransport(UnitType unitType) {
 }
 
 uint8_t eeTypes_IsTransport(UnitType unitType) {
-  return eeTypes_IsWaterUnit(unitType) || eeTypes_IsFromClass(CLASS_SPACE_TRANSPORT, unitType) || eeTypes_IsFromClass(CLASS_AIR_TRANSPORT, unitType);
+  return eeTypes_IsFromClass(CLASS_WATER_TRANSPORT, unitType) || eeTypes_IsFromClass(CLASS_SPACE_TRANSPORT, unitType) || eeTypes_IsFromClass(CLASS_AIR_TRANSPORT, unitType);
 }
 
 uint8_t eeTypes_IsGroundUnit(UnitType unitType) {
