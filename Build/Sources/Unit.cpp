@@ -240,3 +240,8 @@ void unit_Action(Unit unit, Point point, UnitAction action) {
   }
   helper_Unit_Command(unit_Reference(unit), point, action);
 }
+
+float unit_Range(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
+  return *(float *)util_Pointer((PVOID)unitMetaData, 0x9C, FLOAT_TYPE);
+}

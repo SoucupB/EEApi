@@ -28,3 +28,4 @@ int8_t unit_IsBuildingComplete(Unit unit);
 int8_t unit_Building_IsIdle(Unit building);
 Unit unit_Null();
 uint8_t unit_CurrentEnergy(Unit unit);
+float unit_Range(Unit unit);
