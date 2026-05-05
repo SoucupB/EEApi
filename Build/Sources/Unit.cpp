@@ -232,7 +232,8 @@ void unit_Convert(Unit src, Unit dst) {
   if(unit_IsBuilding(dst) || unit_IsDead(dst)) {
     return ;
   }
-  helper_Convert(unit_Reference(src), unit_Reference(dst));
+  // helper_Convert(unit_Reference(src), unit_Reference(dst));
+  helper_Convert_Remade(unit_Reference(src), unit_Reference(dst));
 }
 
 void unit_Action(Unit unit, Point point, UnitAction action) {

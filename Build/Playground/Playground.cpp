@@ -25,6 +25,7 @@ void farmUnit();
 Unit getFishboat();
 Resource getFish();
 void farmFish();
+void convertUnit();
 
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
@@ -87,6 +88,16 @@ Unit getEnemyBuilding() {
   return unit_Null();
 }
 
+Unit getPriest() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(unit_Type(units[i]) == PRIEST) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
 void castEarthquake() {
   Unit currentProphet = getProphet();
   if(!unit_Reference(currentProphet)) {
@@ -96,8 +107,32 @@ void castEarthquake() {
   if(!unit_Reference(currentBuilding)) {
     return ;
   }
-  unit_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_EARTHQUAKE);
+  unit_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
   eeTa_FilePrintf("Some ability is casted lolol\n");
+}
+
+Unit getEnemy() {
+  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTa_Player(units[i]) != eeTa_SelfPlayer()) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
+void convertUnit() {
+  Unit currentPriest = getPriest();
+  if(!unit_Reference(currentPriest)) {
+    return ;
+  }
+  Unit currentUnit = getEnemy();
+  if(!unit_Reference(currentUnit)) {
+    return ;
+  }
+  // unit_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
+  unit_Convert(currentPriest, currentUnit);
+  eeTa_FilePrintf("Some convertion is made\n");
 }
 
 void execDataPengus() {
@@ -114,7 +149,8 @@ void execDataPengus() {
     // repairBuildings();
     // farmUnit();
     // farmFish();
-    castEarthquake();
+    // castEarthquake();
+    convertUnit();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {

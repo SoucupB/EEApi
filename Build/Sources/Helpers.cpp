@@ -782,3 +782,20 @@ void helper_CastAbility_Remade(PVOID unit, Point target, Ability ability) {
   helper_Command_Method6209C9(buffer, unit, tile, ability);
   helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
 }
+
+void helper_Command_Method61D337(PVOID self, PVOID unit, PVOID target) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x21D337);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+         unit,
+         target,
+         (PVOID)0x1,
+         (PVOID)0x0);
+}
+
+void helper_Convert_Remade(PVOID unit, PVOID target) {
+  PVOID buffer = help_New(0x44);
+  helper_Command_Method61D337(buffer, unit, target);
+  helper_IssueCommand(unit, buffer, (PVOID)0x7D4);
+}

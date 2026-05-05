@@ -18,3 +18,4 @@ void helper_Citizen_Gather(PVOID unit, PVOID resource);
 void helper_Unit_Command(PVOID unit, Point position, UnitAction action);
 PVOID helper_Player_FromUnit(PVOID unit);
 void helper_CastAbility_Remade(PVOID unit, Point target, Ability ability);
+void helper_Convert_Remade(PVOID unit, PVOID target);
