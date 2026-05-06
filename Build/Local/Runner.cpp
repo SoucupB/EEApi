@@ -244,6 +244,14 @@ void bt_ConvertUnits() {
   eeTa_AddFrameMethod(atom);
 }
 
+void bt_AttackWithBombers() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_AttackWithBombers;
+  atom.arguments = NULL;
+  atom.time = 1432;
+  eeTa_AddFrameMethod(atom);
+}
+
 void bt_OnUnitIteration(Unit unit) {
   pls_OnUnitIteration(unit);
 }
@@ -270,6 +278,7 @@ void bt_OnInit() {
   bt_InitFisherBoats();
   bt_RepairBuildings();
   bt_ConvertUnits();
+  bt_AttackWithBombers();
   // bt_InitAggresiveness();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();

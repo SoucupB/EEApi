@@ -11,6 +11,7 @@
 static map<pair<float, float>, uint8_t> attackedUnits;
 
 uint8_t idleAttackingWaterUnits(Unit unit);
+uint8_t isFlyingBomber(Unit unit);
 
 size_t min(size_t a, size_t b) {
   return a < b ? a : b;
@@ -199,6 +200,30 @@ void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(Uni
   }
 }
 
+uint8_t isFlyingBomber(Unit unit) {
+  UnitType type = unit_Type(unit);
+  switch (type)
+  {
+    case A_BOMBERNUC13_TITAN:
+      return 1;
+    case A_BOMBER_10_GOTHA:
+      return 1;
+    case A_BOMBER_13_B_122_WYVERN:
+      return 1;
+    case A_BOMBERNUC12_B_52:
+      return 1;
+    case A_BOMBER_11_B_17:
+      return 1;
+    case A_BOMBERNUC11_B_29:
+      return 1;
+    case A_BOMBER_12_STEALTH_B_2:
+      return 1;
+    
+    default:
+      break;
+  }
+  return 0;
+}
 uint8_t att_IsUnitCarrier(Unit unit) {
   return eeTypes_IsFromClass(CLASS_WATER_CARRIERS, unit_Type(unit));
 }
@@ -218,6 +243,29 @@ uint8_t enemyUnit(Unit unit) {
 uint8_t enemyBuilding(Unit unit) {
   return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && unit_IsBuilding(unit);
 }
+
+void att_AttackWithBombers(PVOID _) {
+  vector<Unit> airplanes = unit_Filter(isFlyingBomber);
+  vector<Unit> enemyBuildings = unit_Filter(enemyBuilding);
+  for(size_t i = 0, t = enemyBuildings.size(), c = airplanes.size(); i < c; i++) {
+    if(unit_IsIdle(airplanes[i])) {
+      float currentDist = 100000.0f;
+      Unit currentBuilding = unit_Null();
+      for(size_t j = 0; j < t; j++) {
+        float dist = unit_Distance(airplanes[i], enemyBuildings[j]);
+        if(currentDist > dist) {
+          currentDist = dist;
+          currentBuilding = enemyBuildings[j];
+        }
+      }
+      if(!unit_Reference(currentBuilding)) {
+        continue;
+      }
+      unit_Action(airplanes[i], unit_Point_Position(currentBuilding), UNIT_ATTACK);
+    }
+  }
+}
+
 
 void pickRandomUnits(vector<Unit> &units, int32_t count, uint32_t *index, size_t indexSize) {
   int32_t countArr = min(indexSize, min(count, units.size()));
