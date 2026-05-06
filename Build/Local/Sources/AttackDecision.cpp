@@ -203,6 +203,101 @@ uint8_t att_IsUnitCarrier(Unit unit) {
   return eeTypes_IsFromClass(CLASS_WATER_CARRIERS, unit_Type(unit));
 }
 
+uint8_t isPriest(Unit unit) {
+  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_Type(unit) == PRIEST;
+}
+
+uint8_t isProphet(Unit unit) {
+  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_Type(unit) == PROPHET;
+}
+
+uint8_t enemyUnit(Unit unit) {
+  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !unit_IsBuilding(unit);
+}
+
+uint8_t enemyBuilding(Unit unit) {
+  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && unit_IsBuilding(unit);
+}
+
+void priest_ConvertIfPossible(Unit priest) {
+  vector<Unit> units = unit_Filter(enemyUnit);
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    if(unit_Distance(priest, units[i]) <= unit_Range(priest)) {
+      unit_Convert(priest, units[i]);
+      return ;
+    }
+  }
+}
+
+void att_ProcessPriests() {
+  size_t total = 3;
+  vector<Unit> units = unit_Filter(isPriest);
+  for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
+    priest_ConvertIfPossible(units[i]);
+  }
+}
+
+void prophet_CastMalaria(Unit prophet, vector<Unit> &units, uint8_t *casted) {
+  if(*casted) {
+    return ;
+  }
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet)) {
+      unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_MALARIA);
+      *casted = 1;
+      return ;
+    }
+  }
+}
+
+void prophet_CastTornado(Unit prophet, vector<Unit> &units, uint8_t *casted) {
+  if(*casted) {
+    return ;
+  }
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsWaterUnit(unit_Type(units[i]))) {
+      unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_TORNADO);
+      *casted = 1;
+      return ;
+    }
+  }
+}
+
+void prophet_CastEarthquake(Unit prophet, uint8_t *casted) {
+  if(*casted) {
+    return ;
+  }
+  vector<Unit> units = unit_Filter(enemyBuilding);
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet)) {
+      unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_EARTHQUAKE);
+      *casted = 1;
+      return ;
+    }
+  }
+}
+
+void prophet_CastAbilities(Unit prophet) {
+  vector<Unit> units = unit_Filter(enemyUnit);
+  uint8_t casted = 0;
+  prophet_CastMalaria(prophet, units, &casted);
+  prophet_CastTornado(prophet, units, &casted);
+  prophet_CastEarthquake(prophet, &casted);
+}
+
+void att_ProcessProphets() {
+  size_t total = 4;
+  vector<Unit> units = unit_Filter(isProphet);
+  for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
+    prophet_CastAbilities(units[i]);
+  }
+}
+
+void att_ProcessSpecialAbilityUnits(PVOID _) {
+  att_ProcessPriests();
+  att_ProcessProphets();
+}
+
 void att_PatrolRandomPositions(vector<Unit> &selfUnits) {
   att_PatrolRandomPositions_t(selfUnits, idleAttackingAirUnits, 6);
   att_PatrolRandomPositions_t(selfUnits, idleAttackingGroundUnits, 7);

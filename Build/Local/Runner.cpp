@@ -236,6 +236,14 @@ void bt_RepairBuildings() {
   eeTa_AddFrameMethod(atom);
 }
 
+void bt_ConvertUnits() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_ProcessSpecialAbilityUnits;
+  atom.arguments = NULL;
+  atom.time = 2550;
+  eeTa_AddFrameMethod(atom);
+}
+
 void bt_OnUnitIteration(Unit unit) {
   pls_OnUnitIteration(unit);
 }
@@ -261,6 +269,7 @@ void bt_OnInit() {
   bt_InitPortNaval();
   bt_InitFisherBoats();
   bt_RepairBuildings();
+  bt_ConvertUnits();
   // bt_InitAggresiveness();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();
