@@ -31,3 +31,4 @@ uint8_t unit_CurrentEnergy(Unit unit);
 float unit_Range(Unit unit);
 float unit_Distance(Unit first, Unit dst);
 vector<Unit> unit_IdleBuildings(int8_t player);
+vector<Unit> unit_Filter(uint8_t (*method)(Unit));
