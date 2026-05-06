@@ -212,11 +212,22 @@ uint8_t isProphet(Unit unit) {
 }
 
 uint8_t enemyUnit(Unit unit) {
-  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !unit_IsBuilding(unit);
+  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && !unit_IsBuilding(unit) && !eeTypes_IsAirUnit(unit_Type(unit));
 }
 
 uint8_t enemyBuilding(Unit unit) {
-  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && unit_IsBuilding(unit);
+  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && unit_IsBuilding(unit);
+}
+
+void pickRandomUnits(vector<Unit> &units, int32_t count, uint32_t *index, size_t indexSize) {
+  int32_t countArr = min(indexSize, min(count, units.size()));
+  for(size_t i = 0; i < countArr; i++) {
+    index[i] = i;
+  }
+  for(size_t i = 0; i < countArr; i++) {
+    int32_t newIndex = (rand() * rand()) % (countArr - i) + i;
+    swap(index[i], index[newIndex]);
+  }
 }
 
 void priest_ConvertIfPossible(Unit priest) {
@@ -230,10 +241,12 @@ void priest_ConvertIfPossible(Unit priest) {
 }
 
 void att_ProcessPriests() {
-  size_t total = 3;
+  size_t total = 5;
   vector<Unit> units = unit_Filter(isPriest);
+  uint32_t newIndexes[256];
+  pickRandomUnits(units, total, newIndexes, sizeof(newIndexes) / sizeof(newIndexes[0]));
   for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
-    priest_ConvertIfPossible(units[i]);
+    priest_ConvertIfPossible(units[newIndexes[i]]);
   }
 }
 
@@ -242,7 +255,7 @@ void prophet_CastMalaria(Unit prophet, vector<Unit> &units, uint8_t *casted) {
     return ;
   }
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet)) {
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && unit_CanCast(prophet, PROPHET_MALARIA)) {
       unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_MALARIA);
       *casted = 1;
       return ;
@@ -255,7 +268,7 @@ void prophet_CastTornado(Unit prophet, vector<Unit> &units, uint8_t *casted) {
     return ;
   }
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsWaterUnit(unit_Type(units[i]))) {
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsWaterUnit(unit_Type(units[i])) && unit_CanCast(prophet, PROPHET_TORNADO)) {
       unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_TORNADO);
       *casted = 1;
       return ;
@@ -269,7 +282,7 @@ void prophet_CastEarthquake(Unit prophet, uint8_t *casted) {
   }
   vector<Unit> units = unit_Filter(enemyBuilding);
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet)) {
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && unit_CanCast(prophet, PROPHET_EARTHQUAKE)) {
       unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_EARTHQUAKE);
       *casted = 1;
       return ;
@@ -286,10 +299,12 @@ void prophet_CastAbilities(Unit prophet) {
 }
 
 void att_ProcessProphets() {
-  size_t total = 3;
+  size_t total = 5;
   vector<Unit> units = unit_Filter(isProphet);
+  uint32_t newIndexes[256];
+  pickRandomUnits(units, total, newIndexes, sizeof(newIndexes) / sizeof(newIndexes[0]));
   for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
-    prophet_CastAbilities(units[i]);
+    prophet_CastAbilities(units[newIndexes[i]]);
   }
 }
 

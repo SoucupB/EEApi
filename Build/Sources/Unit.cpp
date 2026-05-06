@@ -224,6 +224,33 @@ void unit_Farm(Unit unit, Resource resource) {
   unit_Fishboat_Farm(unit, resource);
 }
 
+uint8_t unit_Prophet_CanCast(Unit unit, Ability ability) {
+  switch (ability)
+  {
+    case PROPHET_EARTHQUAKE:
+      return unit_CurrentEnergy(unit) >= 50;
+    case PROPHET_MALARIA:
+      return unit_CurrentEnergy(unit) >= 100;
+    case PROPHET_TORNADO:
+      return unit_CurrentEnergy(unit) >= 100;
+    
+    default:
+      break;
+  }
+  return 0;
+}
+
+uint8_t unit_CanCast(Unit unit, Ability ability) {
+  switch(unit_Type(unit)) {
+    case PROPHET:
+      return unit_Prophet_CanCast(unit, ability);
+
+    default:
+      break;
+  }
+  return 0;
+}
+
 uint8_t unit_IsPresent(Unit unit) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
