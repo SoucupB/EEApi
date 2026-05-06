@@ -286,7 +286,7 @@ void prophet_CastAbilities(Unit prophet) {
 }
 
 void att_ProcessProphets() {
-  size_t total = 4;
+  size_t total = 3;
   vector<Unit> units = unit_Filter(isProphet);
   for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
     prophet_CastAbilities(units[i]);
