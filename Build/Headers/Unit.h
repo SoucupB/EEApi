@@ -33,3 +33,5 @@ float unit_Distance(Unit first, Unit dst);
 vector<Unit> unit_IdleBuildings(int8_t player);
 vector<Unit> unit_Filter(uint8_t (*method)(Unit));
 uint8_t unit_CanCast(Unit unit, Ability ability);
+uint8_t unit_IsTransport(Unit unit);
+void unit_Load(Unit transport, Unit unit);

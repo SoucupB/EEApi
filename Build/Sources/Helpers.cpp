@@ -799,3 +799,20 @@ void helper_Convert_Remade(PVOID unit, PVOID target) {
   helper_Command_Method61D337(buffer, unit, target);
   helper_IssueCommand(unit, buffer, (PVOID)0x7D4);
 }
+
+void helper_Command_Method627286(PVOID self, PVOID target) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227286);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  PVOID someVariable = (PVOID)0x07017602;
+  method(self, 
+         target,
+         &someVariable,
+         (PVOID)0x1);
+}
+
+void helper_TransportLoad(PVOID unit, PVOID transport) {
+  PVOID buffer = help_New(0x68);
+  helper_Command_Method627286(buffer, transport);
+  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
+}

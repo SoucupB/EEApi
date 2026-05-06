@@ -27,6 +27,7 @@ Resource getFish();
 void farmFish();
 void convertUnit();
 void addProphetSpells();
+void loadTransport();
 
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
@@ -191,6 +192,7 @@ void execDataPengus() {
     // farmFish();
     // castEarthquake();
     // convertUnit();
+    loadTransport();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -281,6 +283,26 @@ void bt_MoveUnitsRandomly() {
   for(size_t i = 0; i < units.size(); i++) {
     moveUnit(units[i]);
   }
+}
+
+uint8_t transportFilter(Unit unit) {
+  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_IsTransport(unit);
+}
+
+uint8_t nonTransportFilter(Unit unit) {
+  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && !unit_IsTransport(unit);
+}
+
+void loadTransport() {
+  vector<Unit> transport = unit_Filter(transportFilter);
+  if(!transport.size()) {
+    return ;
+  }
+  vector<Unit> unit = unit_Filter(nonTransportFilter);
+  if(!unit.size()) {
+    return ;
+  }
+  unit_Load(transport[0], unit[0]);
 }
 
 void bt_OnFrame() {

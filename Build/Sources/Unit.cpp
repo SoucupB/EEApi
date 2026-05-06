@@ -283,6 +283,17 @@ void unit_Action(Unit unit, Point point, UnitAction action) {
   helper_Unit_Command(unit_Reference(unit), point, action);
 }
 
+uint8_t unit_IsTransport(Unit unit) {
+  return eeTypes_IsTransport(unit_Type(unit));
+}
+
+void unit_Load(Unit transport, Unit unit) {
+  if(!unit_IsTransport(transport) || !eeTypes_IsGroundUnit(unit_Type(unit))) {
+    return ;
+  }
+  helper_TransportLoad(unit_Reference(unit), unit_Reference(transport));
+}
+
 float unit_Range(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
   return *(float *)util_Pointer((PVOID)unitMetaData, 0x9C, FLOAT_TYPE);
