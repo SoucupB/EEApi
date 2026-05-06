@@ -224,6 +224,42 @@ uint8_t isFlyingBomber(Unit unit) {
   }
   return 0;
 }
+
+uint8_t isTower(Unit unit) {
+  UnitType type = unit_Type(unit);
+  switch (type)
+  {
+    case B_GUARD_TOWER_BAMBOO:
+      return 1;
+    case B_GUARD_TOWER_BRONZE:
+      return 1;
+    case B_GUARD_TOWER_COPPER:
+      return 1;
+    case B_GUARD_TOWER_DIGITAL:
+      return 1;
+    case B_GUARD_TOWER_IMPERIAL:
+      return 1;
+    case B_GUARD_TOWER_MIDDLE:
+      return 1;
+    case B_GUARD_TOWER_PALEO:
+      return 1;
+    case B_GUARD_TOWER_PALISADES:
+      return 1;
+    case B_GUARD_TOWER_SPACE:
+      return 1;
+    case B_GUARD_TOWER_WW1:
+      return 1;
+    
+    default:
+      break;
+  }
+  return 0;
+}
+
+uint8_t isEnemyTower(Unit unit) {
+  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && isTower(unit);
+}
+
 uint8_t att_IsUnitCarrier(Unit unit) {
   return eeTypes_IsFromClass(CLASS_WATER_CARRIERS, unit_Type(unit));
 }
@@ -266,6 +302,28 @@ void att_AttackWithBombers(PVOID _) {
   }
 }
 
+void att_AttackWithShips(PVOID _) {
+  vector<Unit> waterUnits = unit_Filter(navalAttackFilter);
+  if(waterUnits.size() < 8) {
+    return ;
+  }
+  vector<Unit> enemyBuildings = unit_Filter(isEnemyTower);
+  for(size_t i = 0, c = waterUnits.size(), t = enemyBuildings.size(); i < c; i++) {
+    Unit currentBuilding = unit_Null();
+    float currentDist = 100000.0f;
+    for(size_t j = 0; j < t; j++) {
+      float dist = unit_Distance(waterUnits[i], enemyBuildings[j]);
+      if(currentDist > dist) {
+        currentDist = dist;
+        currentBuilding = enemyBuildings[j];
+      }
+    }
+    if(!unit_Reference(currentBuilding)) {
+      continue;
+    }
+    unit_Action(waterUnits[i], unit_Point_Position(currentBuilding), UNIT_ATTACK);
+  }
+}
 
 void pickRandomUnits(vector<Unit> &units, int32_t count, uint32_t *index, size_t indexSize) {
   int32_t countArr = min(indexSize, min(count, units.size()));

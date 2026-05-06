@@ -252,6 +252,14 @@ void bt_AttackWithBombers() {
   eeTa_AddFrameMethod(atom);
 }
 
+void bt_AttackWithShipsEverywhere() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_AttackWithShips;
+  atom.arguments = NULL;
+  atom.time = 25034;
+  eeTa_AddFrameMethod(atom);
+}
+
 void bt_OnUnitIteration(Unit unit) {
   pls_OnUnitIteration(unit);
 }
@@ -279,6 +287,7 @@ void bt_OnInit() {
   bt_RepairBuildings();
   bt_ConvertUnits();
   bt_AttackWithBombers();
+  bt_AttackWithShipsEverywhere();
   // bt_InitAggresiveness();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();
