@@ -302,7 +302,9 @@ void loadTransport() {
   if(!unit.size()) {
     return ;
   }
-  unit_Load(transport[0], unit[0]);
+  for(size_t i = 0; i < unit.size(); i++) {
+    unit_Load(transport[0], unit[i]);
+  }
 }
 
 void bt_OnFrame() {
