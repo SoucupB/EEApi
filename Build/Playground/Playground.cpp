@@ -27,6 +27,7 @@ Resource getFish();
 void farmFish();
 void convertUnit();
 void addProphetSpells();
+void printTransport();
 void loadTransport();
 
 __declspec(dllexport) void castEarthquake();
@@ -196,7 +197,7 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
-    printResources();
+    printTransport();
     Beep (300, 250);
   }
 }
@@ -291,6 +292,17 @@ uint8_t transportFilter(Unit unit) {
 
 uint8_t nonTransportFilter(Unit unit) {
   return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && !unit_IsTransport(unit);
+}
+
+void printTransport() {
+  vector<Unit> transport = unit_Filter(transportFilter);
+  for(size_t i = 0, c = transport.size(); i < c; i++) {
+    eeTa_FilePrintf("Transport %p\n", unit_Reference(transport[i]));
+    vector<Unit> unitsInside = unit_Transport_UnitsInside(transport[i]);
+    for(size_t j = 0; j < unitsInside.size(); j++) {
+      eeTa_FilePrintf(" Unit %p\n", unit_Reference(unitsInside[j]));
+    }
+  }
 }
 
 void loadTransport() {

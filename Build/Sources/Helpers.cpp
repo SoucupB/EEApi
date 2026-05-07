@@ -836,7 +836,7 @@ void helper_Transport_Load(vector<PVOID> &units, PVOID transport) {
 }
 
 PVOID helper_Transport_Ref(PVOID unit) {
-  return (PVOID)*(size_t *)(*(size_t *)((size_t)unit + 0x70));
+  return (PVOID)(*(size_t *)((size_t)unit + 0x70));
 }
 
 size_t helper_Transport_UnitsCount(PVOID unit) {

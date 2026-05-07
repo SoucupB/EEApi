@@ -304,10 +304,13 @@ vector<Unit> unit_Transport_UnitsInside(Unit transport) {
     return response;
   }
   size_t unitsCount = helper_Transport_UnitsCount(unit_Reference(transport));
+  if(!unitsCount) {
+    return response;
+  }
   PVOID unitRef = helper_Transport_Ref(unit_Reference(transport));
   for(size_t i = 0; i < unitsCount; i++) {
     response.push_back((Unit) {
-      ._payload = (PVOID)((size_t)unitRef + (i * 0x4))
+      ._payload = (PVOID)*(size_t *)((size_t)unitRef + (i * 0x4))
     });
   }
   return response;
