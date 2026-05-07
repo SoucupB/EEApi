@@ -20,6 +20,10 @@ void ply_Inits(PVOID self) {
   });
 }
 
+int8_t ply_PlayerCount() {
+  return game_Players()->playerData->size();
+}
+
 uint8_t ply_PlayerIndex(Player player) {
   return *(uint8_t *)util_Pointer(ply_Reference(player), 0x45C, INT8_T_TYPE);
 }
@@ -32,6 +36,17 @@ Player ply_GetPlayer(Unit unit) {
   return (Player) {
     ._payload = helper_Player_FromUnit(unit_Reference(unit))
   };
+}
+
+vector<Player> ply_All() {
+  vector<Player> response;
+  PPlayers playerData = game_Players();
+  for(auto &iter : *playerData->playerData) {
+    response.push_back((Player) {
+      ._payload = iter.first
+    });
+  }
+  return response;
 }
 
 PVOID ply_Reference(Player self) {

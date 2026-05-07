@@ -21,20 +21,6 @@ void eeTa_RebuildExtraDataStructure() {
   eeTa_RebuildDTs();
 }
 
-void eeTa_MoveTo(Unit src, Unit dst) {
-  help_MoveToTarget(eeTa_Unit_Reference(src), eeTa_Unit_Reference(dst));
-}
-
-Unit eeTa_Unit_Null() {
-  return (Unit) {
-    ._payload = NULL
-  };
-}
-
-PVOID eeTa_Unit_Reference(Unit unit) {
-  return unit._payload;
-}
-
 uint8_t eeTa_NeutralPlayer() {
   PEETwa eeTwa = game_EETwa();
   return eeTwa->neutralPlayer;
@@ -55,7 +41,7 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
     return ;
   }
   eeTwa->playerPresence[playerTeam] = 1;
-  if(eeTa_IsUnitDead(unit)) {
+  if(unit_IsDead(unit)) {
     unitPresence[playerTeam]->erase(unit._payload);
     unitPresence[eeTwa->all_players]->erase(unit._payload);
     bt_OnUnitDestroy(unit);
@@ -86,15 +72,6 @@ void eeTa_Map_PrintBitMap() {
     eeTa_FilePrintf("\n");
   }
   map_BitMapDelete(map, mapSizeInTiles);
-}
-
-void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability) {
-  helper_CastPoint(eeTa_Unit_Reference(src), target, ability);
-}
-
-uint8_t eeTa_CurrentEnergy(Unit unit) {
-  uint8_t *energyPointer = (uint8_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x2D4, INT8_T_TYPE);
-  return *energyPointer;
 }
 
 void __cdecl eeTa_OnUnitDeath(Unit unit) {
@@ -142,16 +119,6 @@ int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double)) {
     return (int32_t)(method(resources) * 0.05f);
   }
   return method(resources);
-}
-
-int8_t eeTa_AreAllies(uint8_t plySrc, uint8_t plyDst) {
-  PVOID _1 = util_Pointer(lib_BaseAddress(), 0x530DB4 + 0x4 * plySrc, POINTER_TYPE);
-  if(!_1) {
-    return 0;
-  }
-  uint8_t *_2 = (uint8_t *)util_Pointer(_1, 0x4 * plyDst + 0x9DC, INT8_T_TYPE);
-
-  return !*_2;
 }
 
 void eeTa_SetCvCAggression(uint8_t botIndex, float aggression) {
@@ -250,7 +217,7 @@ int8_t eeTa_IsBuildingComplete(Unit unit) {
   return *isBuildingRef;
 }
 
-__declspec(dllexport) uint8_t eeTa_CanBuild(Unit building, PVOID type) {
+uint8_t eeTa_CanBuild(Unit building, PVOID type) {
   size_t *epochStruct = (size_t *)_eeTa_EpochStruct(building._payload, type);
   if(!epochStruct) {
     return 0;
@@ -268,14 +235,15 @@ int8_t *eeTa_PlayerIDs() {
 }
 
 int8_t eeTa_PlayerCount() {
-  int8_t total = 0;
-  PEETwa eeTwa = game_EETwa();
-  for(size_t i = 0; i < 20; i++) {
-    if(eeTwa->playerPresence[i]) {
-      total++;
-    }
-  }
-  return total;
+  // int8_t total = 0;
+  // PEETwa eeTwa = game_EETwa();
+  // for(size_t i = 0; i < 20; i++) {
+  //   if(eeTwa->playerPresence[i]) {
+  //     total++;
+  //   }
+  // }
+  // return total;
+  return ply_PlayerCount();
 }
 
 void eeTa_RebuildDTs() {
@@ -289,16 +257,6 @@ void eeTa_OnInit() {
   bt_OnInit();
 }
 
-UnitType eeTa_UnitType(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
-}
-
-UnitType eeTa_EETypes_UnitType(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
-}
-
 void eeTa_OnFrame() {
   PEETwa eeTwa = game_EETwa();
   bt_OnFrame();
@@ -308,13 +266,6 @@ void eeTa_OnFrame() {
 
 void eeTa_AddFrameMethod(TimeAtom atom) {
   tmrs_AddMethod(game_EETwa()->timers, atom);
-}
-
-int8_t eeTa_IsBuilding(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  size_t *callerStruct = (size_t *)util_Pointer((PVOID)unitMetaData[0], 0xB8, POINTER_TYPE);
-
-  return (size_t)callerStruct == (size_t)lib_BaseAddress() + 0x20FD9D;
 }
 
 PVOID eeTa_CreateDestionationPointer() {
@@ -328,10 +279,6 @@ PVOID eeTa_SetPlayers(PVOID unit) {
   PVOID selectedUnits = help_New(sizeof(PVOID));
   memcpy(selectedUnits, &unit, sizeof(PVOID));
   return selectedUnits;
-}
-
-int8_t eeTa_IsUnit(Unit unit) {
-  return !eeTa_IsBuilding(unit);
 }
 
 Point eeTa_GetDestinationCommand(Unit unit) {
@@ -351,43 +298,13 @@ Point eeTa_GetDestinationCommand(Unit unit) {
   };
 }
 
-TilePoint eeTa_Unit_TilePosition(Unit unit) {
-  int32_t x = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x1C, INT32_T_TYPE);
-  int32_t y = *(int32_t *)util_Pointer(eeTa_Unit_Reference(unit), 0x20, INT32_T_TYPE);
-  return (TilePoint) {
-    .x = x,
-    .y = y
-  };
-}
-
 int32_t eeTa_CurrentlyBuilding(Unit building) {
   return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
-}
-
-int32_t eeTa_CurrentHp(Unit unit) {
-  return *(int32_t *)util_Pointer((PVOID)unit._payload, 0x3C, INT32_T_TYPE);
-}
-
-int8_t eeTa_IsUnitDead(Unit unit) {
-  return !eeTa_CurrentHp(unit);
 }
 
 int64_t eeTa_CurrentFrame() {
   PEETwa eeTwa = game_EETwa();
   return eeTwa->frames;
-}
-
-Point eeTa_CurrentPosition(Unit unit) {
-  float *x = (float *)util_Pointer(unit._payload, 0x13C, FLOAT_TYPE);
-  float *y = (float *)util_Pointer(unit._payload, 0x14C, FLOAT_TYPE);
-  return (Point) {
-    .x = *x,
-    .y = *y
-  };
-}
-
-int8_t eeTa_IsUnitIdle(Unit unit) {
-  return !util_Pointer(unit._payload, 0x1F0, POINTER_TYPE);
 }
 
 PVOID eeTa_Unit_Sample(int8_t player) {

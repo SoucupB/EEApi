@@ -9,15 +9,11 @@
 #include "LibManager.h"
 #include "EETypes.h"
 #include "Geometry.h"
+#include "Unit.h"
 
 #define ACTION_BUFFER_SIZE 0xB8
 
 using namespace std;
-
-typedef struct TileStruct_t {
-  PVOID ref;
-  TilePoint tile;
-} TileStruct;
 
 typedef struct MoveAction_t {
   PVOID methodsBundle; // 0x0
@@ -468,7 +464,7 @@ void help_FillData_Air(PVOID buffer) {
 }
 
 MoveActionUnit *help_GetActionUnit(PVOID parent, PVOID unit) {
-  Point pos = eeTa_CurrentPosition((Unit) {._payload = unit});
+  Point pos = unit_Point_Position((Unit) {._payload = unit});
   MoveActionUnit *self = (MoveActionUnit *)help_New(0x44);
   self->methodsBundle = (PVOID)((size_t)lib_BaseAddress() + 0x4475A8); // 8478A0
   self->_const_1 = (PVOID)0x601;
@@ -765,4 +761,101 @@ void helper_Unit_Command(PVOID unit, Point position, UnitAction action) {
 
 PVOID helper_Player_FromUnit(PVOID unit) {
   return util_Pointer((PVOID)unit, 0x18, POINTER_TYPE);
+}
+
+void helper_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, Ability ability) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+         unit,
+         (PVOID)0x0,
+         (PVOID)tile.x,
+         (PVOID)tile.y,
+         (PVOID)ability,
+         (PVOID)0x1);
+}
+
+void helper_CastAbility_Remade(PVOID unit, Point target, Ability ability) {
+  PVOID buffer = help_New(0x34);
+  TilePoint tile = geom_Tile_FromPoint(target);
+  helper_Command_Method6209C9(buffer, unit, tile, ability);
+  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
+}
+
+void helper_Command_Method61D337(PVOID self, PVOID unit, PVOID target) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x21D337);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+         unit,
+         target,
+         (PVOID)0x1,
+         (PVOID)0x0);
+}
+
+void helper_Convert_Remade(PVOID unit, PVOID target) {
+  PVOID buffer = help_New(0x44);
+  helper_Command_Method61D337(buffer, unit, target);
+  helper_IssueCommand(unit, buffer, (PVOID)0x7D4);
+}
+
+PVOID createArray(vector<PVOID> &units) {
+  PVOID unitBuffer = help_New(sizeof(PVOID) * units.size());
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    memcpy((PVOID)((size_t)unitBuffer + i * sizeof(PVOID)), &units[i], sizeof(PVOID));
+  }
+  return unitBuffer;
+}
+
+void helper_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transport) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227286);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  size_t physicsBuffer = *(size_t *)((size_t)lib_BaseAddress() + 0x5318F0);
+  PVOID variablePointer = (PVOID)((physicsBuffer & 0xFFFFFF00) | 0x2);
+  PVOID unitBuffer = createArray(units);
+  PVOID input[] = {variablePointer, unitBuffer, (PVOID)((size_t)unitBuffer + 0x4 * units.size())};
+  method(self, 
+         transport,
+         &input,
+         (PVOID)0x1);
+}
+
+void helper_Transport_Load(vector<PVOID> &units, PVOID transport) {
+  size_t bufferSize = 0x68;
+  PVOID buffer = help_New(bufferSize);
+  PVOID cpyBuffer = help_New(bufferSize);
+  helper_Command_Method627286(buffer, units, transport);
+  helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    PVOID cpyBuffer = help_New(bufferSize);
+    helper_Command_Method627286(cpyBuffer, units, transport);
+    helper_IssueCommand(units[i], cpyBuffer, (PVOID)0x1F40);
+  }
+}
+
+PVOID helper_Transport_Ref(PVOID unit) {
+  return (PVOID)(*(size_t *)((size_t)unit + 0x70));
+}
+
+size_t helper_Transport_UnitsCount(PVOID unit) {
+  return (*(size_t *)((size_t)unit + 0x74) - *(size_t *)((size_t)unit + 0x70)) / 0x4;
+}
+
+void helper_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2283FF);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self,
+         transport,
+         (PVOID)tile.x,
+         (PVOID)tile.y,
+         (PVOID)0x1);
+}
+
+void helper_Transport_Unload(PVOID transport, TilePoint tile) {
+  PVOID buffer = help_New(0x40);
+  helper_Command_Method6283FF(buffer, transport, tile);
+  helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
 }

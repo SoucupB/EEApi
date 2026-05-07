@@ -11,23 +11,13 @@
 vector<Unit> eeTa_Buildings(int8_t player);
 vector<PVOID> eeTa_UnitTypes(Unit building);
 void __cdecl eeTa_OnUnitFrame(Unit unit);
-vector<Unit> eeTa_Units(int8_t player);
-void eeTa_Clean();
 void eeTa_OnFrame();
 void eeTa_BuildUnit(Unit building, PVOID unitType);
 int32_t eeTa_CurrentlyBuilding(Unit building);
 vector<Unit> eeTa_IdleBuildings(int8_t player);
 int64_t eeTa_CurrentFrame();
-int8_t eeTa_IsBuilding(Unit unit);
 void eeTa_OnUnitDeath(Unit unit);
 int8_t eeTa_Player(Unit unit);
-UnitType eeTa_UnitType(Unit unit);
-int32_t eeTa_CurrentHp(Unit unit);
-Unit eeTa_Unit_Null();
-PVOID eeTa_Unit_Reference(Unit unit);
-void eeTa_MoveTo(Unit src, Unit dst);
-int8_t eeTa_IsUnitDead(Unit unit);
-int8_t eeTa_IsUnit(Unit unit);
 void eeTa_Printf(const char *format, ...);
 int8_t eeTa_SelfPlayer();
 int8_t eeTa_AllPlayers();
@@ -37,13 +27,10 @@ int32_t eeTa_Buildables(Unit unit);
 vector<int32_t> eeTa_AllBuildableTypes(Unit unit);
 int8_t eeTa_IsBuildingComplete(Unit unit);
 Point eeTa_GetDestinationCommand(Unit unit);
-Point eeTa_CurrentPosition(Unit unit);
 PVOID eeTa_Unit_Sample(int8_t player);
-int8_t eeTa_IsUnitIdle(Unit unit);
 int32_t eeTa_UnitPopulation(Unit unit);
 int32_t eeTa_CurrentPopulation();
 int32_t eeTa_TotalPop();
-int8_t eeTa_AreAllies(uint8_t plySrc, uint8_t plyDst);
 void eeTa_SetCvCAggression(uint8_t botIndex, float aggression);
 void eeTa_OnInit();
 void eeTa_AddFrameMethod(TimeAtom atom);
@@ -57,9 +44,6 @@ int8_t eeTa_PlayerCount();
 int8_t *eeTa_PlayerIDs(); // 30 elements max
 int8_t eeTa_PlayerIndex(); // needs to be fixed.
 void eeTa_FilePrintf(const char *format, ...);
-void eeTa_Unit_CastPoint(Unit src, Point target, Ability ability);
-TilePoint eeTa_Unit_TilePosition(Unit unit);
-UnitType eeTa_EETypes_UnitType(Unit unit);
 
 uint8_t eeTa_ShouldOnInitExecute();
 

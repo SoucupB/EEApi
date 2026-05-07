@@ -27,9 +27,6 @@ Resource getFish();
 void farmFish();
 void convertUnit();
 void addProphetSpells();
-void printTransport();
-void loadTransport();
-void unloadTransport();
 
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
@@ -194,12 +191,10 @@ void execDataPengus() {
     // farmFish();
     // castEarthquake();
     // convertUnit();
-    loadTransport();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
-    // printTransport();
-    unloadTransport();
+    printResources();
     Beep (300, 250);
   }
 }
@@ -286,48 +281,6 @@ void bt_MoveUnitsRandomly() {
   for(size_t i = 0; i < units.size(); i++) {
     moveUnit(units[i]);
   }
-}
-
-uint8_t transportFilter(Unit unit) {
-  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_IsTransport(unit);
-}
-
-uint8_t nonTransportFilter(Unit unit) {
-  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && !unit_IsTransport(unit);
-}
-
-void printTransport() {
-  vector<Unit> transport = unit_Filter(transportFilter);
-  for(size_t i = 0, c = transport.size(); i < c; i++) {
-    eeTa_FilePrintf("Transport %p with population %d\n", unit_Reference(transport[i]), unit_Transport_Population(transport[i]));
-    vector<Unit> unitsInside = unit_Transport_UnitsInside(transport[i]);
-    for(size_t j = 0; j < unitsInside.size(); j++) {
-      eeTa_FilePrintf(" Unit %p\n", unit_Reference(unitsInside[j]));
-    }
-  }
-}
-
-void unloadTransport() {
-  vector<Unit> transport = unit_Filter(transportFilter);
-  if(!transport.size()) {
-    return ;
-  }
-  unit_Transport_Unload(transport[0], (TilePoint) {
-    .x = 53,
-    .y = 48
-  });
-}
-
-void loadTransport() {
-  vector<Unit> transport = unit_Filter(transportFilter);
-  if(!transport.size()) {
-    return ;
-  }
-  vector<Unit> units = unit_Filter(nonTransportFilter);
-  if(!units.size()) {
-    return ;
-  }
-  unit_Transport_Load(transport[0], units);
 }
 
 void bt_OnFrame() {

@@ -1014,3 +1014,11 @@ Here 005ED231 is the set the creator for the 0x38 size buffer.
 
 This is the method which sets the data 005EE7D4.
 005ED524 -> 004C2A95
+
+004BB997 is needed for the convert unit.
+004BB9BB is needed.
+
+004C1D29 for loading units.
+
+005ED3F1 for unloading.
+005ED108 caller.

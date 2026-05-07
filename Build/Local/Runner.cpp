@@ -3,12 +3,14 @@
 #include "PlayerState.h"
 #include "ResourceManager.h"
 #include "EETwa.h"
+#include "Unit.h"
+#include "EETypes.h"
+#include "CitizenManager.h"
 
 __declspec(dllexport) PVOID fakeStdin;
 
 void cleanDataChecker() {
   if(GetAsyncKeyState('J') & 0x8000) {
-    eeTa_Clean();
     Beep (300, 250);
   }
 }
@@ -24,17 +26,17 @@ void randomIndexing(size_t *indexes, size_t sz) {
 }
 
 uint8_t nonWorkersFilter(Unit unit) {
-  UnitTypeDef def = eeTa_UnitType(unit);
-  return !eeTypes_IsWorker(def);
+  UnitType def = unit_Type(unit);
+  return !eeTypes_IsCitizen(def);
 }
 
 uint8_t workersFilter(Unit unit) {
-  UnitTypeDef def = eeTa_UnitType(unit);
-  return eeTypes_IsWorker(def);
+  UnitType def = unit_Type(unit);
+  return eeTypes_IsCitizen(def);
 }
 
 int8_t shouldBuildAttackUnit() {
-  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
   vector<Unit> filteredUnits = eeTa_Filter(units, nonWorkersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
@@ -44,7 +46,7 @@ int8_t shouldBuildAttackUnit() {
 }
 
 int8_t shouldBuildWorkers() {
-  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
   vector<Unit> filteredUnits = eeTa_Filter(units, workersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
@@ -58,7 +60,7 @@ uint8_t navalAirCarrierFilter(Unit unit) {
 }
 
 void buildUnit_t(PVOID attr) {
-  vector<Unit> buildings = eeTa_IdleBuildings(eeTa_SelfPlayer());
+  vector<Unit> buildings = unit_IdleBuildings(eeTa_SelfPlayer());
   if(!buildings.size() || !shouldBuildAttackUnit()) {
     return ;
   }
@@ -67,7 +69,7 @@ void buildUnit_t(PVOID attr) {
   int32_t maxBuildings = 4;
   for(int32_t i = 0, c = buildings.size(); i < c; i++) {
     Unit building = buildings[indexes[i]];
-    if(eeTypes_CanProduceWorkers(eeTa_UnitType(building))) {
+    if(eeTypes_CanProduceWorkers(unit_Type(building))) {
       continue;
     }
     vector<int32_t> types = eeTa_AllBuildableTypes(building);
@@ -84,7 +86,7 @@ void buildUnit_t(PVOID attr) {
 }
 
 void buildAirCarrierUnits(PVOID attr) {
-  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
   vector<Unit> filteredUnits = eeTa_Filter(units, navalAirCarrierFilter);
   for(int32_t i = 0, c = filteredUnits.size(); i < c; i++) {
     Unit naval = filteredUnits[i];
@@ -100,7 +102,7 @@ void buildAirCarrierUnits(PVOID attr) {
 }
 
 uint8_t capitolFilter(Unit unit) {
-  UnitTypeDef def = eeTa_UnitType(unit);
+  UnitType def = unit_Type(unit);
   return eeTypes_CanProduceWorkers(def);
 }
 
@@ -108,7 +110,7 @@ __declspec(dllexport) void bt_BuildWorkers(PVOID attr) {
   if(!shouldBuildWorkers()) {
     return ;
   }
-  vector<Unit> buildings = eeTa_IdleBuildings(eeTa_SelfPlayer());
+  vector<Unit> buildings = unit_IdleBuildings(eeTa_SelfPlayer());
   vector<Unit> capitols = eeTa_Filter(buildings, capitolFilter);
   if(!capitols.size()) {
     return ;
@@ -116,7 +118,7 @@ __declspec(dllexport) void bt_BuildWorkers(PVOID attr) {
   int32_t maxBuildings = 3;
   for(int32_t i = 0, c = capitols.size(); i < c; i++) {
     Unit building = capitols[i];
-    eeTa_BuildUnit(building, (PVOID)UNIT_MALE_CITIZEN);
+    eeTa_BuildUnit(building, (PVOID)CITIZEN);
     if(!maxBuildings) {
       break;
     }
@@ -130,101 +132,17 @@ string convertToHex(int number) {
   return std::string(buffer);
 }
 
-void printBuildableTypes(PVOID unit) {
-  vector<int32_t> types = eeTa_AllBuildableTypes((Unit) {._payload = unit});
-
-  string response = "The pointer at " + convertToHex((int32_t)unit) + " can build ";
-
-  for(int32_t i = 0; i < types.size(); i++) {
-    response += convertToHex(types[i]) + " ";
-  }
-
-  eeTa_Printf("%s\n", &response[0]);
-}
-
-void getMetaData() {
-  vector<Unit> buildings = eeTa_Buildings(eeTa_SelfPlayer());
-
-  if(fakeStdin) {
-    printBuildableTypes(fakeStdin);
-    return ;
-  }
-
-  for(int32_t i = 0; i < buildings.size(); i++) {
-    if(eeTa_UnitType(buildings[i]) == BUILDING_BRONZE_ARCHERY) {
-      printBuildableTypes(eeTa_Unit_Reference(buildings[i]));
-    }
-  }
-}
-
 void checkEpochPointer() {
   if(GetAsyncKeyState('P') & 0x8000) {
-    // getMetaData();
     Beep (400, 250);
-  }
-}
-
-void moveRandomly() {
-  if(GetAsyncKeyState('O') & 0x8000) {
-    vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
-    if(!units.size()) {
-      return ;
-    }
-    Point destCommand = eeTa_GetDestinationCommand(units[0]);
-    eeTa_Printf("Dest for %p pos %f and %f\n", units[0], destCommand.x, destCommand.y);
-  }
-}
-
-Point randomMove(PVOID unit) {
-  Point currentPosition = eeTa_CurrentPosition((Unit) {._payload = unit});
-  currentPosition.x += sinf(rand()) * 20.0f;
-  currentPosition.y += sinf(rand()) * 20.0f;
-  return currentPosition;
-}
-
-uint8_t impulseIdleUnit(PVOID unit) {
-  if(!eeTa_IsUnitIdle((Unit) {._payload = unit})) {
-    return 0;
-  }
-  Point pnt = randomMove(unit);
-  if(pnt.x == -1) {
-    return 0;
-  }
-  help_UnitMove(unit, pnt, UNIT_ATTACK);
-  return 1;
-}
-
-void iterateTroughExistingUnits(PVOID attr) {
-  int32_t maxCommands = 10;
-  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
-  for(size_t i = 0, c = units.size(); i < c; i++) {
-    UnitTypeDef def = eeTa_UnitType(units[i]);
-    if(!eeTypes_IsWorker(def) && !eeTypes_IsTransport(def) && impulseIdleUnit(units[i]._payload)) {
-      maxCommands--;
-    }
-    if(!maxCommands) {
-      return ;
-    }
   }
 }
 
 void convert() {
   if(GetAsyncKeyState('P') & 0x8000) {
-    vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+    vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
     att_ConvertIfNecessary(units);
     Beep(400, 250);
-  }
-}
-
-void buildRandomUnit() {
-  if(GetAsyncKeyState('K') & 0x8000) {
-    PVOID unit = eeTa_Unit_Sample(eeTa_SelfPlayer());
-    if(!unit) {
-      return ;
-    }
-    PVOID targetUnit = eeTa_Unit_Sample(0);
-    help_UnitMove(unit, eeTa_CurrentPosition((Unit) {._payload = targetUnit}), UNIT_ATTACK);
-    Beep (400, 250);
   }
 }
 
@@ -238,20 +156,12 @@ void moveToResources() {
 }
 
 void addListeners() {
-  // cleanDataChecker();
-  // checkEpochPointer();
   moveToResources();
-  // moveRandomly();
 }
 
 void bt_HuntTransports(PVOID attributes) {
-  vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
+  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
   att_AttackTransportWithNavals(units);
-}
-
-void bt_HuntWithPlanes(PVOID attributes) {
-  vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
-  att_AttackEnemiesWithPlanes(units);
 }
 
 void convert();
@@ -278,7 +188,7 @@ void bt_InitTransportHunting() {
 }
 
 void patrolCommand(PVOID attr) {
-  vector<Unit> units = eeTa_Units(eeTa_SelfPlayer());
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
   att_PatrolRandomPositions(units);
 }
 
@@ -287,14 +197,6 @@ void bt_InitUnitMovement() {
   atom.method = (PVOID)patrolCommand;
   atom.arguments = NULL;
   atom.time = 1115;
-  eeTa_AddFrameMethod(atom);
-}
-
-void bt_InitPlaneHunters() {
-  TimeAtom atom;
-  atom.method = (PVOID)bt_HuntWithPlanes;
-  atom.arguments = NULL;
-  atom.time = 4048;
   eeTa_AddFrameMethod(atom);
 }
 
@@ -326,6 +228,38 @@ void bt_InitFisherBoats() {
   eeTa_AddFrameMethod(atom);
 }
 
+void bt_RepairBuildings() {
+  TimeAtom atom;
+  atom.method = (PVOID)citizen_RepairBuildings;
+  atom.arguments = NULL;
+  atom.time = 2450;
+  eeTa_AddFrameMethod(atom);
+}
+
+void bt_ConvertUnits() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_ProcessSpecialAbilityUnits;
+  atom.arguments = NULL;
+  atom.time = 2550;
+  eeTa_AddFrameMethod(atom);
+}
+
+void bt_AttackWithBombers() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_AttackWithBombers;
+  atom.arguments = NULL;
+  atom.time = 1432;
+  eeTa_AddFrameMethod(atom);
+}
+
+void bt_AttackWithShipsEverywhere() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_AttackWithShips;
+  atom.arguments = NULL;
+  atom.time = 25034;
+  eeTa_AddFrameMethod(atom);
+}
+
 void bt_OnUnitIteration(Unit unit) {
   pls_OnUnitIteration(unit);
 }
@@ -350,7 +284,11 @@ void bt_OnInit() {
   bt_InitWorkerCreators();
   bt_InitPortNaval();
   bt_InitFisherBoats();
-  bt_InitAggresiveness();
+  bt_RepairBuildings();
+  bt_ConvertUnits();
+  bt_AttackWithBombers();
+  bt_AttackWithShipsEverywhere();
+  // bt_InitAggresiveness();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();
 }

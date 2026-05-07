@@ -19,7 +19,7 @@ vector<Unit> unit_GetBuildings(int8_t player) {
     Unit currentUnit = (Unit) {
       ._payload = it.first
     };
-    if(!unit_IsUnitDead(currentUnit) && unit_IsBuilding(currentUnit)) {
+    if(!unit_IsDead(currentUnit) && unit_IsBuilding(currentUnit)) {
       buildingsPointer.push_back(currentUnit);
     }
   }
@@ -31,7 +31,7 @@ vector<Unit> unit_GetUnits(int8_t player) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   for(auto &it : *(unitPresence[player])) {
-    if(!unit_IsUnitDead((Unit) {
+    if(!unit_IsDead((Unit) {
       ._payload = it.first
     }) && !unit_IsBuilding((Unit) {
       ._payload = (PVOID)it.first
@@ -39,6 +39,23 @@ vector<Unit> unit_GetUnits(int8_t player) {
       units.push_back((Unit) {
         ._payload = (PVOID)it.first
       });
+    }
+  }
+  return units;
+}
+
+vector<Unit> unit_Filter(uint8_t (*method)(Unit)) {
+  vector<Unit> units;
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  for(size_t i = 0; i < 20; i++) {
+    for(auto &it : *(unitPresence[i])) {
+      Unit unit = (Unit) {
+        ._payload = it.first
+      };
+      if(!unit_IsDead(unit) && method(unit)) {
+        units.push_back(unit);
+      }
     }
   }
   return units;
@@ -53,13 +70,13 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   for(auto &it : *(unitPresence[player])) {
-    if(!eeTa_IsUnitDead((Unit) {
+    if(!unit_IsDead((Unit) {
       ._payload = it.first
-    }) && eeTa_IsBuildingComplete((Unit) {
+    }) && unit_IsBuildingComplete((Unit) {
       ._payload = it.first
     }) && unit_IsBuilding((Unit) {
       ._payload = it.first
-    }) && eeTa_IsIdle((Unit) {
+    }) && unit_Building_IsIdle((Unit) {
       ._payload = it.first
     })) {
       buildingsPointer.push_back((Unit) {
@@ -68,6 +85,16 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
     }
   }
   return buildingsPointer;
+}
+
+int8_t unit_Building_IsIdle(Unit building) {
+  return eeTa_CurrentlyBuilding(building) == IDLE;
+}
+
+int8_t unit_IsBuildingComplete(Unit unit) {
+  int8_t *isBuildingRef = (int8_t *)util_Pointer((PVOID)unit._payload, 0x34C, INT8_T_TYPE);
+  
+  return *isBuildingRef;
 }
 
 int8_t unit_IsIdle(Unit unit) {
@@ -96,6 +123,17 @@ TilePoint unit_Tile_Position(Unit unit) {
   };
 }
 
+uint8_t unit_CurrentEnergy(Unit unit) {
+  uint8_t *energyPointer = (uint8_t *)util_Pointer(unit_Reference(unit), 0x2D4, INT8_T_TYPE);
+  return *energyPointer;
+}
+
+Unit unit_Null() {
+  return (Unit) {
+    ._payload = NULL
+  };
+}
+
 PVOID unit_Reference(Unit unit) {
   return unit._payload;
 }
@@ -112,20 +150,17 @@ uint8_t unit_ProphetAbility_CanCast(Unit unit, Point target, Ability ability) {
 }
 
 uint8_t unit_IsSpellValid(Unit unit, Point target, Ability ability) {
-  if(eeTa_UnitType(unit) == PROPHET) {
+  if(unit_Type(unit) == PROPHET) {
     return unit_ProphetAbility_CanCast(unit, target, ability);
   }
-
   return 1;
 }
 
-// This method does not check whether it can cast things,
-// Need to fix this.
 void unit_CastAbility(Unit unit, Point target, Ability ability) {
   if(!unit_IsSpellValid(unit, target, ability)) {
     return ;
   }
-  helper_CastAbility(unit_Reference(unit), target, ability);
+  helper_CastAbility_Remade(unit_Reference(unit), target, ability);
 }
 
 UnitType unit_Type(Unit unit) {
@@ -189,6 +224,33 @@ void unit_Farm(Unit unit, Resource resource) {
   unit_Fishboat_Farm(unit, resource);
 }
 
+uint8_t unit_Prophet_CanCast(Unit unit, Ability ability) {
+  switch (ability)
+  {
+    case PROPHET_EARTHQUAKE:
+      return unit_CurrentEnergy(unit) >= 50;
+    case PROPHET_MALARIA:
+      return unit_CurrentEnergy(unit) >= 100;
+    case PROPHET_TORNADO:
+      return unit_CurrentEnergy(unit) >= 100;
+    
+    default:
+      break;
+  }
+  return 0;
+}
+
+uint8_t unit_CanCast(Unit unit, Ability ability) {
+  switch(unit_Type(unit)) {
+    case PROPHET:
+      return unit_Prophet_CanCast(unit, ability);
+
+    default:
+      break;
+  }
+  return 0;
+}
+
 uint8_t unit_IsPresent(Unit unit) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
@@ -200,18 +262,18 @@ uint8_t unit_IsPresent(Unit unit) {
   return 0;
 }
 
-int8_t unit_IsUnitDead(Unit unit) {
-  return !eeTa_CurrentHp(unit);
+int8_t unit_IsDead(Unit unit) {
+  return !unit_CurrentHp(unit);
 }
 
 void unit_Convert(Unit src, Unit dst) {
   if(!eeTypes_IsPriest(unit_Type(src))) {
     return ;
   }
-  if(unit_IsBuilding(dst) || unit_IsUnitDead(dst)) {
+  if(unit_IsBuilding(dst) || unit_IsDead(dst)) {
     return ;
   }
-  helper_Convert(unit_Reference(src), unit_Reference(dst));
+  helper_Convert_Remade(unit_Reference(src), unit_Reference(dst));
 }
 
 void unit_Action(Unit unit, Point point, UnitAction action) {
@@ -219,4 +281,71 @@ void unit_Action(Unit unit, Point point, UnitAction action) {
     return ;
   }
   helper_Unit_Command(unit_Reference(unit), point, action);
+}
+
+uint8_t unit_IsTransport(Unit unit) {
+  return eeTypes_IsTransport(unit_Type(unit));
+}
+
+void unit_Transport_Load(Unit transport, vector<Unit> &units) {
+  if(!unit_IsTransport(transport) || !units.size()) {
+    return ;
+  }
+  vector<PVOID> bufferUnits;
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    bufferUnits.push_back(unit_Reference(units[i]));
+  }
+  helper_Transport_Load(bufferUnits, unit_Reference(transport));
+}
+
+vector<Unit> unit_Transport_UnitsInside(Unit transport) {
+  vector<Unit> response;
+  if(!unit_IsTransport(transport)) {
+    return response;
+  }
+  size_t unitsCount = helper_Transport_UnitsCount(unit_Reference(transport));
+  if(!unitsCount) {
+    return response;
+  }
+  PVOID unitRef = helper_Transport_Ref(unit_Reference(transport));
+  for(size_t i = 0; i < unitsCount; i++) {
+    response.push_back((Unit) {
+      ._payload = (PVOID)*(size_t *)((size_t)unitRef + (i * 0x4))
+    });
+  }
+  return response;
+}
+
+size_t unit_Transport_Population(Unit transport) {
+  if(!unit_IsTransport(transport)) {
+    return 0;
+  }
+  size_t unitsCount = helper_Transport_UnitsCount(unit_Reference(transport));
+  if(!unitsCount) {
+    return 0;
+  }
+  size_t totalPop = 0;
+  PVOID unitRef = helper_Transport_Ref(unit_Reference(transport));
+  for(size_t i = 0; i < unitsCount; i++) {
+    totalPop += eeTa_UnitPopulation((Unit) {
+      ._payload = (PVOID)*(size_t *)((size_t)unitRef + (i * 0x4))
+    });
+  }
+  return totalPop;
+}
+
+void unit_Transport_Unload(Unit transport, TilePoint tile) {
+  if(!unit_IsTransport(transport)) {
+    return ;
+  }
+  helper_Transport_Unload(unit_Reference(transport), tile);
+}
+
+float unit_Range(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
+  return *(float *)util_Pointer((PVOID)unitMetaData, 0x9C, FLOAT_TYPE);
+}
+
+float unit_Distance(Unit first, Unit dst) {
+  return distanceEuclidf(unit_Point_Position(first), unit_Point_Position(dst));
 }

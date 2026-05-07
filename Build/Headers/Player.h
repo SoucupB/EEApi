@@ -12,3 +12,6 @@ uint8_t ply_AreAllies(Player a, Player b);
 void ply_Print();
 Player ply_Self();
 Player ply_Neutral();
+int8_t ply_PlayerCount();
+vector<Player> ply_All();
+int8_t ply_Index_AreAllies(uint8_t plySrc, uint8_t plyDst);

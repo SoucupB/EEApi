@@ -106,7 +106,9 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
   builder_Definition((PVOID)0x16F275, (PVOID)onResourceInit);
   builder_Definition((PVOID)0x16F33E, (PVOID)onResourceRelease);
-  builder_ReplaceMMUMethods();
+  // #if defined(REPLACE_MMU)
+    builder_ReplaceMMUMethods();
+  // #endif
   setMapStart();
 }
 
