@@ -847,8 +847,7 @@ void helper_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2283FF);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
-  
-  method(self, 
+  method(self,
          transport,
          (PVOID)tile.x,
          (PVOID)tile.y,
