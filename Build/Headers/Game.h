@@ -31,6 +31,7 @@ typedef struct EETypes_t {
   map<NeutralClassType, map<NeutralUnitType, uint8_t> > *neutralClassTreeStructure;
   map<UnitType, UnitClassType> *parentsClass;
   map<NeutralUnitType, NeutralClassType> *neutralParentsClass;
+  map<UnitType, PVOID> *unitTemplatePointers;
 } EETypes;
 
 typedef struct EETwa_t {

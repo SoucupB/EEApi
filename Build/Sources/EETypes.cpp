@@ -1,6 +1,8 @@
 #include "EETypes.h"
 #include "Game.h"
 
+void eeTypes_InitUnitTemplates();
+
 static map<UnitClassType, vector<UnitType> > classDefUnits = {
   {CLASS_SPELL_CASTER, {PRIEST, H1_3_SARGON_OF_AKKAD_HEAL_, H1_5_CHARLEMAGNE_HEAL_, H1_4_ALEXANDER_THE_GREAT_HEAL_, H1_6_WILLIAM_THE_CONQUEROR_HEAL_, H1_7_ISABELLA_HEAL_, H1_8_ELIZABETH_I_HEAL_, H1_9_OTTO_VON_BISMARCK_HEAL_, H1_10_DEVERRAN_HEAL_, H1_11_ROMMEL_HEAL_, PROPHET, H1_13_ALEXI_SEPTIMUS_HEAL_, X05_POPE, H1_14_MOLLY_RYAN_HEAL_, MECH_TEMPEST, MECH_POSEIDON, MECH_HADES, X04_PROPHET_HOMER_3, X11_HAUPTMANN_DURER_PROPHET_, X04_PERICLES_HEAL_, X06_BLACK_PRINCE_HEAL_, X04_HIERAKLES_HEAL_, X10_GERMAN_OFFICER_HEAL_, X06_HORSELESS_WILLIAM, H1_12_R_W_BRESDEN_HEAL_, X13_BLACK_ROBE_OFFICER_HEAL_, EMISSARY, INF04_SHORT_SWORD_CRUSADER_, INF06_LONGSWORD_CRUSADER_, CAV04_BRONZE_SPEAR_CAVALRY_CRUSADER_, CAV06_KNIGHT_CRUSADER_, H_MARIUS_HEAL_CONSCRIPT_, H1_15_KHAN_SUN_DO_STRATEGIST_, X_TITUS_LABENIUS}},
   {CLASS_SPACE_FIGHTER, {SP15_SPACE_FIGHTER}},
@@ -74,6 +76,7 @@ void eeTypes_NeutralUnits_Inits() {
 void eeTypes_InitUnits() {
   eeTypes_ComplexUnits_Inits();
   eeTypes_NeutralUnits_Inits();
+  eeTypes_InitUnitTemplates();
 }
 
 NeutralClassType eeTypes_Neutral_Type(NeutralUnitType unitType) {
@@ -85,6 +88,26 @@ NeutralClassType eeTypes_Neutral_Type(NeutralUnitType unitType) {
   }
 
   return (*parentsClass)[unitType];
+}
+
+void eeTypes_InitUnitTemplates() {
+  PEETypes eTypes = game_GetEETypes();
+  for(size_t i = 0; i < 0xD3C / 0x4; i++) {
+    PVOID unitTemplate = helper_Building_GetTemplate(i);
+    if(!unitTemplate) {
+      continue;
+    }
+    UnitType index = (UnitType)*(size_t *)((size_t)unitTemplate + 0x1E4);
+    (*eTypes->unitTemplatePointers)[index] = unitTemplate;
+  }
+}
+
+PVOID eeTypes_GetTemplate(UnitType typeIndex) {
+  PEETypes eTypes = game_GetEETypes();
+  if(eTypes->unitTemplatePointers->find(typeIndex) == eTypes->unitTemplatePointers->end()) {
+    return NULL;
+  }
+  return (*eTypes->unitTemplatePointers)[typeIndex];
 }
 
 uint8_t eeTypes_Neutral_IsResource(NeutralUnitType unitType) {

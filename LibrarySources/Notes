@@ -1029,3 +1029,5 @@ is somewhere around here.
 004BBE04 - 00644C83
 Parameters here 004BBE04 can change the position.
 eax*4+009636AC here is the Building material. eax is the index.
+
+D3C / 4 unit types;

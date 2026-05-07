@@ -350,9 +350,13 @@ float unit_Distance(Unit first, Unit dst) {
   return distanceEuclidf(unit_Point_Position(first), unit_Point_Position(dst));
 }
 
-void unit_Building_Build(Unit citizen, TilePoint tile, PVOID unitType) {
-  if(!eeTypes_IsCitizen(unit_Type(citizen))) {
+void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
+  if(!eeTypes_IsCitizen(unit_Type(citizen)) || !eeTypes_IsBuilding(unitType)) {
     return ;
   }
-  helper_Building_Create(unit_Reference(citizen), tile, unitType);
+  PVOID unitClass = eeTypes_GetTemplate(unitType);
+  if(!unitClass) {
+    return ;
+  }
+  helper_Building_Create(unit_Reference(citizen), tile, unitClass);
 }

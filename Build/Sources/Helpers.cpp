@@ -876,12 +876,10 @@ void helper_Building_629A56(PVOID unit) {
   method(unit, (PVOID)0x1);
 }
 
-PVOID helper_Building_CreateBuilding(size_t index, TilePoint position) {
+PVOID helper_Building_CreateBuilding(PVOID buildingTemplate, TilePoint position) {
   PVOID methodBaseAddress = helper_Building_Ref();
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodBaseAddress);
-  
-  PVOID buildingTemplate = helper_Building_GetTemplate(index);
   PVOID unit = method(
     buildingTemplate,
     (PVOID)position.x,
@@ -895,7 +893,7 @@ PVOID helper_Building_CreateBuilding(size_t index, TilePoint position) {
 }
 
 void helper_Building_Create(PVOID citizen, TilePoint position, PVOID type) {
-  PVOID building = helper_Building_CreateBuilding((size_t)type, position);
+  PVOID building = helper_Building_CreateBuilding(type, position);
   if(!citizen || !building) {
     return ;
   }

@@ -25,3 +25,4 @@ PVOID helper_Transport_Ref(PVOID unit);
 vector<Unit> unit_Transport_UnitsInside(Unit transport);
 void helper_Building_Create(PVOID citizen, TilePoint position, PVOID type);
 void helper_Transport_Unload(PVOID transport, TilePoint tile);
+PVOID helper_Building_GetTemplate(size_t index);

@@ -350,7 +350,7 @@ void buildSomeShit() {
   unit_Building_Build(citizen, (TilePoint) {
     .x = 50,
     .y = 46
-  }, (PVOID)0x22);
+  }, B_BARRACKS);
   // PVOID building = helper_Building_Create(0x22,
   // (TilePoint) {
   //   .x = 50,

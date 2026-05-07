@@ -117,6 +117,7 @@ void game_EETypes_Init(PGame game) {
   game->types->neutralClassTreeStructure = new map<NeutralClassType, map<NeutralUnitType, uint8_t> >();
   game->types->parentsClass = new map<UnitType, UnitClassType>();
   game->types->neutralParentsClass = new map<NeutralUnitType, NeutralClassType>();
+  game->types->unitTemplatePointers = new map<UnitType, PVOID>();
 }
 
 void game_EETypes_Delete(PGame game) {
@@ -127,6 +128,7 @@ void game_EETypes_Delete(PGame game) {
   delete game->types->parentsClass;
   delete game->types->neutralClassTreeStructure;
   delete game->types->neutralParentsClass;
+  delete game->types->unitTemplatePointers;
   free(game->types);
   game->types = NULL;
 }
