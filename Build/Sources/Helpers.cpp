@@ -815,13 +815,13 @@ void helper_Command_Method627286(PVOID self, PVOID unit, PVOID transport) {
          (PVOID)0x1);
 }
 
-// Still needs work.
+
 void helper_TransportLoad(PVOID unit, PVOID transport) {
   size_t bufferSize = 0x68;
   PVOID buffer = help_New(bufferSize);
   PVOID cpyBuffer = help_New(bufferSize);
   helper_Command_Method627286(buffer, unit, transport);
-  memcpy(cpyBuffer, buffer, bufferSize);
+  helper_Command_Method627286(cpyBuffer, unit, transport);
   helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
   helper_IssueCommand(unit, cpyBuffer, (PVOID)0x1F40);
 }
