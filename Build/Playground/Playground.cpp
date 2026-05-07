@@ -298,13 +298,11 @@ void loadTransport() {
   if(!transport.size()) {
     return ;
   }
-  vector<Unit> unit = unit_Filter(nonTransportFilter);
-  if(!unit.size()) {
+  vector<Unit> units = unit_Filter(nonTransportFilter);
+  if(!units.size()) {
     return ;
   }
-  for(size_t i = 0; i < unit.size(); i++) {
-    unit_Load(transport[0], unit[i]);
-  }
+  unit_Load(transport[0], units);
 }
 
 void bt_OnFrame() {

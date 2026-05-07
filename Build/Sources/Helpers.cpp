@@ -800,28 +800,37 @@ void helper_Convert_Remade(PVOID unit, PVOID target) {
   helper_IssueCommand(unit, buffer, (PVOID)0x7D4);
 }
 
-void helper_Command_Method627286(PVOID self, PVOID unit, PVOID transport) {
+PVOID createArray(vector<PVOID> &units) {
+  PVOID unitBuffer = help_New(sizeof(PVOID) * units.size());
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    memcpy((PVOID)((size_t)unitBuffer + i * sizeof(PVOID)), &units[i], sizeof(PVOID));
+  }
+  return unitBuffer;
+}
+
+void helper_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transport) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227286);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   size_t physicsBuffer = *(size_t *)((size_t)lib_BaseAddress() + 0x5318F0);
   PVOID variablePointer = (PVOID)((physicsBuffer & 0xFFFFFF00) | 0x2);
-  PVOID unitBuffer = help_New(0x4);
-  memcpy(unitBuffer, &unit, sizeof(PVOID));
-  PVOID input[] = {variablePointer, unitBuffer, (PVOID)((size_t)unitBuffer + 0x4)};
+  PVOID unitBuffer = createArray(units);
+  PVOID input[] = {variablePointer, unitBuffer, (PVOID)((size_t)unitBuffer + 0x4 * units.size())};
   method(self, 
          transport,
          &input,
          (PVOID)0x1);
 }
 
-
-void helper_TransportLoad(PVOID unit, PVOID transport) {
+void helper_TransportLoad(vector<PVOID> &units, PVOID transport) {
   size_t bufferSize = 0x68;
   PVOID buffer = help_New(bufferSize);
   PVOID cpyBuffer = help_New(bufferSize);
-  helper_Command_Method627286(buffer, unit, transport);
-  helper_Command_Method627286(cpyBuffer, unit, transport);
+  helper_Command_Method627286(buffer, units, transport);
   helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
-  helper_IssueCommand(unit, cpyBuffer, (PVOID)0x1F40);
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    PVOID cpyBuffer = help_New(bufferSize);
+    helper_Command_Method627286(cpyBuffer, units, transport);
+    helper_IssueCommand(units[i], cpyBuffer, (PVOID)0x1F40);
+  }
 }

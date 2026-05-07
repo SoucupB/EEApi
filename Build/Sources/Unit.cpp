@@ -287,11 +287,15 @@ uint8_t unit_IsTransport(Unit unit) {
   return eeTypes_IsTransport(unit_Type(unit));
 }
 
-void unit_Load(Unit transport, Unit unit) {
-  if(!unit_IsTransport(transport) || !eeTypes_IsGroundUnit(unit_Type(unit))) {
+void unit_Load(Unit transport, vector<Unit> &units) {
+  if(!unit_IsTransport(transport) || !units.size()) {
     return ;
   }
-  helper_TransportLoad(unit_Reference(unit), unit_Reference(transport));
+  vector<PVOID> bufferUnits;
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    bufferUnits.push_back(unit_Reference(units[i]));
+  }
+  helper_TransportLoad(bufferUnits, unit_Reference(transport));
 }
 
 float unit_Range(Unit unit) {
