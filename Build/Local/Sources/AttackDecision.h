@@ -15,3 +15,4 @@ void att_ConvertIfNecessary(vector<Unit> &units);
 void att_ProcessSpecialAbilityUnits(PVOID _);
 void att_AttackWithBombers(PVOID _);
 void att_AttackWithShips(PVOID _);
+void att_FillTransports(TilePoint capitolPoint);

@@ -13,6 +13,8 @@ static map<pair<float, float>, uint8_t> attackedUnits;
 uint8_t idleAttackingWaterUnits(Unit unit);
 uint8_t isFlyingBomber(Unit unit);
 uint8_t attackingWaterUnits(Unit unit);
+uint8_t isSelfUnit(Unit unit);
+uint8_t attackingGroundUnits(Unit unit);
 
 size_t min(size_t a, size_t b) {
   return a < b ? a : b;
@@ -43,6 +45,14 @@ uint8_t enemyTransporters(Unit unit) {
          unitPlayer != playerTeam && !ply_Index_AreAllies(unitPlayer, playerTeam);
 }
 
+uint8_t idleSelfTransporters(Unit unit) {
+  UnitType def = unit_Type(unit);
+  int8_t unitPlayer = eeTa_Player(unit);
+  int8_t playerTeam = eeTa_SelfPlayer();
+  return unit_IsIdle(unit) && eeTypes_IsTransport(def) &&
+         unitPlayer == playerTeam;
+}
+
 uint8_t enemyUnits(Unit unit) {
   UnitType def = unit_Type(unit);
   int8_t unitPlayer = eeTa_Player(unit);
@@ -54,6 +64,11 @@ uint8_t enemyUnits(Unit unit) {
 uint8_t idleAttackingGroundUnits(Unit unit) {
   UnitType def = unit_Type(unit);
   return unit_IsIdle(unit) && eeTypes_IsGroundUnit(def) && !eeTypes_IsFromClass(CLASS_CITIZENS, def);
+}
+
+uint8_t attackingGroundUnits(Unit unit) {
+  UnitType def = unit_Type(unit);
+  return isSelfUnit(unit) && eeTypes_IsGroundUnit(def) && !eeTypes_IsFromClass(CLASS_CITIZENS, def);
 }
 
 uint8_t idleAttackingAirUnits(Unit unit) {
@@ -278,6 +293,10 @@ uint8_t isProphet(Unit unit) {
   return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_Type(unit) == PROPHET;
 }
 
+uint8_t isSelfUnit(Unit unit) {
+  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer();
+}
+
 uint8_t enemyUnit(Unit unit) {
   return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !ply_Index_AreAllies(unit_GetPlayerIndex(unit), eeTa_SelfPlayer()) && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && !unit_IsBuilding(unit) && !eeTypes_IsAirUnit(unit_Type(unit));
 }
@@ -305,6 +324,36 @@ void att_AttackWithBombers(PVOID _) {
       }
       unit_Action(airplanes[i], unit_Point_Position(currentBuilding), UNIT_ATTACK);
     }
+  }
+}
+
+uint8_t groundUnitsCapitor(Unit unit, PVOID buffer) {
+  uint16_t pointerID = *(uint16_t *)buffer;
+  return attackingGroundUnits(unit) && map_Tile_GetPlaneID(unit_Tile_Position(unit)) == pointerID;
+}
+
+vector<vector<Unit> > getSplittedUnits(vector<Unit> &units, uint32_t totalUnits) {
+  vector<vector<Unit> > response;
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    if(!(i % totalUnits)) {
+      response.push_back(vector<Unit>());
+    }
+    response[response.size() - 1].push_back(units[i]);
+  }
+  return response;
+}
+
+void att_FillTransports(TilePoint capitolPoint) {
+  uint16_t capitolID = map_Tile_GetPlaneID(capitolPoint);
+  vector<Unit> insularUnits = unit_FilterWithBuffer(groundUnitsCapitor, (PVOID)&capitolID);
+  uint32_t totalUnits = 6;
+  if(insularUnits.size() <= 25) {
+    return ;
+  }
+  vector<Unit> transports = unit_Filter(idleSelfTransporters);
+  vector<vector<Unit> > units = getSplittedUnits(insularUnits, 6);
+  for(size_t i = 0, c = min(transports.size(), units.size()); i < c; i++) {
+    unit_Transport_Load(transports[i], units[i]);
   }
 }
 

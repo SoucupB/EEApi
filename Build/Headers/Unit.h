@@ -38,3 +38,4 @@ void unit_Transport_Load(Unit transport, vector<Unit> &units);
 size_t unit_Transport_Population(Unit transport);
 void unit_Transport_Unload(Unit transport, TilePoint tile);
 void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType);
+vector<Unit> unit_FilterWithBuffer(uint8_t (*method)(Unit, PVOID), PVOID buffer);

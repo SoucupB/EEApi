@@ -61,6 +61,23 @@ vector<Unit> unit_Filter(uint8_t (*method)(Unit)) {
   return units;
 }
 
+vector<Unit> unit_FilterWithBuffer(uint8_t (*method)(Unit, PVOID), PVOID buffer) {
+  vector<Unit> units;
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  for(size_t i = 0; i < 20; i++) {
+    for(auto &it : *(unitPresence[i])) {
+      Unit unit = (Unit) {
+        ._payload = it.first
+      };
+      if(!unit_IsDead(unit) && method(unit, buffer)) {
+        units.push_back(unit);
+      }
+    }
+  }
+  return units;
+}
+
 int32_t unit_CurrentlyBuilding(Unit building) {
   return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
 }
