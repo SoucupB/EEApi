@@ -50,7 +50,7 @@ uint8_t idleSelfTransporters(Unit unit) {
   int8_t unitPlayer = eeTa_Player(unit);
   int8_t playerTeam = eeTa_SelfPlayer();
   return unit_IsIdle(unit) && eeTypes_IsTransport(def) &&
-         unitPlayer == playerTeam;
+         unitPlayer == playerTeam && unit_Transport_Population(unit) <= 8;
 }
 
 uint8_t enemyUnits(Unit unit) {
@@ -351,7 +351,7 @@ void att_FillTransports(TilePoint capitolPoint) {
     return ;
   }
   vector<Unit> transports = unit_Filter(idleSelfTransporters);
-  vector<vector<Unit> > units = getSplittedUnits(insularUnits, 6);
+  vector<vector<Unit> > units = getSplittedUnits(insularUnits, totalUnits);
   for(size_t i = 0, c = min(transports.size(), units.size()); i < c; i++) {
     unit_Transport_Load(transports[i], units[i]);
   }

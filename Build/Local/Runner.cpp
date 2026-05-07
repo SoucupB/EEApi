@@ -139,6 +139,8 @@ string convertToHex(int number) {
   return std::string(buffer);
 }
 
+void initCapitolPositions();
+
 void checkEpochPointer() {
   if(GetAsyncKeyState('P') & 0x8000) {
     Beep (400, 250);
@@ -286,8 +288,8 @@ SpawnLocation getSelfCapitol() {
 }
 
 void att_LoadTransports(PVOID _) {
+  initCapitolPositions();
   SpawnLocation capitol = getSelfCapitol();
-  eeTa_FilePrintf("DSADSADSADSA %d\n", capitol.player);
   if(capitol.player == 0xFF) {
     return ;
   }
@@ -303,6 +305,7 @@ void bt_LoadUnits() {
 }
 
 void initCapitolPositions() {
+  capitolsLocations.clear();
   vector<Unit> units = unit_GetBuildings(eeTa_AllPlayers());
   for(size_t i = 0; i < units.size(); i++) {
     if(!eeTypes_CanProduceWorkers(unit_Type(units[i]))) {
