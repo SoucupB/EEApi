@@ -30,6 +30,7 @@ void addProphetSpells();
 void printTransport();
 void loadTransport();
 void unloadTransport();
+void buildSomeShit();
 
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
@@ -194,7 +195,8 @@ void execDataPengus() {
     // farmFish();
     // castEarthquake();
     // convertUnit();
-    loadTransport();
+    // loadTransport();
+    buildSomeShit();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -328,6 +330,16 @@ void loadTransport() {
     return ;
   }
   unit_Transport_Load(transport[0], units);
+}
+
+void buildSomeShit() {
+  PVOID building = helper_Building_Create(0x22,
+  (TilePoint) {
+    .x = 50,
+    .y = 46
+  });
+
+  eeTa_FilePrintf("Building shit %p\n", building);
 }
 
 void bt_OnFrame() {
