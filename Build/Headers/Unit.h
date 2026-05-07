@@ -36,3 +36,4 @@ uint8_t unit_CanCast(Unit unit, Ability ability);
 uint8_t unit_IsTransport(Unit unit);
 void unit_Transport_Load(Unit transport, vector<Unit> &units);
 size_t unit_Transport_Population(Unit transport);
+void unit_Transport_Unload(Unit transport, TilePoint tile);

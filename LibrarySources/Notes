@@ -1019,3 +1019,6 @@ This is the method which sets the data 005EE7D4.
 004BB9BB is needed.
 
 004C1D29 for loading units.
+
+005ED3F1 for unloading.
+005ED108 caller.

@@ -29,6 +29,7 @@ void convertUnit();
 void addProphetSpells();
 void printTransport();
 void loadTransport();
+void unloadTransport();
 
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
@@ -197,7 +198,8 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
-    printTransport();
+    // printTransport();
+    unloadTransport();
     Beep (300, 250);
   }
 }
@@ -303,6 +305,17 @@ void printTransport() {
       eeTa_FilePrintf(" Unit %p\n", unit_Reference(unitsInside[j]));
     }
   }
+}
+
+void unloadTransport() {
+  vector<Unit> transport = unit_Filter(transportFilter);
+  if(!transport.size()) {
+    return ;
+  }
+  unit_Transport_Unload(transport[0], (TilePoint) {
+    .x = 53,
+    .y = 48
+  });
 }
 
 void loadTransport() {

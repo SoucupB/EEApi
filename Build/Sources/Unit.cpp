@@ -334,6 +334,13 @@ size_t unit_Transport_Population(Unit transport) {
   return totalPop;
 }
 
+void unit_Transport_Unload(Unit transport, TilePoint tile) {
+  if(!unit_IsTransport(transport)) {
+    return ;
+  }
+  helper_Transport_Unload(unit_Reference(transport), tile);
+}
+
 float unit_Range(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
   return *(float *)util_Pointer((PVOID)unitMetaData, 0x9C, FLOAT_TYPE);

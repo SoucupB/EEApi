@@ -842,3 +842,21 @@ PVOID helper_Transport_Ref(PVOID unit) {
 size_t helper_Transport_UnitsCount(PVOID unit) {
   return (*(size_t *)((size_t)unit + 0x74) - *(size_t *)((size_t)unit + 0x70)) / 0x4;
 }
+
+void helper_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2283FF);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  
+  method(self, 
+         transport,
+         (PVOID)tile.x,
+         (PVOID)tile.y,
+         (PVOID)0x1);
+}
+
+void helper_Transport_Unload(PVOID transport, TilePoint tile) {
+  PVOID buffer = help_New(0x40);
+  helper_Command_Method6283FF(buffer, transport, tile);
+  helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
+}

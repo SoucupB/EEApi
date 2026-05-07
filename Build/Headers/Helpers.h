@@ -23,3 +23,4 @@ void helper_Transport_Load(vector<PVOID> &units, PVOID transport);
 size_t helper_Transport_UnitsCount(PVOID unit);
 PVOID helper_Transport_Ref(PVOID unit);
 vector<Unit> unit_Transport_UnitsInside(Unit transport);
+void helper_Transport_Unload(PVOID transport, TilePoint tile);
