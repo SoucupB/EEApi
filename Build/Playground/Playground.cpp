@@ -332,14 +332,32 @@ void loadTransport() {
   unit_Transport_Load(transport[0], units);
 }
 
+Unit getCitizen() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTypes_IsCitizen(unit_Type(units[i]))) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
 void buildSomeShit() {
-  PVOID building = helper_Building_Create(0x22,
-  (TilePoint) {
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  unit_Building_Build(citizen, (TilePoint) {
     .x = 50,
     .y = 46
-  });
+  }, (PVOID)0x22);
+  // PVOID building = helper_Building_Create(0x22,
+  // (TilePoint) {
+  //   .x = 50,
+  //   .y = 46
+  // });
 
-  eeTa_FilePrintf("Building shit %p\n", building);
+  eeTa_FilePrintf("Building shit\n");
 }
 
 void bt_OnFrame() {
