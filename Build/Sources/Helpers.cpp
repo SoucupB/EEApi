@@ -822,7 +822,7 @@ void helper_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transpo
          (PVOID)0x1);
 }
 
-void helper_TransportLoad(vector<PVOID> &units, PVOID transport) {
+void helper_Transport_Load(vector<PVOID> &units, PVOID transport) {
   size_t bufferSize = 0x68;
   PVOID buffer = help_New(bufferSize);
   PVOID cpyBuffer = help_New(bufferSize);
@@ -833,4 +833,12 @@ void helper_TransportLoad(vector<PVOID> &units, PVOID transport) {
     helper_Command_Method627286(cpyBuffer, units, transport);
     helper_IssueCommand(units[i], cpyBuffer, (PVOID)0x1F40);
   }
+}
+
+PVOID helper_Transport_Ref(PVOID unit) {
+  return (PVOID)*(size_t *)(*(size_t *)((size_t)unit + 0x70));
+}
+
+size_t helper_Transport_UnitsCount(PVOID unit) {
+  return (*(size_t *)((size_t)unit + 0x74) - *(size_t *)((size_t)unit + 0x70)) / 0x4;
 }

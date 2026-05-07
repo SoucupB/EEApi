@@ -287,7 +287,7 @@ uint8_t unit_IsTransport(Unit unit) {
   return eeTypes_IsTransport(unit_Type(unit));
 }
 
-void unit_Load(Unit transport, vector<Unit> &units) {
+void unit_Transport_Load(Unit transport, vector<Unit> &units) {
   if(!unit_IsTransport(transport) || !units.size()) {
     return ;
   }
@@ -295,7 +295,22 @@ void unit_Load(Unit transport, vector<Unit> &units) {
   for(size_t i = 0, c = units.size(); i < c; i++) {
     bufferUnits.push_back(unit_Reference(units[i]));
   }
-  helper_TransportLoad(bufferUnits, unit_Reference(transport));
+  helper_Transport_Load(bufferUnits, unit_Reference(transport));
+}
+
+vector<Unit> unit_Transport_UnitsInside(Unit transport) {
+  vector<Unit> response;
+  if(!unit_IsTransport(transport)) {
+    return response;
+  }
+  size_t unitsCount = helper_Transport_UnitsCount(unit_Reference(transport));
+  PVOID unitRef = helper_Transport_Ref(unit_Reference(transport));
+  for(size_t i = 0; i < unitsCount; i++) {
+    response.push_back((Unit) {
+      ._payload = (PVOID)((size_t)unitRef + (i * 0x4))
+    });
+  }
+  return response;
 }
 
 float unit_Range(Unit unit) {
