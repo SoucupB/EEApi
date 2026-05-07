@@ -316,6 +316,24 @@ vector<Unit> unit_Transport_UnitsInside(Unit transport) {
   return response;
 }
 
+size_t unit_Transport_Population(Unit transport) {
+  if(!unit_IsTransport(transport)) {
+    return 0;
+  }
+  size_t unitsCount = helper_Transport_UnitsCount(unit_Reference(transport));
+  if(!unitsCount) {
+    return 0;
+  }
+  size_t totalPop = 0;
+  PVOID unitRef = helper_Transport_Ref(unit_Reference(transport));
+  for(size_t i = 0; i < unitsCount; i++) {
+    totalPop += eeTa_UnitPopulation((Unit) {
+      ._payload = (PVOID)*(size_t *)((size_t)unitRef + (i * 0x4))
+    });
+  }
+  return totalPop;
+}
+
 float unit_Range(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
   return *(float *)util_Pointer((PVOID)unitMetaData, 0x9C, FLOAT_TYPE);

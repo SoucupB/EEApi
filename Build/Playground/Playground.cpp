@@ -297,7 +297,7 @@ uint8_t nonTransportFilter(Unit unit) {
 void printTransport() {
   vector<Unit> transport = unit_Filter(transportFilter);
   for(size_t i = 0, c = transport.size(); i < c; i++) {
-    eeTa_FilePrintf("Transport %p\n", unit_Reference(transport[i]));
+    eeTa_FilePrintf("Transport %p with population %d\n", unit_Reference(transport[i]), unit_Transport_Population(transport[i]));
     vector<Unit> unitsInside = unit_Transport_UnitsInside(transport[i]);
     for(size_t j = 0; j < unitsInside.size(); j++) {
       eeTa_FilePrintf(" Unit %p\n", unit_Reference(unitsInside[j]));
