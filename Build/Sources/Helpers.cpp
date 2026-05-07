@@ -800,21 +800,28 @@ void helper_Convert_Remade(PVOID unit, PVOID target) {
   helper_IssueCommand(unit, buffer, (PVOID)0x7D4);
 }
 
-void helper_Command_Method627286(PVOID self, PVOID transport) {
+void helper_Command_Method627286(PVOID self, PVOID unit, PVOID transport) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227286);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   size_t physicsBuffer = *(size_t *)((size_t)lib_BaseAddress() + 0x5318F0);
   PVOID variablePointer = (PVOID)((physicsBuffer & 0xFFFFFF00) | 0x2);
+  PVOID unitBuffer = help_New(0x4);
+  memcpy(unitBuffer, &unit, sizeof(PVOID));
+  PVOID input[] = {variablePointer, unitBuffer, (PVOID)((size_t)unitBuffer + 0x4)};
   method(self, 
          transport,
-         &variablePointer,
+         &input,
          (PVOID)0x1);
 }
 
 // Still needs work.
-__declspec(dllexport) void helper_TransportLoad(PVOID unit, PVOID transport) {
-  PVOID buffer = help_New(0x68);
-  helper_Command_Method627286(buffer, unit);
+void helper_TransportLoad(PVOID unit, PVOID transport) {
+  size_t bufferSize = 0x68;
+  PVOID buffer = help_New(bufferSize);
+  PVOID cpyBuffer = help_New(bufferSize);
+  helper_Command_Method627286(buffer, unit, transport);
+  memcpy(cpyBuffer, buffer, bufferSize);
   helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
+  helper_IssueCommand(unit, cpyBuffer, (PVOID)0x1F40);
 }

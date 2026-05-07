@@ -12,6 +12,7 @@ static map<pair<float, float>, uint8_t> attackedUnits;
 
 uint8_t idleAttackingWaterUnits(Unit unit);
 uint8_t isFlyingBomber(Unit unit);
+uint8_t attackingWaterUnits(Unit unit);
 
 size_t min(size_t a, size_t b) {
   return a < b ? a : b;
@@ -19,7 +20,7 @@ size_t min(size_t a, size_t b) {
 
 uint8_t navalAttackFilter(Unit unit) {
   UnitType def = unit_Type(unit);
-  return idleAttackingWaterUnits(unit) && eeTa_Player(unit) == eeTa_SelfPlayer();
+  return attackingWaterUnits(unit) && eeTa_Player(unit) == eeTa_SelfPlayer();
 }
 
 uint8_t priestsFilters(Unit unit) {
@@ -63,6 +64,11 @@ uint8_t idleAttackingAirUnits(Unit unit) {
 uint8_t idleAttackingWaterUnits(Unit unit) {
   UnitType def = unit_Type(unit);
   return unit_IsIdle(unit) && (eeTypes_IsFromClass(CLASS_WATER_BOATS, def) || eeTypes_IsFromClass(CLASS_SUBMARINES, def));
+}
+
+uint8_t attackingWaterUnits(Unit unit) {
+  UnitType def = unit_Type(unit);
+  return eeTypes_IsFromClass(CLASS_WATER_BOATS, def) || eeTypes_IsFromClass(CLASS_SUBMARINES, def);
 }
 
 void att_AddDamagedUnits(Unit unit) {
@@ -257,7 +263,7 @@ uint8_t isTower(Unit unit) {
 }
 
 uint8_t isEnemyTower(Unit unit) {
-  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && isTower(unit);
+  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !ply_Index_AreAllies(unit_GetPlayerIndex(unit), eeTa_SelfPlayer()) && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && isTower(unit);
 }
 
 uint8_t att_IsUnitCarrier(Unit unit) {
@@ -273,11 +279,11 @@ uint8_t isProphet(Unit unit) {
 }
 
 uint8_t enemyUnit(Unit unit) {
-  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && !unit_IsBuilding(unit) && !eeTypes_IsAirUnit(unit_Type(unit));
+  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !ply_Index_AreAllies(unit_GetPlayerIndex(unit), eeTa_SelfPlayer()) && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && !unit_IsBuilding(unit) && !eeTypes_IsAirUnit(unit_Type(unit));
 }
 
 uint8_t enemyBuilding(Unit unit) {
-  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && unit_IsBuilding(unit);
+  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !ply_Index_AreAllies(unit_GetPlayerIndex(unit), eeTa_SelfPlayer()) && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && unit_IsBuilding(unit);
 }
 
 void att_AttackWithBombers(PVOID _) {
