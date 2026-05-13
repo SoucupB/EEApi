@@ -25,12 +25,13 @@ extern "C" {
 
   __declspec(dllexport) int32_t __thiscall onFrame(PVOID self) {
     int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x15401E);
-    if(!onInitFlag) {
+    PEmpireEarthHook hook = game_EmpHook();
+    if(!hook->onInitFlag) {
       if(!eeTa_ShouldOnInitExecute()) {
         return method(self);
       }
       eeTa_OnInit();
-      onInitFlag = 1;
+      hook->onInitFlag = 1;
     }
     eeTa_OnFrame();
     return method(self);
@@ -87,8 +88,8 @@ extern "C" {
 }
 
 void rebuildDataStructures() {
-  onInitFlag = 0;
   eeTa_RebuildExtraDataStructure();
+  onInitFlag = 0;
 }
 
 void setMapStart() {

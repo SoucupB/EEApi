@@ -207,9 +207,8 @@ void execDataPengus() {
 }
 
 void bt_OnInit() {
-  // addProphetSpells();
-  test_PrintUnits();
-  eeTa_FilePrintf("Spookly\n");
+  addProphetSpells();
+  eeTa_FilePrintf("Added prophet spells\n");
 }
 
 Point airNextPosition(Unit unit) {

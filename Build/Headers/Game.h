@@ -56,12 +56,17 @@ typedef struct ResourceManager_t {
   unordered_map<PVOID, uint8_t> *resourcesRefs;
 } ResourceManager;
 
+typedef struct EmpireEarthHook_t {
+  uint8_t onInitFlag;
+} EmpireEarthHook;
+
 typedef EETwa *PEETwa;
 typedef EETypes *PEETypes;
 typedef MapData *PMapData;
 typedef PlayerState *PPlayerState;
 typedef ResourceManager *PResourceManager;
 typedef Players *PPlayers;
+typedef EmpireEarthHook *PEmpireEarthHook;
 
 typedef struct Game_t {
   PPlayerState plyState;
@@ -70,6 +75,7 @@ typedef struct Game_t {
   PResourceManager resourceManager;
   PEETwa eeTwa;
   PPlayers players;
+  PEmpireEarthHook empHook;
 } Game;
 
 typedef Game *PGame;
@@ -81,3 +87,4 @@ PEETypes game_GetEETypes();
 PEETwa game_EETwa();
 PResourceManager game_GetResourcesManager();
 PPlayers game_Players();
+PEmpireEarthHook game_EmpHook();
