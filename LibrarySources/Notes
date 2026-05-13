@@ -1022,3 +1022,12 @@ This is the method which sets the data 005EE7D4.
 
 005ED3F1 for unloading.
 005ED108 caller.
+
+0056F275 <- 00562BC9 This is called before a barracks is created, maybe the creation
+is somewhere around here.
+
+004BBE04 - 00644C83
+Parameters here 004BBE04 can change the position.
+eax*4+009636AC here is the Building material. eax is the index.
+
+D3C / 4 unit types;

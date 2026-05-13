@@ -859,3 +859,43 @@ void helper_Transport_Unload(PVOID transport, TilePoint tile) {
   helper_Command_Method6283FF(buffer, transport, tile);
   helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
 }
+
+PVOID helper_Building_Ref() {
+  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + 0x449520 + 0x30);
+}
+
+PVOID helper_Building_GetTemplate(size_t index) {
+  return (PVOID)*(size_t *)(index * 0x4 + 0x5636AC + (size_t)lib_BaseAddress());
+}
+
+void helper_Building_629A56(PVOID unit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x229A56);
+  PVOID __thiscall (*method)(PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+
+  method(unit, (PVOID)0x1);
+}
+
+PVOID helper_Building_CreateBuilding(PVOID buildingTemplate, TilePoint position) {
+  PVOID methodBaseAddress = helper_Building_Ref();
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodBaseAddress);
+  PVOID unit = method(
+    buildingTemplate,
+    (PVOID)position.x,
+    (PVOID)position.y,
+    (PVOID)0x1,
+    (PVOID)0x1,
+    (PVOID)0x0
+  );
+  helper_Building_629A56(unit);
+  return unit;
+}
+
+void helper_Building_Create(PVOID citizen, TilePoint position, PVOID type) {
+  PVOID building = helper_Building_CreateBuilding(type, position);
+  if(!citizen || !building) {
+    return ;
+  }
+  helper_RepairBuilding(citizen, building);
+}

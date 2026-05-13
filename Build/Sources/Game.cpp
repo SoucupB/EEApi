@@ -32,6 +32,21 @@ void game_Player_Init(PGame game) {
   game->players->playerData = new unordered_map<PVOID, uint8_t>();
 }
 
+
+PEmpireEarthHook game_EmpHook_Init(PGame game) {
+  game->empHook = (PEmpireEarthHook)malloc(sizeof(EmpireEarthHook));
+  game->empHook->onInitFlag = 0;
+  game->empHook->hasIterationBeenExecuted = 0;
+}
+
+void game_EmpHook_Delete(PGame game) {
+  if(!game->empHook) {
+    return ;
+  }
+  free(game->empHook);
+  game->empHook = NULL;
+}
+
 void game_EETwa_Init(PGame game) {
   game->eeTwa = (PEETwa)malloc(sizeof(EETwa));
   memset(game->eeTwa, 0, sizeof(EETwa));
@@ -64,6 +79,10 @@ PEETwa game_EETwa() {
 
 PPlayers game_Players() {
   return game->players;
+}
+
+PEmpireEarthHook game_EmpHook() {
+  return game->empHook;
 }
 
 PResourceManager game_GetResourcesManager() {
@@ -117,6 +136,7 @@ void game_EETypes_Init(PGame game) {
   game->types->neutralClassTreeStructure = new map<NeutralClassType, map<NeutralUnitType, uint8_t> >();
   game->types->parentsClass = new map<UnitType, UnitClassType>();
   game->types->neutralParentsClass = new map<NeutralUnitType, NeutralClassType>();
+  game->types->unitTemplatePointers = new map<UnitType, PVOID>();
 }
 
 void game_EETypes_Delete(PGame game) {
@@ -127,6 +147,7 @@ void game_EETypes_Delete(PGame game) {
   delete game->types->parentsClass;
   delete game->types->neutralClassTreeStructure;
   delete game->types->neutralParentsClass;
+  delete game->types->unitTemplatePointers;
   free(game->types);
   game->types = NULL;
 }
@@ -154,6 +175,7 @@ void game_Delete(PGame *self) {
   game_Resources_Delete(*self);
   game_EETwa_Delete(*self);
   game_Players_Delete(*self);
+  game_EmpHook_Delete(*self);
   free(*self);
   *self = NULL;
 }
@@ -167,4 +189,5 @@ void game_Init() {
   game_Resources_Init(game);
   game_EETwa_Init(game);
   game_Player_Init(game);
+  game_EmpHook_Init(game);
 }

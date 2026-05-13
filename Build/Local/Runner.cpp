@@ -7,7 +7,14 @@
 #include "EETypes.h"
 #include "CitizenManager.h"
 
-__declspec(dllexport) PVOID fakeStdin;
+typedef struct SpawnLocation_t {
+  TilePoint point;
+  uint8_t player;
+} SpawnLocation;
+
+vector<SpawnLocation> capitolsLocations;
+
+void att_LoadTransports(PVOID _);
 
 void cleanDataChecker() {
   if(GetAsyncKeyState('J') & 0x8000) {
@@ -132,6 +139,8 @@ string convertToHex(int number) {
   return std::string(buffer);
 }
 
+void initCapitolPositions();
+
 void checkEpochPointer() {
   if(GetAsyncKeyState('P') & 0x8000) {
     Beep (400, 250);
@@ -146,19 +155,6 @@ void convert() {
   }
 }
 
-void moveToResources() {
-  if(GetAsyncKeyState('P') & 0x8000) {
-    PVOID unit = eeTa_Unit_Sample(eeTa_SelfPlayer());
-    PVOID target = eeTa_Unit_Sample(eeTa_NeutralPlayer());
-
-    help_MoveToTarget(unit, target);
-  }
-}
-
-void addListeners() {
-  moveToResources();
-}
-
 void bt_HuntTransports(PVOID attributes) {
   vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
   att_AttackTransportWithNavals(units);
@@ -167,8 +163,6 @@ void bt_HuntTransports(PVOID attributes) {
 void convert();
 
 void bt_OnFrame() {
-  // convert();
-  // addListeners();
 }
 
 void bt_InitBuildingCreation() {
@@ -277,7 +271,55 @@ void bt_InitAggresiveness() {
   }
 }
 
+SpawnLocation getSelfCapitol() {
+  for(size_t i = 0; i < capitolsLocations.size(); i++) {
+    if(capitolsLocations[i].player == eeTa_SelfPlayer()) {
+      return capitolsLocations[i];
+    }
+  }
+
+  return (SpawnLocation){
+    .point = (TilePoint) {
+      .x = 0,
+      .y = 0
+    },
+    .player = 0xFF
+  };
+}
+
+void att_LoadTransports(PVOID _) {
+  initCapitolPositions();
+  SpawnLocation capitol = getSelfCapitol();
+  if(capitol.player == 0xFF) {
+    return ;
+  }
+  att_FillTransports(capitol.point);
+}
+
+void bt_LoadUnits() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_LoadTransports;
+  atom.arguments = NULL;
+  atom.time = 16500;
+  eeTa_AddFrameMethod(atom);
+}
+
+void initCapitolPositions() {
+  capitolsLocations.clear();
+  vector<Unit> units = unit_GetBuildings(eeTa_AllPlayers());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(!eeTypes_CanProduceWorkers(unit_Type(units[i]))) {
+      continue;
+    }
+    capitolsLocations.push_back((SpawnLocation) {
+      .point = unit_Tile_Position(units[i]),
+      .player = unit_GetPlayerIndex(units[i])
+    });
+  }
+}
+
 void bt_OnInit() {
+  initCapitolPositions();
   bt_InitUnitMovement();
   bt_InitBuildingCreation();
   bt_InitTransportHunting();
@@ -288,7 +330,7 @@ void bt_OnInit() {
   bt_ConvertUnits();
   bt_AttackWithBombers();
   bt_AttackWithShipsEverywhere();
-  // bt_InitAggresiveness();
+  bt_LoadUnits();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();
 }

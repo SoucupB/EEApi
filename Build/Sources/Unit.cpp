@@ -61,6 +61,23 @@ vector<Unit> unit_Filter(uint8_t (*method)(Unit)) {
   return units;
 }
 
+vector<Unit> unit_FilterWithBuffer(uint8_t (*method)(Unit, PVOID), PVOID buffer) {
+  vector<Unit> units;
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  for(size_t i = 0; i < 20; i++) {
+    for(auto &it : *(unitPresence[i])) {
+      Unit unit = (Unit) {
+        ._payload = it.first
+      };
+      if(!unit_IsDead(unit) && method(unit, buffer)) {
+        units.push_back(unit);
+      }
+    }
+  }
+  return units;
+}
+
 int32_t unit_CurrentlyBuilding(Unit building) {
   return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
 }
@@ -348,4 +365,15 @@ float unit_Range(Unit unit) {
 
 float unit_Distance(Unit first, Unit dst) {
   return distanceEuclidf(unit_Point_Position(first), unit_Point_Position(dst));
+}
+
+void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
+  if(!eeTypes_IsCitizen(unit_Type(citizen)) || !eeTypes_IsBuilding(unitType)) {
+    return ;
+  }
+  PVOID unitClass = eeTypes_GetTemplate(unitType);
+  if(!unitClass) {
+    return ;
+  }
+  helper_Building_Create(unit_Reference(citizen), tile, unitClass);
 }

@@ -17,20 +17,26 @@ void rebuildDataStructures();
 extern "C" {
   __declspec(dllexport) int32_t __thiscall onUnitIteration(PVOID self) {
     int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1540DC);
+    PEmpireEarthHook hook = game_EmpHook();
     eeTa_OnUnitFrame((Unit) {
       ._payload = self
     });
+    hook->hasIterationBeenExecuted = 1;
     return method(self);
   }
 
   __declspec(dllexport) int32_t __thiscall onFrame(PVOID self) {
     int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x15401E);
-    if(!onInitFlag) {
+    PEmpireEarthHook hook = game_EmpHook();
+    if(!hook->hasIterationBeenExecuted) {
+      return method(self);
+    }
+    if(!hook->onInitFlag) {
       if(!eeTa_ShouldOnInitExecute()) {
         return method(self);
       }
       eeTa_OnInit();
-      onInitFlag = 1;
+      hook->onInitFlag = 1;
     }
     eeTa_OnFrame();
     return method(self);
@@ -87,8 +93,8 @@ extern "C" {
 }
 
 void rebuildDataStructures() {
-  onInitFlag = 0;
   eeTa_RebuildExtraDataStructure();
+  onInitFlag = 0;
 }
 
 void setMapStart() {
@@ -106,9 +112,9 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
   builder_Definition((PVOID)0x16F275, (PVOID)onResourceInit);
   builder_Definition((PVOID)0x16F33E, (PVOID)onResourceRelease);
-  // #if defined(REPLACE_MMU)
+  #if defined(REPLACE_MMU)
     builder_ReplaceMMUMethods();
-  // #endif
+  #endif
   setMapStart();
 }
 
