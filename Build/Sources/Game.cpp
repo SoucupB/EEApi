@@ -36,6 +36,7 @@ void game_Player_Init(PGame game) {
 PEmpireEarthHook game_EmpHook_Init(PGame game) {
   game->empHook = (PEmpireEarthHook)malloc(sizeof(EmpireEarthHook));
   game->empHook->onInitFlag = 0;
+  game->empHook->hasIterationBeenExecuted = 0;
 }
 
 void game_EmpHook_Delete(PGame game) {

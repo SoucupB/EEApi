@@ -58,6 +58,7 @@ typedef struct ResourceManager_t {
 
 typedef struct EmpireEarthHook_t {
   uint8_t onInitFlag;
+  uint8_t hasIterationBeenExecuted;
 } EmpireEarthHook;
 
 typedef EETwa *PEETwa;
