@@ -8,7 +8,6 @@
 #include "Helpers.h"
 #include "Resource.h"
 
-static uint8_t onInitFlag = 0;
 static size_t mapPolygons;
 void eeTa_RebuildExtraDataStructure();
 void eeTa_RebuildDTs();
@@ -94,7 +93,6 @@ extern "C" {
 
 void rebuildDataStructures() {
   eeTa_RebuildExtraDataStructure();
-  onInitFlag = 0;
 }
 
 void setMapStart() {

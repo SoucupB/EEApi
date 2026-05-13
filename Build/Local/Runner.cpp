@@ -288,7 +288,6 @@ SpawnLocation getSelfCapitol() {
 }
 
 void att_LoadTransports(PVOID _) {
-  initCapitolPositions();
   SpawnLocation capitol = getSelfCapitol();
   if(capitol.player == 0xFF) {
     return ;
