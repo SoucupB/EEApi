@@ -61,6 +61,17 @@ vector<Unit> unit_Player_GetUnits(Player ply) {
   return units;
 }
 
+void unit_Build(Unit building, UnitType type) {
+  if(eeTa_CurrentPopulation() >= eeTa_TotalPop()) {
+    return ;
+  }
+  int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1F5F97);
+  PEETwa eeTwa = game_EETwa();
+  eeTwa->shouldCostBeReduced = 1;
+  method(building._payload, (PVOID)type, 0);
+  eeTwa->shouldCostBeReduced = 0;
+}
+
 vector<Unit> unit_GetUnits(int8_t player) {
   vector<Unit> units;
   PEETwa eeTwa = game_EETwa();

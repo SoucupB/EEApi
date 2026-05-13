@@ -8,11 +8,9 @@
 #include "TimerHelper.h"
 #include "EETypes.h"
 
-vector<Unit> eeTa_Buildings(int8_t player);
 vector<PVOID> eeTa_UnitTypes(Unit building);
 void __cdecl eeTa_OnUnitFrame(Unit unit);
 void eeTa_OnFrame();
-void eeTa_BuildUnit(Unit building, PVOID unitType);
 int32_t eeTa_CurrentlyBuilding(Unit building);
 vector<Unit> eeTa_IdleBuildings(int8_t player);
 int64_t eeTa_CurrentFrame();

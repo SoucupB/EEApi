@@ -83,7 +83,7 @@ void buildUnit_t(PVOID attr) {
     if(!types.size()) {
       continue;
     }
-    eeTa_BuildUnit(building, (PVOID)types[rand() % types.size()]);
+    unit_Build(building, (UnitType)types[rand() % types.size()]);
     if(!maxBuildings) {
       break;
     }
@@ -104,7 +104,7 @@ void buildAirCarrierUnits(PVOID attr) {
     if(!types.size()) {
       continue;
     }
-    eeTa_BuildUnit(naval, (PVOID)types[rand() % types.size()]);
+    unit_Build(naval, (UnitType)types[rand() % types.size()]);
   }
 }
 
@@ -125,7 +125,7 @@ __declspec(dllexport) void bt_BuildWorkers(PVOID attr) {
   int32_t maxBuildings = 3;
   for(int32_t i = 0, c = capitols.size(); i < c; i++) {
     Unit building = capitols[i];
-    eeTa_BuildUnit(building, (PVOID)CITIZEN);
+    unit_Build(building, (UnitType)CITIZEN);
     if(!maxBuildings) {
       break;
     }

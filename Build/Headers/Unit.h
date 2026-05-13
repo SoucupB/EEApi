@@ -39,6 +39,7 @@ size_t unit_Transport_Population(Unit transport);
 void unit_Transport_Unload(Unit transport, TilePoint tile);
 void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType);
 vector<Unit> unit_FilterWithBuffer(uint8_t (*method)(Unit, PVOID), PVOID buffer);
+void unit_Build(Unit building, UnitType type);
 
 vector<Unit> unit_Player_GetBuildings(Player ply);
 vector<Unit> unit_Player_GetUnits(Player ply);

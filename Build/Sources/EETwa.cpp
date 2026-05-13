@@ -83,17 +83,6 @@ void __cdecl eeTa_OnUnitDeath(Unit unit) {
   bt_OnUnitDestroy(unit);
 }
 
-void eeTa_BuildUnit(Unit building, PVOID unitType) {
-  if(eeTa_CurrentPopulation() >= eeTa_TotalPop()) {
-    return ;
-  }
-  int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1F5F97);
-  PEETwa eeTwa = game_EETwa();
-  eeTwa->shouldCostBeReduced = 1;
-  method(building._payload, unitType, 0);
-  eeTwa->shouldCostBeReduced = 0;
-}
-
 int32_t eeTa_UnitPopulation(Unit unit) {
   PVOID unitTypeStruct = util_Pointer(unit._payload, 0x2C, POINTER_TYPE);
   PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
