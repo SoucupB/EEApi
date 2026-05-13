@@ -43,7 +43,7 @@ uint8_t workersFilter(Unit unit) {
 }
 
 int8_t shouldBuildAttackUnit() {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   vector<Unit> filteredUnits = eeTa_Filter(units, nonWorkersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
@@ -53,7 +53,7 @@ int8_t shouldBuildAttackUnit() {
 }
 
 int8_t shouldBuildWorkers() {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   vector<Unit> filteredUnits = eeTa_Filter(units, workersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
@@ -93,7 +93,7 @@ void buildUnit_t(PVOID attr) {
 }
 
 void buildAirCarrierUnits(PVOID attr) {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   vector<Unit> filteredUnits = eeTa_Filter(units, navalAirCarrierFilter);
   for(int32_t i = 0, c = filteredUnits.size(); i < c; i++) {
     Unit naval = filteredUnits[i];
@@ -149,14 +149,14 @@ void checkEpochPointer() {
 
 void convert() {
   if(GetAsyncKeyState('P') & 0x8000) {
-    vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+    vector<Unit> units = unit_Player_GetUnits(ply_Self());
     att_ConvertIfNecessary(units);
     Beep(400, 250);
   }
 }
 
 void bt_HuntTransports(PVOID attributes) {
-  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
   att_AttackTransportWithNavals(units);
 }
 
@@ -182,7 +182,7 @@ void bt_InitTransportHunting() {
 }
 
 void patrolCommand(PVOID attr) {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   att_PatrolRandomPositions(units);
 }
 
@@ -306,7 +306,7 @@ void bt_LoadUnits() {
 
 void initCapitolPositions() {
   capitolsLocations.clear();
-  vector<Unit> units = unit_GetBuildings(eeTa_AllPlayers());
+  vector<Unit> units = unit_Player_GetBuildings(ply_Null());
   for(size_t i = 0; i < units.size(); i++) {
     if(!eeTypes_CanProduceWorkers(unit_Type(units[i]))) {
       continue;

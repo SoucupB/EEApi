@@ -33,7 +33,7 @@ void fishTheFishes(Unit fishBoat) {
 }
 
 void res_MoveResourceBoats() {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   vector<Unit> fishBoats = eeTa_Filter(units, fishBoatsFilter);
 
   int32_t maxSearches = 5;

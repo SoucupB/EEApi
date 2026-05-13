@@ -11,7 +11,7 @@ void citizen_RepairBuildings(PVOID _) {
   if(!needyBuildings.size()) {
     return ;
   }
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   for(size_t i = 0, c = units.size(); i < c; i++) {
     if(unit_IsIdle(units[i]) && eeTypes_IsCitizen(unit_Type(units[i]))) {
       unit_Repair(units[i], needyBuildings[(rand() * rand()) % needyBuildings.size()]);
