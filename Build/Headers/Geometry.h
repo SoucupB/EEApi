@@ -16,7 +16,7 @@ typedef struct Circle_t {
   float radius;
 } Circle;
 
-Unit geom_GetClosestUnitFrom(Unit unit, int8_t player, uint8_t (*filter)(Unit));
+Unit geom_GetClosestUnitFrom(Unit unit, Player ply, uint8_t (*filter)(Unit));
 uint8_t geom_IsPointInCircle(Point p, Circle c);
 TilePoint geom_Tile_FromPoint(Point target);
 Point geom_Point_Invalid();

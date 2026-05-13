@@ -124,7 +124,7 @@ void att_AttackTransportWithNavals(vector<Unit> &units) {
 void att_ConvertIfNecessary(vector<Unit> &units) {
   vector<Unit> filteredPriests = eeTa_Filter(units, priestsFilters);
   for(size_t i = 0; i < filteredPriests.size(); i++) {
-    Unit enemy = geom_GetClosestUnitFrom(filteredPriests[i], eeTa_AllPlayers(), enemyFilter);
+    Unit enemy = geom_GetClosestUnitFrom(filteredPriests[i], ply_Null(), enemyFilter);
     if(!enemy._payload) {
       continue;
     }
