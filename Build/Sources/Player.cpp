@@ -25,6 +25,9 @@ int8_t ply_PlayerCount() {
 }
 
 uint8_t ply_PlayerIndex(Player player) {
+  if(!ply_Reference(player)) {
+    return 20;
+  }
   return *(uint8_t *)util_Pointer(ply_Reference(player), 0x45C, INT8_T_TYPE);
 }
 

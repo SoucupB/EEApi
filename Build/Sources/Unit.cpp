@@ -26,6 +26,41 @@ vector<Unit> unit_GetBuildings(int8_t player) {
   return buildingsPointer;
 }
 
+vector<Unit> unit_Player_GetBuildings(Player ply) {
+  vector<Unit> buildingsPointer;
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  const uint8_t playerIndex = ply_PlayerIndex(ply);
+  for(auto &it : *(unitPresence[playerIndex])) {
+    Unit currentUnit = (Unit) {
+      ._payload = it.first
+    };
+    if(!unit_IsDead(currentUnit) && unit_IsBuilding(currentUnit)) {
+      buildingsPointer.push_back(currentUnit);
+    }
+  }
+  return buildingsPointer;
+}
+
+vector<Unit> unit_Player_GetUnits(Player ply) {
+  vector<Unit> units;
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  const uint8_t playerIndex = ply_PlayerIndex(ply);
+  for(auto &it : *(unitPresence[playerIndex])) {
+    if(!unit_IsDead((Unit) {
+      ._payload = it.first
+    }) && !unit_IsBuilding((Unit) {
+      ._payload = (PVOID)it.first
+    })) {
+      units.push_back((Unit) {
+        ._payload = (PVOID)it.first
+      });
+    }
+  }
+  return units;
+}
+
 vector<Unit> unit_GetUnits(int8_t player) {
   vector<Unit> units;
   PEETwa eeTwa = game_EETwa();
