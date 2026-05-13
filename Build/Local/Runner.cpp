@@ -79,11 +79,11 @@ void buildUnit_t(PVOID attr) {
     if(eeTypes_CanProduceWorkers(unit_Type(building))) {
       continue;
     }
-    vector<int32_t> types = eeTa_AllBuildableTypes(building);
+    vector<UnitType> types = unit_AllBuildableTypes(building);
     if(!types.size()) {
       continue;
     }
-    unit_Build(building, (UnitType)types[rand() % types.size()]);
+    unit_Build(building, types[rand() % types.size()]);
     if(!maxBuildings) {
       break;
     }
@@ -100,11 +100,11 @@ void buildAirCarrierUnits(PVOID attr) {
     if(!eeTa_IsIdle(naval)) {
       continue;
     }
-    vector<int32_t> types = eeTa_AllBuildableTypes(naval);
+    vector<UnitType> types = unit_AllBuildableTypes(naval);
     if(!types.size()) {
       continue;
     }
-    unit_Build(naval, (UnitType)types[rand() % types.size()]);
+    unit_Build(naval, types[rand() % types.size()]);
   }
 }
 

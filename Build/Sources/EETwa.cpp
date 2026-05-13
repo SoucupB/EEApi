@@ -182,24 +182,6 @@ int32_t eeTa_Buildables(Unit unit) {
   return method(typeMetaPointer);
 }
 
-vector<int32_t> eeTa_AllBuildableTypes(Unit unit) {
-  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  size_t *buildableTypes = (size_t *)util_Pointer((PVOID)typeMetaPointer, 0x30, POINTER_TYPE);
-  vector<int32_t> types;
-  if(!buildableTypes) {
-    return types;
-  }
-
-  int32_t totalBuildables = eeTa_Buildables(unit);
-  for(int32_t i = 0; i < totalBuildables; i++) {
-    if(eeTa_CanBuild(unit, (PVOID)buildableTypes[i])) {
-      types.push_back(buildableTypes[i]);
-    }
-  }
-
-  return types;
-}
-
 int8_t eeTa_IsBuildingComplete(Unit unit) {
   int8_t *isBuildingRef = (int8_t *)util_Pointer((PVOID)unit._payload, 0x34C, INT8_T_TYPE);
   

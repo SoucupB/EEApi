@@ -61,6 +61,24 @@ vector<Unit> unit_Player_GetUnits(Player ply) {
   return units;
 }
 
+vector<UnitType> unit_AllBuildableTypes(Unit unit) {
+  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
+  size_t *buildableTypes = (size_t *)util_Pointer((PVOID)typeMetaPointer, 0x30, POINTER_TYPE);
+  vector<UnitType> types;
+  if(!buildableTypes) {
+    return types;
+  }
+
+  int32_t totalBuildables = eeTa_Buildables(unit);
+  for(int32_t i = 0; i < totalBuildables; i++) {
+    if(eeTa_CanBuild(unit, (PVOID)buildableTypes[i])) {
+      types.push_back((UnitType)buildableTypes[i]);
+    }
+  }
+
+  return types;
+}
+
 void unit_Build(Unit building, UnitType type) {
   if(eeTa_CurrentPopulation() >= eeTa_TotalPop()) {
     return ;

@@ -22,7 +22,6 @@ int8_t eeTa_AllPlayers();
 PVOID _eeTa_EpochStruct(PVOID building, PVOID unitType);
 uint8_t eeTa_CanBuild(Unit building, PVOID type);
 int32_t eeTa_Buildables(Unit unit);
-vector<int32_t> eeTa_AllBuildableTypes(Unit unit);
 int8_t eeTa_IsBuildingComplete(Unit unit);
 Point eeTa_GetDestinationCommand(Unit unit);
 PVOID eeTa_Unit_Sample(int8_t player);
