@@ -199,10 +199,6 @@ int64_t eeTa_CurrentFrame() {
   return eeTwa->frames;
 }
 
-int8_t eeTa_PlayerIndex() {
-  return *(int8_t *)util_Pointer(lib_BaseAddress(), 0x5318C4, POINTER_TYPE);
-}
-
 uint8_t eeTa_ShouldOnInitExecute() {
   return eeTa_PlayerCount() != 0;
 }
