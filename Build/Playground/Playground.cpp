@@ -206,9 +206,19 @@ void execDataPengus() {
   }
 }
 
+void printPopulation() {
+  vector<Player> players = ply_All();
+  for(size_t i = 0; i < players.size(); i++) {
+    if(ply_Reference(players[i]) == ply_Reference(ply_Neutral())) {
+      continue;
+    }
+    eeTa_FilePrintf("Current pop for player %p is %d and total is %d\n", ply_Reference(players[i]), ply_CurrentPopulation(players[i]), ply_TotalPop(players[i]));
+  }
+}
+
 void bt_OnInit() {
   // addProphetSpells();
-  test_PrintUnits();
+  printPopulation();
   eeTa_FilePrintf("Spookly\n");
 }
 

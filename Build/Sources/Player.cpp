@@ -143,3 +143,15 @@ void ply_Print() {
     eeTa_FilePrintf("\n");
   }
 }
+
+int32_t ply_CurrentPopulation(Player player) {
+  return *(int32_t *)util_Pointer(ply_Reference(player), 0xB14, INT32_T_TYPE);
+}
+
+int32_t ply_TotalPop(Player player) {
+  const PVOID plyRef = ply_Reference(player);
+  size_t additionPop = *(size_t *)((size_t)plyRef + 0xB24);
+  size_t skillsPop = *(size_t *)((size_t)plyRef + 0xB20);
+  size_t mapPop = *(size_t *)((size_t)lib_BaseAddress() + 0x530E14);
+  return additionPop + skillsPop + mapPop;
+}
