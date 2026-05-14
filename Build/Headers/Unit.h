@@ -32,6 +32,7 @@ float unit_Range(Unit unit);
 float unit_Distance(Unit first, Unit dst);
 vector<Unit> unit_IdleBuildings(int8_t player);
 vector<Unit> unit_Filter(uint8_t (*method)(Unit));
+vector<Unit> unit_FilterFromArray(vector<Unit> &units, uint8_t (*method)(Unit));
 uint8_t unit_CanCast(Unit unit, Ability ability);
 uint8_t unit_IsTransport(Unit unit);
 void unit_Transport_Load(Unit transport, vector<Unit> &units);
@@ -42,6 +43,7 @@ vector<Unit> unit_FilterWithBuffer(uint8_t (*method)(Unit, PVOID), PVOID buffer)
 void unit_Build(Unit building, UnitType type);
 vector<UnitType> unit_AllBuildableTypes(Unit unit);
 int32_t unit_Population(Unit unit);
+uint8_t unit_IsNeutral(Unit unit);
 
 vector<Unit> unit_Player_GetBuildings(Player ply);
 vector<Unit> unit_Player_GetUnits(Player ply);

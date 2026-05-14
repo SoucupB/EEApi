@@ -44,7 +44,7 @@ uint8_t workersFilter(Unit unit) {
 
 int8_t shouldBuildAttackUnit() {
   vector<Unit> units = unit_Player_GetUnits(ply_Self());
-  vector<Unit> filteredUnits = eeTa_Filter(units, nonWorkersFilter);
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, nonWorkersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
     currentPop += unit_Population(filteredUnits[i]);
@@ -54,7 +54,7 @@ int8_t shouldBuildAttackUnit() {
 
 int8_t shouldBuildWorkers() {
   vector<Unit> units = unit_Player_GetUnits(ply_Self());
-  vector<Unit> filteredUnits = eeTa_Filter(units, workersFilter);
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, workersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
     currentPop += unit_Population(filteredUnits[i]);
@@ -94,7 +94,7 @@ void buildUnit_t(PVOID attr) {
 
 void buildAirCarrierUnits(PVOID attr) {
   vector<Unit> units = unit_Player_GetUnits(ply_Self());
-  vector<Unit> filteredUnits = eeTa_Filter(units, navalAirCarrierFilter);
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, navalAirCarrierFilter);
   for(int32_t i = 0, c = filteredUnits.size(); i < c; i++) {
     Unit naval = filteredUnits[i];
     if(!unit_Building_IsIdle(naval)) {
@@ -118,7 +118,7 @@ __declspec(dllexport) void bt_BuildWorkers(PVOID attr) {
     return ;
   }
   vector<Unit> buildings = unit_IdleBuildings(eeTa_SelfPlayer());
-  vector<Unit> capitols = eeTa_Filter(buildings, capitolFilter);
+  vector<Unit> capitols = unit_FilterFromArray(buildings, capitolFilter);
   if(!capitols.size()) {
     return ;
   }

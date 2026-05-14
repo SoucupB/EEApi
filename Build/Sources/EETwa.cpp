@@ -26,11 +26,6 @@ uint8_t eeTa_NeutralPlayer() {
   return eeTwa->neutralPlayer;
 }
 
-uint8_t eeTa_IsNeutral(Unit unit) {
-  PEETwa eeTwa = game_EETwa();
-  return eeTa_Player(unit) == eeTwa->neutralPlayer;
-}
-
 // Money pointer is at ["EE-AOC.exe"+530DB8 + 0xAFC]
 
 void __cdecl eeTa_OnUnitFrame(Unit unit) {
@@ -102,21 +97,7 @@ void eeTa_SetCvCAggression(uint8_t botIndex, float aggression) {
   }
   float *_2 = (float *)util_Pointer(_1, 0xBF0, FLOAT_TYPE);
   *_2 = aggression;
-} 
-
-vector<Unit> eeTa_Filter(vector<Unit> &units, uint8_t (*method)(Unit)) {
-  vector<Unit> filteredUnits;
-  for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(method(units[i])) {
-      filteredUnits.push_back(units[i]);
-    }
-  }
-  return filteredUnits;
 }
-
-// int8_t eeTa_IsIdle(Unit building) {
-//   return eeTa_CurrentlyBuilding(building) == IDLE;
-// }
 
 void eeta_FileClean() {
   FILE* f = fopen("EETWa.log", "w");
@@ -212,10 +193,6 @@ Point eeTa_GetDestinationCommand(Unit unit) {
     .y = positionPointer[1]
   };
 }
-
-// int32_t eeTa_CurrentlyBuilding(Unit building) {
-//   return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
-// }
 
 int64_t eeTa_CurrentFrame() {
   PEETwa eeTwa = game_EETwa();

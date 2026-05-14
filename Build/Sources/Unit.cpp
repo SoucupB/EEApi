@@ -205,6 +205,21 @@ int8_t unit_IsBuildingComplete(Unit unit) {
   return *isBuildingRef;
 }
 
+vector<Unit> unit_FilterFromArray(vector<Unit> &units, uint8_t (*method)(Unit)) {
+  vector<Unit> filteredUnits;
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    if(method(units[i])) {
+      filteredUnits.push_back(units[i]);
+    }
+  }
+  return filteredUnits;
+}
+
+uint8_t unit_IsNeutral(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  return eeTa_Player(unit) == eeTwa->neutralPlayer;
+}
+
 int8_t unit_IsIdle(Unit unit) {
   return !util_Pointer(unit_Reference(unit), 0x1F0, POINTER_TYPE);
 }

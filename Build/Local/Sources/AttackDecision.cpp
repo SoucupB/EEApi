@@ -58,7 +58,7 @@ uint8_t enemyUnits(Unit unit) {
   int8_t unitPlayer = eeTa_Player(unit);
   int8_t playerTeam = eeTa_SelfPlayer();
   return unitPlayer != playerTeam && !ply_Index_AreAllies(unitPlayer, playerTeam) &&
-         !eeTa_IsNeutral(unit);
+         !unit_IsNeutral(unit);
 }
 
 uint8_t idleAttackingGroundUnits(Unit unit) {
@@ -99,10 +99,10 @@ void att_AddDamagedUnits(Unit unit) {
 }
 
 void att_AttackTransportWithNavals(vector<Unit> &units) {
-  vector<Unit> filteredUnits = eeTa_Filter(units, navalAttackFilter);
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, navalAttackFilter);
 
   for(uint32_t i = 0, c = min(6, filteredUnits.size()); i < c; i++) {
-    vector<Unit> enemyTransports = eeTa_Filter(units, enemyTransporters);
+    vector<Unit> enemyTransports = unit_FilterFromArray(units, enemyTransporters);
 
     for(uint32_t j = 0, p = enemyTransports.size(); j < p; j++) {
       Point currPos = unit_Point_Position(filteredUnits[i]);
@@ -122,7 +122,7 @@ void att_AttackTransportWithNavals(vector<Unit> &units) {
 }
 
 void att_ConvertIfNecessary(vector<Unit> &units) {
-  vector<Unit> filteredPriests = eeTa_Filter(units, priestsFilters);
+  vector<Unit> filteredPriests = unit_FilterFromArray(units, priestsFilters);
   for(size_t i = 0; i < filteredPriests.size(); i++) {
     Unit enemy = geom_GetClosestUnitFrom(filteredPriests[i], ply_Null(), enemyFilter);
     if(!enemy._payload) {
@@ -204,7 +204,7 @@ uint8_t att_ScanAndAttack(vector<Unit> &selfUnits) {
 }
 
 void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(Unit), int32_t maxCommands) {
-  vector<Unit> filteredUnits = eeTa_Filter(selfUnits, checker);
+  vector<Unit> filteredUnits = unit_FilterFromArray(selfUnits, checker);
   if(!filteredUnits.size()) {
     return ;
   }

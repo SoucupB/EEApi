@@ -256,7 +256,7 @@ void farmFish() {
 
 Unit getEnemyShip() {
   vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
-  vector<Unit> filteredUnits = eeTa_Filter(units, navalAttackFilter);
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, navalAttackFilter);
   for(size_t i = 0; i < filteredUnits.size(); i++) {
     if(eeTa_Player(filteredUnits[i]) != eeTa_SelfPlayer()) {
       return filteredUnits[i];
