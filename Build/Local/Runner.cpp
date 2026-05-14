@@ -47,9 +47,9 @@ int8_t shouldBuildAttackUnit() {
   vector<Unit> filteredUnits = eeTa_Filter(units, nonWorkersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
-    currentPop += eeTa_UnitPopulation(filteredUnits[i]);
+    currentPop += unit_Population(filteredUnits[i]);
   }
-  return (float)currentPop < (float)eeTa_TotalPop() * 0.6f;
+  return (float)currentPop < (float)ply_TotalPop(ply_Self()) * 0.6f;
 }
 
 int8_t shouldBuildWorkers() {
@@ -57,9 +57,9 @@ int8_t shouldBuildWorkers() {
   vector<Unit> filteredUnits = eeTa_Filter(units, workersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
-    currentPop += eeTa_UnitPopulation(filteredUnits[i]);
+    currentPop += unit_Population(filteredUnits[i]);
   }
-  return (float)currentPop < (float)eeTa_TotalPop() * 0.4f;
+  return (float)currentPop < (float)ply_TotalPop(ply_Self()) * 0.4f;
 }
 
 uint8_t navalAirCarrierFilter(Unit unit) {
@@ -97,7 +97,7 @@ void buildAirCarrierUnits(PVOID attr) {
   vector<Unit> filteredUnits = eeTa_Filter(units, navalAirCarrierFilter);
   for(int32_t i = 0, c = filteredUnits.size(); i < c; i++) {
     Unit naval = filteredUnits[i];
-    if(!eeTa_IsIdle(naval)) {
+    if(!unit_Building_IsIdle(naval)) {
       continue;
     }
     vector<UnitType> types = unit_AllBuildableTypes(naval);

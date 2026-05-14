@@ -61,6 +61,32 @@ vector<Unit> unit_Player_GetUnits(Player ply) {
   return units;
 }
 
+int32_t unit_BuildablesCount(Unit unit) {
+  size_t *typeMetaPointer = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
+  int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x196DFF);
+  return method(typeMetaPointer);
+}
+
+PVOID unit_EpochStruct(PVOID building, PVOID unitType) {
+  size_t *buildingMetaData = (size_t *)util_Pointer((PVOID)building, 0x18, POINTER_TYPE);
+  size_t *epochStruct = (size_t *)util_Pointer((PVOID)buildingMetaData, 0x9CC, POINTER_TYPE);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x18A4);
+
+  return method((PVOID)epochStruct, unitType);
+}
+
+uint8_t unit_CanBuild(Unit building, UnitType type) {
+  size_t *epochStruct = (size_t *)unit_EpochStruct(unit_Reference(building), (PVOID)type);
+  if(!epochStruct) {
+    return 0;
+  }
+
+  size_t *checkMethod = (size_t *)util_Pointer((PVOID)(epochStruct[0]), 0x4, POINTER_TYPE);
+  int8_t __thiscall (*method)(PVOID) = (int8_t __thiscall (*)(PVOID)) ((uint8_t *)checkMethod);
+
+  return method((PVOID)epochStruct);
+}
+
 vector<UnitType> unit_AllBuildableTypes(Unit unit) {
   size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
   size_t *buildableTypes = (size_t *)util_Pointer((PVOID)typeMetaPointer, 0x30, POINTER_TYPE);
@@ -69,9 +95,9 @@ vector<UnitType> unit_AllBuildableTypes(Unit unit) {
     return types;
   }
 
-  int32_t totalBuildables = eeTa_Buildables(unit);
+  int32_t totalBuildables = unit_BuildablesCount(unit);
   for(int32_t i = 0; i < totalBuildables; i++) {
-    if(eeTa_CanBuild(unit, (PVOID)buildableTypes[i])) {
+    if(unit_CanBuild(unit, (UnitType)buildableTypes[i])) {
       types.push_back((UnitType)buildableTypes[i]);
     }
   }
@@ -80,7 +106,8 @@ vector<UnitType> unit_AllBuildableTypes(Unit unit) {
 }
 
 void unit_Build(Unit building, UnitType type) {
-  if(eeTa_CurrentPopulation() >= eeTa_TotalPop()) {
+  Player currentPlayer = ply_GetPlayer(building);
+  if(ply_CurrentPopulation(currentPlayer) >= ply_TotalPop(currentPlayer)) {
     return ;
   }
   int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1F5F97);
@@ -169,7 +196,7 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
 }
 
 int8_t unit_Building_IsIdle(Unit building) {
-  return eeTa_CurrentlyBuilding(building) == IDLE;
+  return unit_CurrentlyBuilding(building) == IDLE;
 }
 
 int8_t unit_IsBuildingComplete(Unit unit) {
@@ -408,7 +435,7 @@ size_t unit_Transport_Population(Unit transport) {
   size_t totalPop = 0;
   PVOID unitRef = helper_Transport_Ref(unit_Reference(transport));
   for(size_t i = 0; i < unitsCount; i++) {
-    totalPop += eeTa_UnitPopulation((Unit) {
+    totalPop += unit_Population((Unit) {
       ._payload = (PVOID)*(size_t *)((size_t)unitRef + (i * 0x4))
     });
   }
@@ -440,4 +467,13 @@ void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
     return ;
   }
   helper_Building_Create(unit_Reference(citizen), tile, unitClass);
+}
+
+int32_t unit_Population(Unit unit) {
+  PVOID unitTypeStruct = util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
+  PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
+  PVOID callee = util_Pointer(callerMethods, 0x6C, POINTER_TYPE);
+  int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callee);
+
+  return method(unitTypeStruct);
 }

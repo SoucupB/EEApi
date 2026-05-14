@@ -83,23 +83,8 @@ void __cdecl eeTa_OnUnitDeath(Unit unit) {
   bt_OnUnitDestroy(unit);
 }
 
-int32_t eeTa_UnitPopulation(Unit unit) {
-  PVOID unitTypeStruct = util_Pointer(unit._payload, 0x2C, POINTER_TYPE);
-  PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
-  PVOID callee = util_Pointer(callerMethods, 0x6C, POINTER_TYPE);
-  int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callee);
-
-  return method(unitTypeStruct);
-}
-
 PVOID eeTa_GetPlayer() {
   return util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
-}
-
-int32_t eeTa_CurrentPopulation() {
-  PVOID unitTypeStruct = util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
-  int32_t *unitPop = (int32_t *)util_Pointer(unitTypeStruct, 0xB14, INT32_T_TYPE);
-  return *unitPop;
 }
 
 int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double)) {
@@ -129,18 +114,9 @@ vector<Unit> eeTa_Filter(vector<Unit> &units, uint8_t (*method)(Unit)) {
   return filteredUnits;
 }
 
-int32_t eeTa_TotalPop() {
-  PVOID unitTypeStruct = util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
-  PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
-  PVOID popMethod = util_Pointer(callerMethods, 0x7C, POINTER_TYPE);
-  int32_t __fastcall (*method)(PVOID, PVOID, PVOID) = (int32_t __fastcall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)popMethod);
-
-  return method(unitTypeStruct, NULL, NULL);
-}
-
-int8_t eeTa_IsIdle(Unit building) {
-  return eeTa_CurrentlyBuilding(building) == IDLE;
-}
+// int8_t eeTa_IsIdle(Unit building) {
+//   return eeTa_CurrentlyBuilding(building) == IDLE;
+// }
 
 void eeta_FileClean() {
   FILE* f = fopen("EETWa.log", "w");
@@ -166,38 +142,6 @@ int8_t eeTa_SelfPlayer() {
 
 vector<PVOID> eeTa_UnitTypes(Unit building) {
   return vector<PVOID>();
-}
-
-PVOID _eeTa_EpochStruct(PVOID building, PVOID unitType) {
-  size_t *buildingMetaData = (size_t *)util_Pointer((PVOID)building, 0x18, POINTER_TYPE);
-  size_t *epochStruct = (size_t *)util_Pointer((PVOID)buildingMetaData, 0x9CC, POINTER_TYPE);
-  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x18A4);
-
-  return method((PVOID)epochStruct, unitType);
-}
-
-int32_t eeTa_Buildables(Unit unit) {
-  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x196DFF);
-  return method(typeMetaPointer);
-}
-
-int8_t eeTa_IsBuildingComplete(Unit unit) {
-  int8_t *isBuildingRef = (int8_t *)util_Pointer((PVOID)unit._payload, 0x34C, INT8_T_TYPE);
-  
-  return *isBuildingRef;
-}
-
-uint8_t eeTa_CanBuild(Unit building, PVOID type) {
-  size_t *epochStruct = (size_t *)_eeTa_EpochStruct(building._payload, type);
-  if(!epochStruct) {
-    return 0;
-  }
-
-  size_t *checkMethod = (size_t *)util_Pointer((PVOID)(epochStruct[0]), 0x4, POINTER_TYPE);
-  int8_t __thiscall (*method)(PVOID) = (int8_t __thiscall (*)(PVOID)) ((uint8_t *)checkMethod);
-
-  return method((PVOID)epochStruct);
 }
 
 int8_t *eeTa_PlayerIDs() {
@@ -269,22 +213,13 @@ Point eeTa_GetDestinationCommand(Unit unit) {
   };
 }
 
-int32_t eeTa_CurrentlyBuilding(Unit building) {
-  return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
-}
+// int32_t eeTa_CurrentlyBuilding(Unit building) {
+//   return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
+// }
 
 int64_t eeTa_CurrentFrame() {
   PEETwa eeTwa = game_EETwa();
   return eeTwa->frames;
-}
-
-PVOID eeTa_Unit_Sample(int8_t player) {
-  vector<Unit> units = unit_GetUnits(player);
-  if(!units.size()) {
-    return NULL;
-  }
-
-  return units[rand() % units.size()]._payload;
 }
 
 int8_t eeTa_PlayerIndex() {
@@ -298,8 +233,4 @@ uint8_t eeTa_ShouldOnInitExecute() {
 int8_t eeTa_Player(Unit unit) {
   PVOID nextStruct = util_Pointer((PVOID)unit._payload, 0x18, POINTER_TYPE);
   return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
-}
-
-uint8_t eeTa_Tile_IsWater(TilePoint self) {
-  return map_Tile_IsWater(self);
 }

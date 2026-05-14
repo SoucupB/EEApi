@@ -41,6 +41,7 @@ void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType);
 vector<Unit> unit_FilterWithBuffer(uint8_t (*method)(Unit, PVOID), PVOID buffer);
 void unit_Build(Unit building, UnitType type);
 vector<UnitType> unit_AllBuildableTypes(Unit unit);
+int32_t unit_Population(Unit unit);
 
 vector<Unit> unit_Player_GetBuildings(Player ply);
 vector<Unit> unit_Player_GetUnits(Player ply);
