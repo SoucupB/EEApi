@@ -825,7 +825,6 @@ void helper_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transpo
 void helper_Transport_Load(vector<PVOID> &units, PVOID transport) {
   size_t bufferSize = 0x68;
   PVOID buffer = help_New(bufferSize);
-  PVOID cpyBuffer = help_New(bufferSize);
   helper_Command_Method627286(buffer, units, transport);
   helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
   for(size_t i = 0, c = units.size(); i < c; i++) {

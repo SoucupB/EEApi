@@ -28,6 +28,13 @@ enum DefaultType {
   IDLE = 0x186A0
 };
 
+typedef struct UnitStatistics_t {
+  int32_t currentHP;
+  int32_t totalHP;
+  int32_t movementSpeed;
+  float attackDamage;
+} UnitStatistics;
+
 enum UnitType {
   UNIT_UNDEFINED = 0x186A0,
   A10_AA_TANK = 0x0000272F,

@@ -88,7 +88,7 @@ uint8_t unit_CanBuild(Unit building, UnitType type) {
 }
 
 vector<UnitType> unit_AllBuildableTypes(Unit unit) {
-  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
+  size_t *typeMetaPointer = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
   size_t *buildableTypes = (size_t *)util_Pointer((PVOID)typeMetaPointer, 0x30, POINTER_TYPE);
   vector<UnitType> types;
   if(!buildableTypes) {
@@ -200,7 +200,7 @@ int8_t unit_Building_IsIdle(Unit building) {
 }
 
 int8_t unit_IsBuildingComplete(Unit unit) {
-  int8_t *isBuildingRef = (int8_t *)util_Pointer((PVOID)unit._payload, 0x34C, INT8_T_TYPE);
+  int8_t *isBuildingRef = (int8_t *)util_Pointer(unit_Reference(unit), 0x34C, INT8_T_TYPE);
   
   return *isBuildingRef;
 }
@@ -287,17 +287,28 @@ void unit_CastAbility(Unit unit, Point target, Ability ability) {
 }
 
 UnitType unit_Type(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
   return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
 }
 
 int32_t unit_CurrentHp(Unit unit) {
-  return *(int32_t *)util_Pointer((PVOID)unit._payload, 0x3C, INT32_T_TYPE);
+  return *(int32_t *)util_Pointer(unit_Reference(unit), 0x3C, INT32_T_TYPE);
 }
 
 int32_t unit_TotalHP(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
   return *(int32_t *)util_Pointer((PVOID)unitMetaData, 0x144, INT32_T_TYPE);
+}
+
+float unit_TotalDamage(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
+  return *(float *)util_Pointer((PVOID)unitMetaData, 0xD8, FLOAT_TYPE);
+}
+
+// This method is not good yet.
+float unit_TotalSpeed(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
+  return *(float *)util_Pointer((PVOID)unitMetaData, 0xBD4, FLOAT_TYPE);
 }
 
 uint8_t unit_GetPlayerIndex(Unit unit) {
@@ -465,7 +476,7 @@ void unit_Transport_Unload(Unit transport, TilePoint tile) {
 }
 
 float unit_Range(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
   return *(float *)util_Pointer((PVOID)unitMetaData, 0x9C, FLOAT_TYPE);
 }
 
