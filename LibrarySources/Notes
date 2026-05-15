@@ -1031,3 +1031,5 @@ Parameters here 004BBE04 can change the position.
 eax*4+009636AC here is the Building material. eax is the index.
 
 D3C / 4 unit types;
+[[unit + 0x34] + 0xAC] speed var.
+0063C016 is the method for adding the speed of the unit.
