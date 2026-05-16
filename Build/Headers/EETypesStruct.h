@@ -13,6 +13,13 @@ typedef struct Player_t {
   PVOID _payload;
 } Player;
 
+typedef struct UnitStatistics_t {
+  int32_t currentHP;
+  int32_t totalHP;
+  float movementSpeed;
+  float attackDamage;
+} UnitStatistics;
+
 enum UnitAction {
   UNIT_MOVE = 0x101,
   UNIT_ATTACK = 0x100
@@ -27,13 +34,6 @@ enum Ability {
 enum DefaultType {
   IDLE = 0x186A0
 };
-
-typedef struct UnitStatistics_t {
-  int32_t currentHP;
-  int32_t totalHP;
-  int32_t movementSpeed;
-  float attackDamage;
-} UnitStatistics;
 
 enum UnitType {
   UNIT_UNDEFINED = 0x186A0,

@@ -73,7 +73,7 @@ void printSpells() {
     }
     eeTa_FilePrintf("Unit %p with %s ", it.first, eeTypes_Name(it.first));
     for(size_t i = 0; i < it.second.size(); i++) {
-      eeTa_FilePrintf("%p ", it.second[i]);
+      eeTa_FilePrintf("Cast: %p Template: %p ", it.second[i], eeTypes_GetTemplate((UnitType)it.second[i]));
     }
     eeTa_FilePrintf("\n");
   }
