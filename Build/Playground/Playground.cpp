@@ -79,13 +79,15 @@ char *techNodeTextureName(PVOID techNode) {
   return (char *)*(size_t *)((size_t)textureRef + 0x8);
 }
 
+size_t findCallerIndex(PVOID cTechNodes) {
+  return *(size_t *)((*(size_t *)((size_t)cTechNodes + 0x8)) + 0x44);
+}
+
 void printTechNodes() {
   TechTree tree = ply_TechTree(ply_Self());
   PVOID cTechNode = techNode(tree, PROPHET_TORNADO);
   eeTa_FilePrintf("Tech node is %p, name is %s\n", cTechNode, techNodeTextureName(cTechNode));
 }
-
-
 
 void printSpells() {
   PEETypes types = game_GetEETypes();
@@ -110,7 +112,7 @@ void printSpells() {
       if(!cTechNode) {
         continue;
       }
-      eeTa_FilePrintf("Spell: %p, name: '%s'\n", it.second[i], techNodeTextureName(cTechNode));
+      eeTa_FilePrintf("Spell: %p, node %p, index is %p, name: '%s'\n", it.second[i], cTechNode, findCallerIndex(cTechNode), techNodeTextureName(cTechNode));
     }
   }
 }
