@@ -918,3 +918,23 @@ void helper_Building_Create(PVOID citizen, TilePoint position, PVOID type) {
   }
   helper_RepairBuilding(citizen, building);
 }
+
+void helper_Command_Target_Method6209C9(PVOID self, PVOID unit, PVOID target, TilePoint tile, AbilityTypes ability) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+         unit,
+         target,
+         (PVOID)tile.x,
+         (PVOID)tile.y,
+         (PVOID)ability,
+         (PVOID)0x1);
+}
+
+void helper_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, AbilityTypes ability) {
+  PVOID buffer = help_New(0x34);
+  TilePoint tile = geom_Tile_FromPoint(targetPoint);
+  helper_Command_Target_Method6209C9(buffer, unit, target, tile, ability);
+  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
+}

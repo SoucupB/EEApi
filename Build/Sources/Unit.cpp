@@ -282,6 +282,13 @@ void unit_Point_CastAbility(Unit unit, Point target, AbilityTypes ability) {
   helper_CastAbility_Remade(unit_Reference(unit), target, ability);
 }
 
+void unit_Object_CastAbility(Unit unit, Unit target, AbilityTypes ability) {
+  if(!unit_CanCast(unit, ability)) {
+    return ;
+  }
+  helper_CastAbility_Target(unit_Reference(unit), unit_Reference(target), unit_Point_Position(target), ability);
+}
+
 UnitType unit_Type(Unit unit) {
   size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
   return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);

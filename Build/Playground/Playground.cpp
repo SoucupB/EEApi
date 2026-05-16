@@ -13,7 +13,7 @@
 void test_PrintUnits();
 void printSpells();
 void printTechNodes();
-
+void castFire();
 // I think I find the water tile.
 void onLosingHealth(Unit unit) {
   eeTa_FilePrintf("Unit %p taking damage\n", unit_Reference(unit));
@@ -57,7 +57,7 @@ void execDataPengus() {
     // castEarthquake();
     // convertUnit();
     // loadTransport();
-    printTechNodes();
+    castFire();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -185,8 +185,42 @@ void printSpells() {
   eeTa_FilePrintf("};\n");
 }
 
+Unit getProphet() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(unit_Type(units[i]) == PROPHET) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
+Unit getEnemyBuilding() {
+  vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
+  for(size_t i = 0; i < buildings.size(); i++) {
+    if(eeTa_Player(buildings[i]) != eeTa_SelfPlayer()) {
+      return buildings[i];
+    }
+  }
+  return unit_Null();
+}
+
+void castFire() {
+  Unit currentProphet = getProphet();
+  if(!unit_Reference(currentProphet)) {
+    return ;
+  }
+  Unit currentBuilding = getEnemyBuilding();
+  if(!unit_Reference(currentBuilding)) {
+    return ;
+  }
+  unit_Object_CastAbility(currentProphet, currentBuilding, ABILITY_PROPHET_FIRE_);
+  // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
+  eeTa_FilePrintf("Some ability\n");
+}
+
 void bt_OnInit() {
-  printSpells();
+  // printSpells();
   eeTa_FilePrintf("Spookly\n");
 }
 

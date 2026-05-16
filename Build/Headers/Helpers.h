@@ -29,3 +29,4 @@ PVOID helper_Building_GetTemplate(size_t index);
 PVOID helper_TechNode(TechTree tree, AbilityTypes ability);
 PVOID helper_AbilityPointer(PVOID manager, size_t abilityIndex);
 int32_t helper_AbilityEnergy(PVOID reference);
+void helper_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, AbilityTypes ability);
