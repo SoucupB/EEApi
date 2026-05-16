@@ -114,6 +114,15 @@ static inline void eeTypes_InitAbilities(const PEETypes eTypes, const PVOID unit
   }
 }
 
+vector<AbilityTypes> eeTypes_Abilities(UnitType type) {
+  PEETypes types = game_GetEETypes();
+  map<UnitType, vector<AbilityTypes> > *abilityPointers = types->abilityPointers;
+  if(abilityPointers->find(type) == abilityPointers->end()) {
+    return vector<AbilityTypes>();
+  }
+  return (*abilityPointers)[type];
+}
+
 char *eeTypes_Name(UnitType type) {
   PEETypes eTypes = game_GetEETypes();
   if(eTypes->unitTemplatePointers->find(type) == eTypes->unitTemplatePointers->end()) {
@@ -183,11 +192,6 @@ UnitClassType eeTypes_UnitClass(UnitType unitType) {
   }
 
   return (*parentsClass)[unitType];
-}
-
-vector<Ability> eeTypes_GetAbility(UnitType type) {
-  vector<Ability> abilities;
-  return abilities;
 }
 
 uint8_t eeTypes_IsWaterUnit(UnitType unitType) {

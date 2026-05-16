@@ -88,7 +88,7 @@ void castEarthQuake(Unit prophet) {
   if(!unit_Reference(building)) {
     return ;
   }
-  unit_CastAbility(prophet, unit_Point_Position(building), PROPHET_EARTHQUAKE);
+  unit_Point_CastAbility(prophet, unit_Point_Position(building), PROPHET_EARTHQUAKE);
 }
 
 void prophetCommandSpells(PVOID _) {
@@ -147,7 +147,7 @@ void castEarthquake() {
   if(!unit_Reference(currentBuilding)) {
     return ;
   }
-  unit_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
+  unit_Point_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
   eeTa_FilePrintf("Some ability is casted lolol\n");
 }
 
@@ -170,7 +170,7 @@ void convertUnit() {
   if(!unit_Reference(currentUnit)) {
     return ;
   }
-  // unit_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
+  // unit_Point_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
   unit_Convert(currentPriest, currentUnit);
   eeTa_FilePrintf("Some convertion is made\n");
 }

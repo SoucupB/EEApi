@@ -265,7 +265,7 @@ __declspec(dllexport) void castEarthquake() {
     return ;
   }
   // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
-  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
+  unit_Point_CastAbility(currentProphet, eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
   eeTa_FilePrintf("Some ability\n");
 }
 
@@ -279,7 +279,7 @@ __declspec(dllexport) void castMalaria() {
     return ;
   }
   // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
-  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
+  unit_Point_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
   eeTa_FilePrintf("Some ability\n");
 }
 
@@ -293,7 +293,7 @@ __declspec(dllexport) void castHurricane() {
   if(!eeTa_Unit_Reference(currentenemy)) {
     return ;
   }
-  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_TORNADO);
+  unit_Point_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_TORNADO);
   eeTa_FilePrintf("Some ability\n");
 }
 

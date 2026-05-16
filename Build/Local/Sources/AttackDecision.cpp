@@ -416,8 +416,8 @@ void prophet_CastMalaria(Unit prophet, vector<Unit> &units, uint8_t *casted) {
     return ;
   }
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && unit_CanCast(prophet, PROPHET_MALARIA)) {
-      unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_MALARIA);
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsGroundUnit(unit_Type(units[i])) && unit_CanCast(prophet, ABILITY_PROPHET_PLAGUE_)) {
+      unit_Point_CastAbility(prophet, unit_Point_Position(units[i]), ABILITY_PROPHET_PLAGUE_);
       *casted = 1;
       return ;
     }
@@ -429,8 +429,8 @@ void prophet_CastTornado(Unit prophet, vector<Unit> &units, uint8_t *casted) {
     return ;
   }
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsWaterUnit(unit_Type(units[i])) && unit_CanCast(prophet, PROPHET_TORNADO)) {
-      unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_TORNADO);
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsWaterUnit(unit_Type(units[i])) && unit_CanCast(prophet, ABILITY_PROPHET_HURRICANE_)) {
+      unit_Point_CastAbility(prophet, unit_Point_Position(units[i]), ABILITY_PROPHET_HURRICANE_);
       *casted = 1;
       return ;
     }
@@ -443,8 +443,8 @@ void prophet_CastEarthquake(Unit prophet, uint8_t *casted) {
   }
   vector<Unit> units = unit_Filter(enemyBuilding);
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && unit_CanCast(prophet, PROPHET_EARTHQUAKE)) {
-      unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_EARTHQUAKE);
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && unit_CanCast(prophet, ABILITY_PROPHET_EARTHQUAKE_)) {
+      unit_Point_CastAbility(prophet, unit_Point_Position(units[i]), ABILITY_PROPHET_EARTHQUAKE_);
       *casted = 1;
       return ;
     }

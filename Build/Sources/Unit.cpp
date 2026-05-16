@@ -7,6 +7,7 @@
 #include "EETwa.h"
 #include "Player.h"
 #include "Game.h"
+#include "Ability.h"
 
 uint8_t unit_IsPresent(Unit unit);
 
@@ -263,13 +264,7 @@ Unit unit_Null() {
 }
 
 vector<AbilityTypes> unit_Abilities(Unit unit) {
-  PEETypes types = game_GetEETypes();
-  map<UnitType, vector<AbilityTypes> > *abilityPointers = types->abilityPointers;
-  UnitType unitType = unit_Type(unit);
-  if(abilityPointers->find(unitType) == abilityPointers->end()) {
-    return vector<AbilityTypes>();
-  }
-  return (*abilityPointers)[unitType];
+  return eeTypes_Abilities(unit_Type(unit));
 }
 
 PVOID unit_Reference(Unit unit) {
@@ -280,22 +275,8 @@ uint16_t unit_GetPlaneID(Unit unit) {
   return map_Tile_GetPlaneID(unit_Tile_Position(unit));
 }
 
-uint8_t unit_ProphetAbility_CanCast(Unit unit, Point target, Ability ability) {
-  if(ability == PROPHET_TORNADO && !map_Tile_IsWater(geom_Tile_FromPoint(target))) {
-    return 0;
-  }
-  return 1;
-}
-
-uint8_t unit_IsSpellValid(Unit unit, Point target, Ability ability) {
-  if(unit_Type(unit) == PROPHET) {
-    return unit_ProphetAbility_CanCast(unit, target, ability);
-  }
-  return 1;
-}
-
-void unit_CastAbility(Unit unit, Point target, Ability ability) {
-  if(!unit_IsSpellValid(unit, target, ability)) {
+void unit_Point_CastAbility(Unit unit, Point target, AbilityTypes ability) {
+  if(!unit_CanCast(unit, ability)) {
     return ;
   }
   helper_CastAbility_Remade(unit_Reference(unit), target, ability);
@@ -373,31 +354,18 @@ void unit_Farm(Unit unit, Resource resource) {
   unit_Fishboat_Farm(unit, resource);
 }
 
-uint8_t unit_Prophet_CanCast(Unit unit, Ability ability) {
-  switch (ability)
-  {
-    case PROPHET_EARTHQUAKE:
-      return unit_CurrentEnergy(unit) >= 50;
-    case PROPHET_MALARIA:
-      return unit_CurrentEnergy(unit) >= 100;
-    case PROPHET_TORNADO:
-      return unit_CurrentEnergy(unit) >= 100;
-    
-    default:
-      break;
+uint8_t unit_CanCast(Unit unit, AbilityTypes ability) {
+  uint8_t found = 0;
+  vector<AbilityTypes> abilityTypes = unit_Abilities(unit);
+  for(size_t i = 0, c = abilityTypes.size(); i < c; i++) {
+    if(abilityTypes[i] == ability) {
+      found = 1;
+    }
   }
-  return 0;
-}
-
-uint8_t unit_CanCast(Unit unit, Ability ability) {
-  switch(unit_Type(unit)) {
-    case PROPHET:
-      return unit_Prophet_CanCast(unit, ability);
-
-    default:
-      break;
+  if(!found) {
+    return 0;
   }
-  return 0;
+  return ability_Energy(ability) <= unit_CurrentEnergy(unit);
 }
 
 uint8_t unit_IsPresent(Unit unit) {
