@@ -89,6 +89,38 @@ void printTechNodes() {
   eeTa_FilePrintf("Tech node is %p, name is %s\n", cTechNode, techNodeTextureName(cTechNode));
 }
 
+PVOID getAbilityManager() {
+  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + 0x4E5FB0);
+}
+
+PVOID abilityPointer(PVOID manager, size_t abilityIndex) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0xAE71D);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(manager, 
+         (PVOID)&abilityIndex);
+}
+
+PVOID getAbilityInstance(Ability ability) {
+  TechTree tree = ply_TechTree(ply_Self());
+  PVOID cTechNode = techNode(tree, ability);
+  if(!cTechNode) {
+    return 0;
+  }
+  size_t abilityIndex = findCallerIndex(cTechNode);
+  PVOID abilityInstance = abilityPointer(getAbilityManager(), abilityIndex);
+  return abilityInstance;
+}
+
+int32_t abilityEnergy(Ability ability) {
+  PVOID reference = getAbilityInstance(ability);
+  if(!reference) {
+    return 0;
+  }
+  PVOID energyMethod = (PVOID)*(size_t *)(*(size_t *)reference + 0x10);
+  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)energyMethod);
+  return (int32_t)method(reference);
+}
+
 void printSpells() {
   PEETypes types = game_GetEETypes();
   map<UnitType, vector<Ability> > *abilityPointers = types->abilityPointers;
@@ -112,7 +144,7 @@ void printSpells() {
       if(!cTechNode) {
         continue;
       }
-      eeTa_FilePrintf("Spell: %p, node %p, index is %p, name: '%s'\n", it.second[i], cTechNode, findCallerIndex(cTechNode), techNodeTextureName(cTechNode));
+      eeTa_FilePrintf("Spell: %p, node %p, index is %p, instance: %p, energy: %d, name: '%s'\n", it.second[i], cTechNode, findCallerIndex(cTechNode), getAbilityInstance(it.second[i]), abilityEnergy(it.second[i]), techNodeTextureName(cTechNode));
     }
   }
 }
