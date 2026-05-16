@@ -416,8 +416,8 @@ void prophet_CastMalaria(Unit prophet, vector<Unit> &units, uint8_t *casted) {
     return ;
   }
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsGroundUnit(unit_Type(units[i])) && unit_CanCast(prophet, ABILITY_PROPHET_PLAGUE_)) {
-      unit_Point_CastAbility(prophet, unit_Point_Position(units[i]), ABILITY_PROPHET_PLAGUE_);
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsGroundUnit(unit_Type(units[i])) && unit_CanCast(prophet, ABILITY_PROPHET_FAMINE_)) {
+      unit_Point_CastAbility(prophet, unit_Point_Position(units[i]), ABILITY_PROPHET_FAMINE_);
       *casted = 1;
       return ;
     }

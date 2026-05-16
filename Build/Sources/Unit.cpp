@@ -361,12 +361,13 @@ void unit_Farm(Unit unit, Resource resource) {
   unit_Fishboat_Farm(unit, resource);
 }
 
-uint8_t unit_CanCast(Unit unit, AbilityTypes ability) {
+__declspec(dllexport) uint8_t unit_CanCast(Unit unit, AbilityTypes ability) {
   uint8_t found = 0;
   vector<AbilityTypes> abilityTypes = unit_Abilities(unit);
   for(size_t i = 0, c = abilityTypes.size(); i < c; i++) {
     if(abilityTypes[i] == ability) {
       found = 1;
+      break;
     }
   }
   if(!found) {
