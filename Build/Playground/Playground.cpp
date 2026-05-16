@@ -122,6 +122,32 @@ int32_t abilityEnergy(Ability ability) {
   return (int32_t)method(reference);
 }
 
+char *abilityName(char *textureName) {
+  const size_t strSize = strlen(textureName);
+  char *response = (char *)malloc(strSize + 1);
+  size_t k = 0;
+  memset(response, 0, strSize + 1);
+  for(size_t i = 0; i < strSize; i++) {
+    if(textureName[i] >= 'a' && textureName[i] <= 'z') {
+      response[k++] = textureName[i] - ('a' - 'A');
+      continue;
+    }
+    if(textureName[i] >= '0' && textureName[i] <= '9') {
+      response[k++] = textureName[i];
+      continue;
+    }
+    if(!(textureName[i] >= 'A' && textureName[i] <= 'Z')) {
+      if(k && response[k - 1] == '_') {
+        continue;
+      }
+      response[k++] = '_';
+      continue;
+    }
+    response[k++] = textureName[i];
+  }
+  return response;
+}
+
 void printSpells() {
   PEETypes types = game_GetEETypes();
   map<UnitType, vector<Ability> > *abilityPointers = types->abilityPointers;
@@ -145,7 +171,8 @@ void printSpells() {
       if(!cTechNode) {
         continue;
       }
-      eeTa_FilePrintf("Spell: %p, node %p, index is %p, instance: %p, energy: %d, name: '%s'\n", it.second[i], cTechNode, findCallerIndex(cTechNode), getAbilityInstance(it.second[i]), ability_Energy(it.second[i]), techNodeTextureName(cTechNode));
+      eeTa_FilePrintf("Spell: %p, node %p, index is %p, instance: %p, energy: %d, name: '%s'\n", 
+        it.second[i], cTechNode, findCallerIndex(cTechNode), getAbilityInstance(it.second[i]), ability_Energy(it.second[i]), abilityName(techNodeTextureName(cTechNode)));
     }
   }
 }
