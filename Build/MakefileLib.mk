@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=gnu++11 -IHeaders/ -O2 -lPsapi -lgdi32 -luser32 -DREPLACE_MMU
+CXXFLAGS = -std=gnu++11 -IHeaders/ -O2 -lPsapi -lgdi32 -luser32
 AR = ar rcs
 
 SRC_DIR = Sources

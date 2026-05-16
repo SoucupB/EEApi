@@ -113,7 +113,7 @@ uint8_t capitolFilter(Unit unit) {
   return eeTypes_CanProduceWorkers(def);
 }
 
-__declspec(dllexport) void bt_BuildWorkers(PVOID attr) {
+void bt_BuildWorkers(PVOID attr) {
   if(!shouldBuildWorkers()) {
     return ;
   }
@@ -207,6 +207,14 @@ void bt_InitPortNaval() {
   atom.method = (PVOID)buildAirCarrierUnits;
   atom.arguments = NULL;
   atom.time = 1528;
+  eeTa_AddFrameMethod(atom);
+}
+
+void bt_InitHurricaneHunt() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_HuntWithHurricane;
+  atom.arguments = NULL;
+  atom.time = 2678;
   eeTa_AddFrameMethod(atom);
 }
 
@@ -329,6 +337,7 @@ void bt_OnInit() {
   bt_ConvertUnits();
   bt_AttackWithBombers();
   bt_AttackWithShipsEverywhere();
+  bt_InitHurricaneHunt();
   bt_LoadUnits();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();

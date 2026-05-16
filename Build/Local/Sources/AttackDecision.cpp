@@ -454,8 +454,8 @@ void prophet_CastEarthquake(Unit prophet, uint8_t *casted) {
 void prophet_CastAbilities(Unit prophet) {
   vector<Unit> units = unit_Filter(enemyUnit);
   uint8_t casted = 0;
-  prophet_CastMalaria(prophet, units, &casted);
   prophet_CastTornado(prophet, units, &casted);
+  prophet_CastMalaria(prophet, units, &casted);
   prophet_CastEarthquake(prophet, &casted);
 }
 
@@ -472,6 +472,55 @@ void att_ProcessProphets() {
 void att_ProcessSpecialAbilityUnits(PVOID _) {
   att_ProcessPriests();
   att_ProcessProphets();
+}
+
+uint8_t hurricaneFilter(Unit unit) {
+  return unit_Type(unit) == UNIT_UNDEFINED && res_Type((Resource) {
+    ._payload = unit_Reference(unit)
+  }) == HURRICANE;
+}
+
+Unit getHurricane() {
+  vector<Unit> hurricanes = unit_Filter(hurricaneFilter);
+  if(!hurricanes.size()) {
+    return unit_Null();
+  }
+  return hurricanes[rand() % hurricanes.size()];
+}
+
+Unit getClosestEnemyShip(Unit hurricane) {
+  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  float closest = 1000000.0f;
+  Unit enemy = unit_Null();
+  for(size_t i = 0; i < units.size(); i++) {
+    UnitType type = unit_Type(units[i]);
+    if(eeTypes_IsWaterUnit(type) && !ply_Index_AreAllies(unit_GetPlayerIndex(units[i]), eeTa_SelfPlayer()) && 
+       ply_Reference(ply_GetPlayer(units[i])) != ply_Reference(ply_Self()) && 
+       ply_Reference(ply_GetPlayer(units[i])) != ply_Reference(ply_Neutral())) {
+      float currentDist = unit_Distance(hurricane, units[i]);
+      if(closest > currentDist) {
+        closest = currentDist;
+        enemy = units[i];
+      }
+    }
+  }
+  return enemy;
+}
+
+void att_HuntWithHurricane(PVOID _) {
+  Unit hurricane = getHurricane();
+  if(!unit_Reference(hurricane)) {
+    return ;
+  }
+  Unit enemyShip = getClosestEnemyShip(hurricane);
+  if(!unit_Reference(enemyShip)) {
+    return ;
+  }
+  unit_Action(hurricane, unit_Point_Position(enemyShip), UNIT_MOVE);
+}
+
+void att_HuntWithHades(PVOID _) {
+
 }
 
 void att_PatrolRandomPositions(vector<Unit> &selfUnits) {
