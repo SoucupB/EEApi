@@ -14,6 +14,7 @@ void test_PrintUnits();
 void printSpells();
 void printTechNodes();
 void castFire();
+void hurricaneProcess();
 // I think I find the water tile.
 void onLosingHealth(Unit unit) {
   eeTa_FilePrintf("Unit %p taking damage\n", unit_Reference(unit));
@@ -57,7 +58,7 @@ void execDataPengus() {
     // castEarthquake();
     // convertUnit();
     // loadTransport();
-    castFire();
+    hurricaneProcess();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -215,13 +216,53 @@ void castFire() {
     return ;
   }
   unit_Object_CastAbility(currentProphet, currentBuilding, ABILITY_PROPHET_FIRE_);
-  // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
   eeTa_FilePrintf("Some ability\n");
+}
+
+Unit getHurricane() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(unit_Type(units[i]) == UNIT_UNDEFINED && res_Type((Resource) {
+      ._payload = unit_Reference(units[i])
+    }) == HURRICANE) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
+Unit getClosestEnemyShip(Unit hurricane) {
+  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  float closest = 1000000.0f;
+  Unit enemy = unit_Null();
+  for(size_t i = 0; i < units.size(); i++) {
+    UnitType type = unit_Type(units[i]);
+    if(eeTypes_IsWaterUnit(type) && ply_Reference(ply_GetPlayer(units[i])) != ply_Reference(ply_Self()) && ply_Reference(ply_GetPlayer(units[i])) != ply_Reference(ply_Neutral())) {
+      float currentDist = unit_Distance(hurricane, units[i]);
+      if(closest > currentDist) {
+        closest = currentDist;
+        enemy = units[i];
+      }
+    }
+  }
+  return enemy;
+}
+
+void hurricaneProcess() {
+  Unit hurricane = getHurricane();
+  if(!unit_Reference(hurricane)) {
+    return ;
+  }
+  Unit enemyShip = getClosestEnemyShip(hurricane);
+  if(!unit_Reference(enemyShip)) {
+    return ;
+  }
+  unit_Action(hurricane, unit_Point_Position(enemyShip), UNIT_MOVE);
+  eeTa_FilePrintf("Hunt %f %f\n", unit_Point_Position(enemyShip).x, unit_Point_Position(enemyShip).y);
 }
 
 void bt_OnInit() {
   // printSpells();
-  eeTa_FilePrintf("Spookly\n");
 }
 
 void bt_OnFrame() {

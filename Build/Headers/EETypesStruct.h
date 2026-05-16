@@ -29,12 +29,6 @@ enum UnitAction {
   UNIT_ATTACK = 0x100
 };
 
-enum Ability {
-  PROPHET_EARTHQUAKE = 0x3FA,
-  PROPHET_MALARIA = 0x3F8,
-  PROPHET_TORNADO = 0x3FE
-};
-
 enum DefaultType {
   IDLE = 0x186A0
 };
