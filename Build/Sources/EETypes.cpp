@@ -98,15 +98,15 @@ static inline UnitType eeTypes_TypeFromTemplate(const PVOID unitTemplate) {
   return (UnitType)*(size_t *)((size_t)unitTemplate + 0x1E4);
 }
 
-static inline Ability eeTypes_GetAbilityRef(const PVOID unitTemplate, const size_t index) {
-  return (Ability)*(size_t *)((*(size_t *)((size_t)unitTemplate + 0x30)) + index * sizeof(PVOID));
+static inline AbilityTypes eeTypes_GetAbilityRef(const PVOID unitTemplate, const size_t index) {
+  return (AbilityTypes)*(size_t *)((*(size_t *)((size_t)unitTemplate + 0x30)) + index * sizeof(PVOID));
 }
 
 static inline void eeTypes_InitAbilities(const PEETypes eTypes, const PVOID unitTemplate, const UnitType index) {
   size_t abilityCount = eeTypes_AbilityCount(unitTemplate);
-  map<UnitType, vector<Ability> > *unitAbilities = eTypes->abilityPointers;
+  map<UnitType, vector<AbilityTypes> > *unitAbilities = eTypes->abilityPointers;
   for(size_t i = 0; i < abilityCount; i++) {
-    Ability ability = eeTypes_GetAbilityRef(unitTemplate, i);
+    AbilityTypes ability = eeTypes_GetAbilityRef(unitTemplate, i);
     if(eTypes->unitTemplatePointers->find((UnitType)ability) != eTypes->unitTemplatePointers->end()) {
       continue;
     }

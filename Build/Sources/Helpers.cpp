@@ -842,7 +842,7 @@ size_t helper_Transport_UnitsCount(PVOID unit) {
   return (*(size_t *)((size_t)unit + 0x74) - *(size_t *)((size_t)unit + 0x70)) / 0x4;
 }
 
-PVOID helper_TechNode(TechTree tree, Ability ability) {
+PVOID helper_TechNode(TechTree tree, AbilityTypes ability) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x18A4);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(ply_TechTree_Ref(tree), 

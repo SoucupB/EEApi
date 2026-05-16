@@ -262,6 +262,16 @@ Unit unit_Null() {
   };
 }
 
+vector<AbilityTypes> unit_Abilities(Unit unit) {
+  PEETypes types = game_GetEETypes();
+  map<UnitType, vector<AbilityTypes> > *abilityPointers = types->abilityPointers;
+  UnitType unitType = unit_Type(unit);
+  if(abilityPointers->find(unitType) == abilityPointers->end()) {
+    return vector<AbilityTypes>();
+  }
+  return (*abilityPointers)[unitType];
+}
+
 PVOID unit_Reference(Unit unit) {
   return unit._payload;
 }

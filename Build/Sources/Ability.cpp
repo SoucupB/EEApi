@@ -11,7 +11,7 @@ size_t abiliy_FindCallerIndex(PVOID cTechNodes) {
   return *(size_t *)((*(size_t *)((size_t)cTechNodes + 0x8)) + 0x44);
 }
 
-PVOID ability_Instance(Ability ability) {
+PVOID ability_Instance(AbilityTypes ability) {
   TechTree tree = ply_TechTree(ply_Self());
   PVOID cTechNode = helper_TechNode(tree, ability);
   if(!cTechNode) {
@@ -21,7 +21,7 @@ PVOID ability_Instance(Ability ability) {
   return helper_AbilityPointer(ability_Manager(), abilityIndex);
 }
 
-int32_t ability_Energy(Ability ability) {
+int32_t ability_Energy(AbilityTypes ability) {
   PVOID reference = ability_Instance(ability);
   if(!reference) {
     return 0;

@@ -45,6 +45,7 @@ vector<UnitType> unit_AllBuildableTypes(Unit unit);
 int32_t unit_Population(Unit unit);
 uint8_t unit_IsNeutral(Unit unit);
 char *unit_Name(Unit unit);
+vector<AbilityTypes> unit_Abilities(Unit unit);
 
 vector<Unit> unit_Player_GetBuildings(Player ply);
 vector<Unit> unit_Player_GetUnits(Player ply);

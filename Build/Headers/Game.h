@@ -32,7 +32,7 @@ typedef struct EETypes_t {
   map<UnitType, UnitClassType> *parentsClass;
   map<NeutralUnitType, NeutralClassType> *neutralParentsClass;
   map<UnitType, PVOID> *unitTemplatePointers;
-  map<UnitType, vector<Ability> > *abilityPointers;
+  map<UnitType, vector<AbilityTypes> > *abilityPointers;
 } EETypes;
 
 typedef struct EETwa_t {

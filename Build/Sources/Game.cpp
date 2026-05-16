@@ -137,7 +137,7 @@ void game_EETypes_Init(PGame game) {
   game->types->parentsClass = new map<UnitType, UnitClassType>();
   game->types->neutralParentsClass = new map<NeutralUnitType, NeutralClassType>();
   game->types->unitTemplatePointers = new map<UnitType, PVOID>();
-  game->types->abilityPointers = new map<UnitType, vector<Ability> >();
+  game->types->abilityPointers = new map<UnitType, vector<AbilityTypes> >();
 }
 
 void game_EETypes_Delete(PGame game) {

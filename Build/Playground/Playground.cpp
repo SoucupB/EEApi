@@ -67,7 +67,7 @@ void execDataPengus() {
   }
 }
 
-PVOID techNode(TechTree tree, Ability ability) {
+PVOID techNode(TechTree tree, AbilityTypes ability) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x18A4);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(ply_TechTree_Ref(tree), 
@@ -86,7 +86,7 @@ size_t findCallerIndex(PVOID cTechNodes) {
 
 void printTechNodes() {
   TechTree tree = ply_TechTree(ply_Self());
-  PVOID cTechNode = techNode(tree, PROPHET_TORNADO);
+  PVOID cTechNode = techNode(tree, ABILITY_PROPHET_HURRICANE_);
   eeTa_FilePrintf("Tech node is %p, name is %s\n", cTechNode, techNodeTextureName(cTechNode));
 }
 
@@ -101,7 +101,7 @@ PVOID abilityPointer(PVOID manager, size_t abilityIndex) {
          (PVOID)&abilityIndex);
 }
 
-PVOID getAbilityInstance(Ability ability) {
+PVOID getAbilityInstance(AbilityTypes ability) {
   TechTree tree = ply_TechTree(ply_Self());
   PVOID cTechNode = techNode(tree, ability);
   if(!cTechNode) {
@@ -112,7 +112,7 @@ PVOID getAbilityInstance(Ability ability) {
   return abilityInstance;
 }
 
-int32_t abilityEnergy(Ability ability) {
+int32_t abilityEnergy(AbilityTypes ability) {
   PVOID reference = getAbilityInstance(ability);
   if(!reference) {
     return 0;
@@ -150,7 +150,7 @@ char *abilityName(char *textureName) {
 
 void printSpells() {
   PEETypes types = game_GetEETypes();
-  map<UnitType, vector<Ability> > *abilityPointers = types->abilityPointers;
+  map<UnitType, vector<AbilityTypes> > *abilityPointers = types->abilityPointers;
   TechTree tree = ply_TechTree(ply_Self());
   for(auto &it : *abilityPointers) {
     if(!it.second.size() || eeTypes_IsBuilding(it.first)) {
@@ -162,19 +162,27 @@ void printSpells() {
     }
     eeTa_FilePrintf("\n");
   }
+  map<size_t, uint8_t> crc;
+  eeTa_FilePrintf("enum AbilityTypes {\n");
   for(auto &it : *abilityPointers) {
     if(!it.second.size() || eeTypes_IsBuilding(it.first)) {
       continue;
     }
     for(size_t i = 0; i < it.second.size(); i++) {
       PVOID cTechNode = techNode(tree, it.second[i]);
-      if(!cTechNode) {
+      if(!cTechNode || !ability_Energy(it.second[i])) {
         continue;
       }
-      eeTa_FilePrintf("Spell: %p, node %p, index is %p, instance: %p, energy: %d, name: '%s'\n", 
-        it.second[i], cTechNode, findCallerIndex(cTechNode), getAbilityInstance(it.second[i]), ability_Energy(it.second[i]), abilityName(techNodeTextureName(cTechNode)));
+      if(crc.find(it.second[i]) != crc.end()) {
+        continue;
+      }
+      eeTa_FilePrintf("ABILITY_%s_%s = 0x%p,\n", abilityName(eeTypes_Name(it.first)), abilityName(techNodeTextureName(cTechNode)), it.second[i]);
+      crc[it.second[i]] = 1;
+      // eeTa_FilePrintf("Spell: %p, node %p, index is %p, instance: %p, energy: %d, name: '%s'\n", 
+      //   it.second[i], cTechNode, findCallerIndex(cTechNode), getAbilityInstance(it.second[i]), ability_Energy(it.second[i]), abilityName(techNodeTextureName(cTechNode)));
     }
   }
+  eeTa_FilePrintf("};\n");
 }
 
 void bt_OnInit() {
