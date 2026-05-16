@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "Resource.h"
 #include "Player.h"
+#include "Ability.h"
 
 void test_PrintUnits();
 void printSpells();
@@ -144,7 +145,7 @@ void printSpells() {
       if(!cTechNode) {
         continue;
       }
-      eeTa_FilePrintf("Spell: %p, node %p, index is %p, instance: %p, energy: %d, name: '%s'\n", it.second[i], cTechNode, findCallerIndex(cTechNode), getAbilityInstance(it.second[i]), abilityEnergy(it.second[i]), techNodeTextureName(cTechNode));
+      eeTa_FilePrintf("Spell: %p, node %p, index is %p, instance: %p, energy: %d, name: '%s'\n", it.second[i], cTechNode, findCallerIndex(cTechNode), getAbilityInstance(it.second[i]), ability_Energy(it.second[i]), techNodeTextureName(cTechNode));
     }
   }
 }

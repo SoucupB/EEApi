@@ -26,3 +26,6 @@ vector<Unit> unit_Transport_UnitsInside(Unit transport);
 void helper_Building_Create(PVOID citizen, TilePoint position, PVOID type);
 void helper_Transport_Unload(PVOID transport, TilePoint tile);
 PVOID helper_Building_GetTemplate(size_t index);
+PVOID helper_TechNode(TechTree tree, Ability ability);
+PVOID helper_AbilityPointer(PVOID manager, size_t abilityIndex);
+int32_t helper_AbilityEnergy(PVOID reference);

@@ -842,6 +842,26 @@ size_t helper_Transport_UnitsCount(PVOID unit) {
   return (*(size_t *)((size_t)unit + 0x74) - *(size_t *)((size_t)unit + 0x70)) / 0x4;
 }
 
+PVOID helper_TechNode(TechTree tree, Ability ability) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x18A4);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(ply_TechTree_Ref(tree), 
+         (PVOID)ability);
+}
+
+PVOID helper_AbilityPointer(PVOID manager, size_t abilityIndex) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0xAE71D);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(manager, 
+         (PVOID)&abilityIndex);
+}
+
+int32_t helper_AbilityEnergy(PVOID reference) {
+  PVOID energyMethod = (PVOID)*(size_t *)(*(size_t *)reference + 0x10);
+  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)energyMethod);
+  return (int32_t)method(reference);
+}
+
 void helper_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2283FF);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
