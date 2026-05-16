@@ -2,6 +2,8 @@
 #include "Game.h"
 
 void eeTypes_InitUnitTemplates();
+static inline UnitType eeTypes_TypeFromTemplate(PVOID unitTemplate);
+static inline size_t eeTypes_AbilityCount(PVOID unitTemplate);
 
 static map<UnitClassType, vector<UnitType> > classDefUnits = {
   {CLASS_SPELL_CASTER, {PRIEST, H1_3_SARGON_OF_AKKAD_HEAL_, H1_5_CHARLEMAGNE_HEAL_, H1_4_ALEXANDER_THE_GREAT_HEAL_, H1_6_WILLIAM_THE_CONQUEROR_HEAL_, H1_7_ISABELLA_HEAL_, H1_8_ELIZABETH_I_HEAL_, H1_9_OTTO_VON_BISMARCK_HEAL_, H1_10_DEVERRAN_HEAL_, H1_11_ROMMEL_HEAL_, PROPHET, H1_13_ALEXI_SEPTIMUS_HEAL_, X05_POPE, H1_14_MOLLY_RYAN_HEAL_, MECH_TEMPEST, MECH_POSEIDON, MECH_HADES, X04_PROPHET_HOMER_3, X11_HAUPTMANN_DURER_PROPHET_, X04_PERICLES_HEAL_, X06_BLACK_PRINCE_HEAL_, X04_HIERAKLES_HEAL_, X10_GERMAN_OFFICER_HEAL_, X06_HORSELESS_WILLIAM, H1_12_R_W_BRESDEN_HEAL_, X13_BLACK_ROBE_OFFICER_HEAL_, EMISSARY, INF04_SHORT_SWORD_CRUSADER_, INF06_LONGSWORD_CRUSADER_, CAV04_BRONZE_SPEAR_CAVALRY_CRUSADER_, CAV06_KNIGHT_CRUSADER_, H_MARIUS_HEAL_CONSCRIPT_, H1_15_KHAN_SUN_DO_STRATEGIST_, X_TITUS_LABENIUS}},
@@ -90,6 +92,31 @@ NeutralClassType eeTypes_Neutral_Type(NeutralUnitType unitType) {
   return (*parentsClass)[unitType];
 }
 
+static inline UnitType eeTypes_TypeFromTemplate(const PVOID unitTemplate) {
+  return (UnitType)*(size_t *)((size_t)unitTemplate + 0x1E4);
+}
+
+static inline Ability eeTypes_GetAbilityRef(const PVOID unitTemplate, const size_t index) {
+  return (Ability)*(size_t *)((*(size_t *)((size_t)unitTemplate + 0x30)) + index * sizeof(PVOID));
+}
+
+static inline void eeTypes_InitAbilities(const PEETypes eTypes, const PVOID unitTemplate, const UnitType index) {
+  size_t abilityCount = eeTypes_AbilityCount(unitTemplate);
+  map<UnitType, vector<Ability> > *unitAbilities = eTypes->abilityPointers;
+  for(size_t i = 0; i < abilityCount; i++) {
+    (*unitAbilities)[index].push_back(eeTypes_GetAbilityRef(unitTemplate, i));
+  }
+}
+
+char *eeTypes_Name(UnitType type) {
+  PEETypes eTypes = game_GetEETypes();
+  if(eTypes->unitTemplatePointers->find(type) == eTypes->unitTemplatePointers->end()) {
+    return NULL;
+  }
+  PVOID temp = (*eTypes->unitTemplatePointers)[type];
+  return (char *)*(size_t *)((size_t)temp + 0x1C);
+}
+
 void eeTypes_InitUnitTemplates() {
   PEETypes eTypes = game_GetEETypes();
   for(size_t i = 0; i < 0xD3C / 0x4; i++) {
@@ -97,9 +124,14 @@ void eeTypes_InitUnitTemplates() {
     if(!unitTemplate) {
       continue;
     }
-    UnitType index = (UnitType)*(size_t *)((size_t)unitTemplate + 0x1E4);
+    UnitType index = eeTypes_TypeFromTemplate(unitTemplate);
+    eeTypes_InitAbilities(eTypes, unitTemplate, index);
     (*eTypes->unitTemplatePointers)[index] = unitTemplate;
   }
+}
+
+static inline size_t eeTypes_AbilityCount(PVOID unitTemplate) {
+  return (*(size_t *)((size_t)unitTemplate + 0x34) - *(size_t *)((size_t)unitTemplate + 0x30)) / sizeof(PVOID);
 }
 
 PVOID eeTypes_GetTemplate(UnitType typeIndex) {
@@ -135,6 +167,11 @@ UnitClassType eeTypes_UnitClass(UnitType unitType) {
   }
 
   return (*parentsClass)[unitType];
+}
+
+vector<Ability> eeTypes_GetAbility(UnitType type) {
+  vector<Ability> abilities;
+  return abilities;
 }
 
 uint8_t eeTypes_IsWaterUnit(UnitType unitType) {

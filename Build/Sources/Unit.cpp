@@ -105,6 +105,11 @@ vector<UnitType> unit_AllBuildableTypes(Unit unit) {
   return types;
 }
 
+char *unit_Name(Unit unit) {
+  const PVOID ref = unit_Reference(unit);
+  return (char *)((size_t *)(*(size_t *)ref + 0x2C) + 0x1C);
+}
+
 void unit_Build(Unit building, UnitType type) {
   Player currentPlayer = ply_GetPlayer(building);
   if(ply_CurrentPopulation(currentPlayer) >= ply_TotalPop(currentPlayer)) {

@@ -1033,3 +1033,8 @@ eax*4+009636AC here is the Building material. eax is the index.
 D3C / 4 unit types;
 [[unit + 0x34] + 0xAC] speed var.
 0063C016 is the method for adding the speed of the unit.
+Abilities can be found at [[0x2C + unit] + 0x30]
+Resources offset is [player + 0xAFC]
+
+ImproveUnit caller is here 004B8F10.
+And somehow this is here 005537BA.

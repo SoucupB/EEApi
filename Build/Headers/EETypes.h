@@ -18,6 +18,8 @@ uint8_t eeTypes_IsPriest(UnitType type);
 uint8_t eeTypes_IsAirUnit(UnitType unitType);
 uint8_t eeTypes_CanProduceWorkers(UnitType type);
 PVOID eeTypes_GetTemplate(UnitType typeIndex);
+vector<Ability> eeTypes_GetAbility(UnitType type);
+char *eeTypes_Name(UnitType type);
 
 UnitClassType eeTypes_UnitClass(UnitType unitType);
 uint8_t eeTypes_IsBuilding(UnitType unitType);
