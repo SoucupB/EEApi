@@ -11,6 +11,7 @@
 
 void test_PrintUnits();
 void printSpells();
+void printTechNodes();
 
 // I think I find the water tile.
 void onLosingHealth(Unit unit) {
@@ -55,6 +56,7 @@ void execDataPengus() {
     // castEarthquake();
     // convertUnit();
     // loadTransport();
+    printTechNodes();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -64,9 +66,31 @@ void execDataPengus() {
   }
 }
 
+PVOID techNode(TechTree tree, Ability ability) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x18A4);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(ply_TechTree_Ref(tree), 
+         (PVOID)ability);
+}
+
+char *techNodeTextureName(PVOID techNode) {
+  PVOID textureRef = (PVOID)*(size_t *)((size_t)techNode + 0x10);
+
+  return (char *)*(size_t *)((size_t)textureRef + 0x8);
+}
+
+void printTechNodes() {
+  TechTree tree = ply_TechTree(ply_Self());
+  PVOID cTechNode = techNode(tree, PROPHET_TORNADO);
+  eeTa_FilePrintf("Tech node is %p, name is %s\n", cTechNode, techNodeTextureName(cTechNode));
+}
+
+
+
 void printSpells() {
   PEETypes types = game_GetEETypes();
   map<UnitType, vector<Ability> > *abilityPointers = types->abilityPointers;
+  TechTree tree = ply_TechTree(ply_Self());
   for(auto &it : *abilityPointers) {
     if(!it.second.size() || eeTypes_IsBuilding(it.first)) {
       continue;
@@ -76,6 +100,18 @@ void printSpells() {
       eeTa_FilePrintf("Cast: %p Template: %p ", it.second[i], eeTypes_GetTemplate((UnitType)it.second[i]));
     }
     eeTa_FilePrintf("\n");
+  }
+  for(auto &it : *abilityPointers) {
+    if(!it.second.size() || eeTypes_IsBuilding(it.first)) {
+      continue;
+    }
+    for(size_t i = 0; i < it.second.size(); i++) {
+      PVOID cTechNode = techNode(tree, it.second[i]);
+      if(!cTechNode) {
+        continue;
+      }
+      eeTa_FilePrintf("Spell: %p, name: '%s'\n", it.second[i], techNodeTextureName(cTechNode));
+    }
   }
 }
 

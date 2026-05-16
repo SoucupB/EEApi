@@ -20,6 +20,10 @@ typedef struct UnitStatistics_t {
   float attackDamage;
 } UnitStatistics;
 
+typedef struct TechTree_t {
+  PVOID _payload;
+} TechTree;
+
 enum UnitAction {
   UNIT_MOVE = 0x101,
   UNIT_ATTACK = 0x100

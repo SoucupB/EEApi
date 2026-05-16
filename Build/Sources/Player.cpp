@@ -31,6 +31,16 @@ uint8_t ply_PlayerIndex(Player player) {
   return *(uint8_t *)util_Pointer(ply_Reference(player), 0x45C, INT8_T_TYPE);
 }
 
+TechTree ply_TechTree(Player player) {
+  return (TechTree) {
+    ._payload = (PVOID)*(size_t *)((size_t)ply_Reference(player) + 0x9CC)
+  };
+}
+
+PVOID ply_TechTree_Ref(TechTree techTree) {
+  return techTree._payload;
+}
+
 uint8_t ply_GetPlayerIndex(Unit unit) {
   return ply_PlayerIndex(ply_GetPlayer(unit));
 }

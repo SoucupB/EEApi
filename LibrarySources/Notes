@@ -1038,3 +1038,7 @@ Resources offset is [player + 0xAFC]
 
 ImproveUnit caller is here 004B8F10.
 And somehow this is here 005537BA.
+When I select a prophet this code at 00668B1E gets triggered.
+Here I might find the name.
+The method at 00668B23 seems interesting, I might need it.
+Need to find TechTree Also this might be interesting 00668978.
