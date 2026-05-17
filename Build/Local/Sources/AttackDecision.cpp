@@ -7,6 +7,7 @@
 #include <map>
 #include "Unit.h"
 #include "Player.h"
+#include "SimpleUnit.h"
 
 static map<pair<float, float>, uint8_t> attackedUnits;
 
@@ -542,26 +543,26 @@ void att_ProcessHades() {
   uint32_t newIndexes[256];
   pickRandomUnits(units, total, newIndexes, sizeof(newIndexes) / sizeof(newIndexes[0]));
   for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
-    hades_CastAbilities(units[newIndexes[i]]);
+    hades_CastAbilities(units[i]);
   }
 }
 
 void att_ProcessSpecialAbilityUnits(PVOID _) {
-  att_ProcessPriests();
-  att_ProcessProphets();
-  att_ProcessHades();
+  // att_ProcessPriests();
+  // att_ProcessProphets();
+  // att_ProcessHades();
 }
 
-uint8_t hurricaneFilter(Unit unit) {
-  return unit_Type(unit) == UNIT_UNDEFINED && res_Type((Resource) {
-    ._payload = unit_Reference(unit)
+uint8_t hurricaneFilter(SimpleUnit unit) {
+  return res_Type((Resource) {
+    ._payload = su_Reference(unit)
   }) == HURRICANE;
 }
 
-Unit getHurricane() {
-  vector<Unit> hurricanes = unit_Filter(hurricaneFilter);
+SimpleUnit getHurricane() {
+  vector<SimpleUnit> hurricanes = su_Filter(hurricaneFilter);
   if(!hurricanes.size()) {
-    return unit_Null();
+    return su_Null();
   }
   return hurricanes[rand() % hurricanes.size()];
 }
@@ -586,15 +587,16 @@ Unit getClosestEnemyShip(Unit hurricane) {
 }
 
 void att_HuntWithHurricane(PVOID _) {
-  Unit hurricane = getHurricane();
-  if(!unit_Reference(hurricane)) {
+  SimpleUnit hurricane = getHurricane();
+  if(!su_Reference(hurricane)) {
     return ;
   }
-  Unit enemyShip = getClosestEnemyShip(hurricane);
+  Unit hurricaneUnit = unit_SimpleUnitConvert(hurricane);
+  Unit enemyShip = getClosestEnemyShip(hurricaneUnit);
   if(!unit_Reference(enemyShip)) {
     return ;
   }
-  unit_Action(hurricane, unit_Point_Position(enemyShip), UNIT_MOVE);
+  unit_Action(hurricaneUnit, unit_Point_Position(enemyShip), UNIT_MOVE);
 }
 
 void att_PatrolRandomPositions(vector<Unit> &selfUnits) {

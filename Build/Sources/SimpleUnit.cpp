@@ -7,13 +7,23 @@ vector<SimpleUnit> su_Filter(uint8_t (*method)(SimpleUnit)) {
   unordered_map<PVOID, uint8_t> **simpleUnitPresence = eeTwa->simpleUnitPresence;
   for(size_t i = 0; i < 20; i++) {
     for(auto &it : *(simpleUnitPresence[i])) {
-      Unit unit = (Unit) {
+      SimpleUnit unit = (SimpleUnit) {
         ._payload = it.first
       };
-      if(method(units[i])) {
-        units.push_back(units[i]);
+      if(method(unit)) {
+        units.push_back(unit);
       }
     }
   }
   return units;
+}
+
+PVOID su_Reference(SimpleUnit unit) {
+  return unit._payload;
+}
+
+SimpleUnit su_Null() {
+  return (SimpleUnit) {
+    ._payload = NULL
+  };
 }

@@ -10,6 +10,7 @@
 #include "Ability.h"
 #include "EETypesStructPrivate.h"
 #include "Offset.h"
+#include "SimpleUnit.h"
 
 uint8_t unit_IsPresent(Unit unit);
 
@@ -158,6 +159,12 @@ vector<Unit> unit_Filter(uint8_t (*method)(Unit)) {
     }
   }
   return units;
+}
+
+Unit unit_SimpleUnitConvert(SimpleUnit su) {
+  return (Unit) {
+    ._payload = su_Reference(su)
+  };
 }
 
 vector<Unit> unit_FilterWithBuffer(uint8_t (*method)(Unit, PVOID), PVOID buffer) {

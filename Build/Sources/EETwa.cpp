@@ -42,14 +42,7 @@ void eeTa_OnUnitDestroy(Unit unit) {
 
 void eeTa_ProcessSimpleUnits(const PEETwa eeTwa, const Unit unit) {
   unordered_map<PVOID, uint8_t> **simpleUnitPresence = eeTwa->simpleUnitPresence;
-  int8_t playerTeam = eeTa_Player(unit);
-  if(unit_IsDead(unit)) {
-    simpleUnitPresence[playerTeam]->erase(unit._payload);
-    simpleUnitPresence[eeTwa->all_players]->erase(unit._payload);
-    eeTa_OnUnitDestroy(unit);
-    return ;
-  }
-  (*simpleUnitPresence[playerTeam])[unit._payload] = 1;
+  (*simpleUnitPresence[eeTa_Player(unit)])[unit._payload] = 1;
   (*simpleUnitPresence[eeTwa->all_players])[unit._payload] = 1;
 }
 

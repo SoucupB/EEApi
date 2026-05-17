@@ -47,6 +47,7 @@ uint8_t unit_IsNeutral(Unit unit);
 char *unit_Name(Unit unit);
 vector<AbilityTypes> unit_Abilities(Unit unit);
 void unit_Object_CastAbility(Unit unit, Unit target, AbilityTypes ability);
+Unit unit_SimpleUnitConvert(SimpleUnit su);
 
 vector<Unit> unit_Player_GetBuildings(Player ply);
 vector<Unit> unit_Player_GetUnits(Player ply);
