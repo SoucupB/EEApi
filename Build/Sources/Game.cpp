@@ -4,6 +4,7 @@
 #include <windows.h>
 #include "MapData.h"
 #include "EETypes.h"
+#include "TimerHelperPrivate.h"
 
 using namespace std;
 

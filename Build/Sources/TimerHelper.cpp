@@ -1,4 +1,5 @@
 #include "TimerHelper.h"
+#include "TimerHelperPrivate.h"
 
 uint64_t tmr_Milliseconds() {
   LARGE_INTEGER frequency, counter;

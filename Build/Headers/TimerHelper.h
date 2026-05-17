@@ -10,15 +10,8 @@ typedef struct TimeAtom_t {
   size_t _lastCheckedTime;
 } TimeAtom;
 
+struct TimerHelper_t;
+typedef struct TimerHelper_t *PTimerHelper;
 
-typedef struct TimerHelper_t {
-  std::vector<TimeAtom> *fractures;
-} TimerHelper;
-
-typedef TimerHelper *PTimerHelper;
-
-PTimerHelper tmr_Init();
 uint64_t tmr_Milliseconds();
 void tmrs_AddMethod(PTimerHelper self, TimeAtom atom);
-void tmrs_Delete(PTimerHelper self);
-void tmr_OnFrame(PTimerHelper self);

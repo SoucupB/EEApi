@@ -8,6 +8,7 @@
 #include "EETypes.h"
 #include "TimerHelper.h"
 #include "Player.h"
+#include "TimerHelperPrivate.h"
 
 using namespace std;
 
