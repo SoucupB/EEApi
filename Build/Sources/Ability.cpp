@@ -3,13 +3,14 @@
 #include "Helpers.h"
 #include "LibManager.h"
 #include "EETypesStructPrivate.h"
+#include "Offset.h"
 
 PVOID ability_Manager() {
-  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + 0x4E5FB0);
+  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + ABILITY_REMOTE_METHOD_MANAGER);
 }
 
 size_t abiliy_FindCallerIndex(PVOID cTechNodes) {
-  return *(size_t *)((*(size_t *)((size_t)cTechNodes + 0x8)) + 0x44);
+  return *(size_t *)((*(size_t *)((size_t)cTechNodes + ABILITY_TECH_NODE_INDEX_HOLDER)) + ABILITY_TECH_NODE_INDEX);
 }
 
 PVOID ability_Instance(AbilityTypes ability) {
