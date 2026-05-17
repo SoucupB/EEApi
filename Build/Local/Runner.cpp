@@ -266,12 +266,12 @@ void bt_OnUnitDestroy(Unit unit) {
 }
 
 void bt_InitAggresiveness() {
-  int8_t *playerIndexes = eeTa_PlayerIDs();
-  for(size_t i = 0; i < 20; i++) {
-    if(i != 1 && playerIndexes[i]) {
-      eeTa_SetCvCAggression(i, 50.0f);
-    }
-  }
+  // int8_t *playerIndexes = eeTa_PlayerIDs();
+  // for(size_t i = 0; i < 20; i++) {
+  //   if(i != 1 && playerIndexes[i]) {
+  //     eeTa_SetCvCAggression(i, 50.0f);
+  //   }
+  // }
 }
 
 SpawnLocation getSelfCapitol() {

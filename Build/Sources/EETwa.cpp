@@ -10,6 +10,7 @@
 #include "PlayerStatePrivate.h"
 #include "PlayerPrivate.h"
 #include "EETypesStructPrivate.h"
+#include "EETwaPrivate.h"
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
@@ -129,24 +130,7 @@ int8_t eeTa_SelfPlayer() {
   return eeTwa->playerIndex;
 }
 
-vector<PVOID> eeTa_UnitTypes(Unit building) {
-  return vector<PVOID>();
-}
-
-int8_t *eeTa_PlayerIDs() {
-  PEETwa eeTwa = game_EETwa();
-  return eeTwa->playerPresence;
-}
-
 int8_t eeTa_PlayerCount() {
-  // int8_t total = 0;
-  // PEETwa eeTwa = game_EETwa();
-  // for(size_t i = 0; i < 20; i++) {
-  //   if(eeTwa->playerPresence[i]) {
-  //     total++;
-  //   }
-  // }
-  // return total;
   return ply_PlayerCount();
 }
 
