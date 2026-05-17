@@ -10,7 +10,6 @@ typedef struct TimeAtom_t {
   size_t _lastCheckedTime;
 } TimeAtom;
 
-struct TimerHelper_t;
 typedef struct TimerHelper_t *PTimerHelper;
 
 uint64_t tmr_Milliseconds();

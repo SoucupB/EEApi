@@ -6,6 +6,7 @@
 #include "ResourcePrivate.h"
 #include "PlayerPrivate.h"
 #include "EETypesStructPrivate.h"
+#include "MethodsDefinitions.h"
 
 uint8_t res_IsUnitResource(PVOID simpleUnit);
 

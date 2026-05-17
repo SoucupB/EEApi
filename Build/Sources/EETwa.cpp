@@ -11,6 +11,8 @@
 #include "PlayerPrivate.h"
 #include "EETypesStructPrivate.h"
 #include "EETwaPrivate.h"
+#include "InjectUtilities.h"
+#include "Helpers.h"
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();

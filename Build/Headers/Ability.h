@@ -1,4 +1,5 @@
 #pragma once
-#include "EETwa.h"
+#include <stdint.h>
+#include "EETypesStruct.h"
 
 int32_t ability_Energy(AbilityTypes ability);

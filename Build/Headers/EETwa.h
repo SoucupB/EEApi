@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include <Windows.h>
 #include "Geometry.h"
-#include "InjectUtilities.h"
-#include "Helpers.h"
 #include "TimerHelper.h"
 #include "EETypes.h"
 
