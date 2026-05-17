@@ -307,7 +307,7 @@ void bt_LoadUnits() {
   TimeAtom atom;
   atom.method = (PVOID)att_LoadTransports;
   atom.arguments = NULL;
-  atom.time = 16500;
+  atom.time = 6400;
   eeTa_AddFrameMethod(atom);
 }
 

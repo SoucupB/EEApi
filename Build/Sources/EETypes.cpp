@@ -99,7 +99,12 @@ static inline UnitType eeTypes_TypeFromTemplate(const PVOID unitTemplate) {
 }
 
 static inline AbilityTypes eeTypes_GetAbilityRef(const PVOID unitTemplate, const size_t index) {
-  return (AbilityTypes)*(size_t *)((*(size_t *)((size_t)unitTemplate + 0x30)) + index * sizeof(PVOID));
+  const size_t unitTemplateOffset = (*(size_t *)((size_t)unitTemplate + 0x30));
+  if(!unitTemplateOffset) {
+    return (AbilityTypes)NULL;
+  }
+
+  return (AbilityTypes)*(size_t *)(unitTemplateOffset + index * sizeof(PVOID));
 }
 
 static inline void eeTypes_InitAbilities(const PEETypes eTypes, const PVOID unitTemplate, const UnitType index) {

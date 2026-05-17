@@ -10,6 +10,8 @@
 
 static map<pair<float, float>, uint8_t> attackedUnits;
 
+uint8_t isMechUnit(Unit unit);
+
 uint8_t idleAttackingWaterUnits(Unit unit);
 uint8_t isFlyingBomber(Unit unit);
 uint8_t attackingWaterUnits(Unit unit);
@@ -293,12 +295,20 @@ uint8_t isProphet(Unit unit) {
   return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_Type(unit) == PROPHET;
 }
 
+uint8_t isHades(Unit unit) {
+  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_Type(unit) == MECH_HADES;
+}
+
 uint8_t isSelfUnit(Unit unit) {
   return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer();
 }
 
 uint8_t enemyUnit(Unit unit) {
   return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !ply_Index_AreAllies(unit_GetPlayerIndex(unit), eeTa_SelfPlayer()) && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && !unit_IsBuilding(unit) && !eeTypes_IsAirUnit(unit_Type(unit));
+}
+
+uint8_t enemyUnitFilter(Unit unit) {
+  return enemyUnits(unit) && !eeTypes_IsBuilding(unit_Type(unit));
 }
 
 uint8_t enemyBuilding(Unit unit) {
@@ -416,7 +426,8 @@ void prophet_CastMalaria(Unit prophet, vector<Unit> &units, uint8_t *casted) {
     return ;
   }
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsGroundUnit(unit_Type(units[i])) && unit_CanCast(prophet, ABILITY_PROPHET_FAMINE_)) {
+    const UnitType type = unit_Type(units[i]);
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && !isMechUnit(units[i]) && eeTypes_IsGroundUnit(type) && unit_CanCast(prophet, ABILITY_PROPHET_FAMINE_)) {
       unit_Point_CastAbility(prophet, unit_Point_Position(units[i]), ABILITY_PROPHET_FAMINE_);
       *casted = 1;
       return ;
@@ -469,9 +480,83 @@ void att_ProcessProphets() {
   }
 }
 
+void hades_CastTimeWarp(Unit hades, vector<Unit> &enemyUnits, uint8_t *casted) {
+  if(*casted) {
+    return ;
+  }
+  for(size_t i = 0, c = enemyUnits.size(); i < c; i++) {
+    const float unitDistance = unit_Distance(enemyUnits[i], hades);
+    if(unitDistance <= unit_Range(hades) && unit_CanCast(hades, ABILITY_MECH_HADES_MP_TIMEWARP_)) {
+      unit_Object_CastAbility(hades, enemyUnits[i], ABILITY_MECH_HADES_MP_TIMEWARP_);
+      *casted = 1;
+      return ;
+    }
+  }
+}
+
+uint8_t isMechUnit(Unit unit) {
+  const UnitType type = unit_Type(unit);
+  switch (type)
+  {
+    case MECH_APOLLO:
+    case MECH_ARES:
+    case MECH_ARES_II:
+    case MECH_FURIES:
+    case MECH_HYPERION:
+    case MECH_HYPERION_II:
+    case MECH_MINOTAUR:
+    case MECH_MINOTAUR_II:
+    case MECH_PANDORA:
+    case MECH_PANDORA_II:
+    case MECH_POSEIDON:
+    case MECH_TEMPEST:
+    case MECH_ZEUS:
+      return 1;
+    
+    default:
+      break;
+  }
+  return 0;
+}
+
+void hades_CastNanoVirus(Unit hades, vector<Unit> &enemyUnits, uint8_t *casted) {
+  if(*casted) {
+    return ;
+  }
+  for(size_t i = 0, c = enemyUnits.size(); i < c; i++) {
+    if(!isMechUnit(enemyUnits[i])) {
+      continue;
+    }
+    const float unitDistance = unit_Distance(enemyUnits[i], hades);
+    if(unitDistance <= unit_Range(hades) && unit_CanCast(hades, ABILITY_MECH_HADES_MP_NANOVIRUS_)) {
+      unit_Object_CastAbility(hades, enemyUnits[i], ABILITY_MECH_HADES_MP_NANOVIRUS_);
+      *casted = 1;
+      return ;
+    }
+  }
+}
+
+void hades_CastAbilities(Unit hades) {
+  vector<Unit> units = unit_Filter(enemyUnitFilter);
+  uint8_t casted = 0;
+  hades_CastNanoVirus(hades, units, &casted);
+  hades_CastTimeWarp(hades, units, &casted);
+}
+
+void att_ProcessHades() {
+  size_t total = 5;
+  vector<Unit> units = unit_Filter(isHades);
+  uint32_t newIndexes[256];
+  pickRandomUnits(units, total, newIndexes, sizeof(newIndexes) / sizeof(newIndexes[0]));
+  for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
+    hades_CastAbilities(units[i]);
+  }
+}
+
 void att_ProcessSpecialAbilityUnits(PVOID _) {
   att_ProcessPriests();
   att_ProcessProphets();
+  att_ProcessHades();
 }
 
 uint8_t hurricaneFilter(Unit unit) {
