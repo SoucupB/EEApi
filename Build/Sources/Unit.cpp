@@ -161,7 +161,7 @@ vector<Unit> unit_Filter(uint8_t (*method)(Unit)) {
   return units;
 }
 
-Unit unit_SimpleUnitConvert(SimpleUnit su) {
+Unit unit_SimpleUnitToUnit(SimpleUnit su) {
   return (Unit) {
     ._payload = su_Reference(su)
   };

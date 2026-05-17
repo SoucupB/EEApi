@@ -589,7 +589,7 @@ void att_HuntWithHurricane(PVOID _) {
   if(!su_Reference(hurricane)) {
     return ;
   }
-  Unit hurricaneUnit = unit_SimpleUnitConvert(hurricane);
+  Unit hurricaneUnit = unit_SimpleUnitToUnit(hurricane);
   Unit enemyShip = getClosestEnemyShip(hurricaneUnit);
   if(!unit_Reference(enemyShip)) {
     return ;
