@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "EETwa.h"
 #include "Unit.h"
+#include "ResourcePrivate.h"
 
 uint8_t res_IsUnitResource(PVOID simpleUnit);
 
