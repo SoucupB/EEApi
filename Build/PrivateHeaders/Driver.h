@@ -4,15 +4,9 @@
 #include <vector>
 #include "Geometry.h"
 
-PVOID __cdecl help_New(size_t size);
-void help_UnitMove(PVOID unit, Point point, UnitAction currentAction);
-void __cdecl help_MoveToTarget(PVOID unit, PVOID target);
+PVOID __cdecl driver_New(size_t size);
 void __cdecl help_ConvertTarget(PVOID unit, PVOID target);
-void driver_Convert(PVOID src, PVOID dst);
-void __cdecl help_Delete(PVOID pointer);
-void driver_CastPoint(PVOID unit, Point target, AbilityTypes ability);
-void help_MoveSecondMethod(PVOID unit, Point target);
-void driver_CastAbility(PVOID unit, Point target, AbilityTypes ability);
+void __cdecl driver_Delete(PVOID pointer);
 void driver_RepairBuilding(PVOID unit, PVOID building);
 void driver_Citizen_Gather(PVOID unit, PVOID resource);
 void driver_Unit_Command(PVOID unit, Point position, UnitAction action);

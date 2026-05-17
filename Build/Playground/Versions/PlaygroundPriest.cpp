@@ -165,7 +165,7 @@ void test_FillMemCheck(PVOID mem, PVOID baseAddres) {
 }
 
 void test_Convert_FillConstants(PVOID mem, Unit currentUnit) {
-  PVOID unitBuffer = help_New(0x8);
+  PVOID unitBuffer = driver_New(0x8);
   builder_FillValue(unitBuffer, 0x0, (size_t)eeTa_Unit_Reference(currentUnit));
   builder_FillValue(mem, 0x4, 0x2);
   builder_FillValue(mem, 0x1C, 0x1);
@@ -227,8 +227,8 @@ void replace_AnchorMethods() {
 
 // Fixed nigga
 void test_Convert(Unit src, Unit dst) {
-  PVOID actionMove = help_New(0xB8);
-  PVOID secondary = help_New(0x44);
+  PVOID actionMove = driver_New(0xB8);
+  PVOID secondary = driver_New(0x44);
   memset(actionMove, 0x0, 0xB8);
   memset(secondary, 0x0, 0x44);
   test_Convert_Fill(actionMove, secondary, src);

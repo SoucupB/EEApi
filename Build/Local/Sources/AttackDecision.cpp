@@ -116,21 +116,10 @@ void att_AttackTransportWithNavals(vector<Unit> &units) {
       };
 
       if(geom_IsPointInCircle(enemyPos, circle)) {
-        help_UnitMove(filteredUnits[i]._payload, enemyPos, UNIT_ATTACK);
+        unit_Action(filteredUnits[i], enemyPos, UNIT_ATTACK);
         break;
       }
     }
-  }
-}
-
-void att_ConvertIfNecessary(vector<Unit> &units) {
-  vector<Unit> filteredPriests = unit_FilterFromArray(units, priestsFilters);
-  for(size_t i = 0; i < filteredPriests.size(); i++) {
-    Unit enemy = geom_GetClosestUnitFrom(filteredPriests[i], ply_Null(), enemyFilter);
-    if(!enemy._payload) {
-      continue;
-    }
-    help_ConvertTarget(filteredPriests[i]._payload, enemy._payload);
   }
 }
 
@@ -392,11 +381,15 @@ void att_AttackWithShips(PVOID _) {
 
 void pickRandomUnits(vector<Unit> &units, int32_t count, uint32_t *index, size_t indexSize) {
   int32_t countArr = min(indexSize, min(count, units.size()));
-  for(size_t i = 0; i < countArr; i++) {
+  int32_t maxCountArr = min(units.size(), indexSize);
+  for(int32_t i = 0; i < maxCountArr; i++) {
     index[i] = i;
   }
-  for(size_t i = 0; i < countArr; i++) {
-    int32_t newIndex = (rand() * rand()) % (countArr - i) + i;
+  for(int32_t i = 0; i < countArr; i++) {
+    if(maxCountArr - i - 1 <= 0) {
+      break;
+    }
+    int32_t newIndex = (rand() * rand()) % (maxCountArr - i - 1) + i + 1;
     swap(index[i], index[newIndex]);
   }
 }
@@ -549,7 +542,7 @@ void att_ProcessHades() {
   uint32_t newIndexes[256];
   pickRandomUnits(units, total, newIndexes, sizeof(newIndexes) / sizeof(newIndexes[0]));
   for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
-    hades_CastAbilities(units[i]);
+    hades_CastAbilities(units[newIndexes[i]]);
   }
 }
 
@@ -602,10 +595,6 @@ void att_HuntWithHurricane(PVOID _) {
     return ;
   }
   unit_Action(hurricane, unit_Point_Position(enemyShip), UNIT_MOVE);
-}
-
-void att_HuntWithHades(PVOID _) {
-
 }
 
 void att_PatrolRandomPositions(vector<Unit> &selfUnits) {

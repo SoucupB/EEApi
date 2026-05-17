@@ -39,12 +39,12 @@ typedef struct EETypes_t {
 
 typedef struct EETwa_t {
   unordered_map<PVOID, uint8_t> *unitPresence[24];
+  unordered_map<PVOID, uint8_t> *simpleUnitPresence[24];
   int64_t frames;
   int8_t all_players;
   int8_t playerIndex;
   int8_t neutralPlayer;
   int8_t shouldCostBeReduced;
-  int8_t playerPresence[30];
   int8_t playersCount;
   PTimerHelper timers;
 } EETwa;

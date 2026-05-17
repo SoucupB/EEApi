@@ -147,14 +147,6 @@ void checkEpochPointer() {
   }
 }
 
-void convert() {
-  if(GetAsyncKeyState('P') & 0x8000) {
-    vector<Unit> units = unit_Player_GetUnits(ply_Self());
-    att_ConvertIfNecessary(units);
-    Beep(400, 250);
-  }
-}
-
 void bt_HuntTransports(PVOID attributes) {
   vector<Unit> units = unit_Player_GetUnits(ply_Null());
   att_AttackTransportWithNavals(units);

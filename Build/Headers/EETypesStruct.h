@@ -3,6 +3,7 @@
 
 typedef struct Resource_t Resource;
 typedef struct Unit_t Unit;
+typedef struct SimpleUnit_t SimpleUnit;
 typedef struct Player_t Player;
 typedef struct UnitStatistics_t UnitStatistics;
 typedef struct TechTree_t TechTree;

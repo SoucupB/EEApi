@@ -9,6 +9,10 @@ typedef struct Unit_t {
   PVOID _payload;
 } Unit;
 
+typedef struct SimpleUnit_t {
+  PVOID _payload;
+} SimpleUnit;
+
 typedef struct Player_t {
   PVOID _payload;
 } Player;

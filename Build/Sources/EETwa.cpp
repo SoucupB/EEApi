@@ -40,14 +40,30 @@ void eeTa_OnUnitDestroy(Unit unit) {
   bt_OnUnitDestroy(unit);
 }
 
-void __cdecl eeTa_OnUnitFrame(Unit unit) {
+void eeTa_ProcessSimpleUnits(const PEETwa eeTwa, const Unit unit) {
+  unordered_map<PVOID, uint8_t> **simpleUnitPresence = eeTwa->simpleUnitPresence;
+  int8_t playerTeam = eeTa_Player(unit);
+  if(unit_IsDead(unit)) {
+    simpleUnitPresence[playerTeam]->erase(unit._payload);
+    simpleUnitPresence[eeTwa->all_players]->erase(unit._payload);
+    eeTa_OnUnitDestroy(unit);
+    return ;
+  }
+  (*simpleUnitPresence[playerTeam])[unit._payload] = 1;
+  (*simpleUnitPresence[eeTwa->all_players])[unit._payload] = 1;
+}
+
+void eeTa_OnUnitFrame(Unit unit) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
   int8_t playerTeam = eeTa_Player(unit);
   if(playerTeam < 0 || playerTeam >= 24) {
     return ;
   }
-  eeTwa->playerPresence[playerTeam] = 1;
+  if(unit_Type(unit) == UNIT_UNDEFINED) {
+    eeTa_ProcessSimpleUnits(eeTwa, unit);
+    return ;
+  }
   if(unit_IsDead(unit)) {
     unitPresence[playerTeam]->erase(unit._payload);
     unitPresence[eeTwa->all_players]->erase(unit._payload);
@@ -81,11 +97,14 @@ void eeTa_Map_PrintBitMap() {
   map_BitMapDelete(map, mapSizeInTiles);
 }
 
+// needs refactoring
 void __cdecl eeTa_OnUnitDeath(Unit unit) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  unordered_map<PVOID, uint8_t> **simpleUnitPresence = eeTwa->simpleUnitPresence;
   for(int8_t i = 0; i < 24; i++) {
     unitPresence[i]->erase(unit._payload);
+    simpleUnitPresence[i]->erase(unit._payload);
   }
   bt_OnUnitDestroy(unit);
 }
@@ -156,7 +175,7 @@ void eeTa_AddFrameMethod(TimeAtom atom) {
 }
 
 PVOID eeTa_SetPlayers(PVOID unit) {
-  PVOID selectedUnits = help_New(sizeof(PVOID));
+  PVOID selectedUnits = driver_New(sizeof(PVOID));
   memcpy(selectedUnits, &unit, sizeof(PVOID));
   return selectedUnits;
 }

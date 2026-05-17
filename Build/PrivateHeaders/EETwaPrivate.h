@@ -1,7 +1,7 @@
 #pragma once
 #include "EETypesStructPrivate.h"
 
-void __cdecl eeTa_OnUnitFrame(Unit unit);
+void eeTa_OnUnitFrame(Unit unit);
 void eeTa_OnFrame();
 void eeTa_OnUnitDeath(Unit unit);
 void eeTa_OnInit();
