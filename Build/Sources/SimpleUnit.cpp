@@ -1,5 +1,6 @@
 #include "SimpleUnit.h"
 #include "Game.h"
+#include "Resource.h"
 
 vector<SimpleUnit> su_Filter(uint8_t (*method)(SimpleUnit)) {
   vector<SimpleUnit> units;
@@ -20,6 +21,12 @@ vector<SimpleUnit> su_Filter(uint8_t (*method)(SimpleUnit)) {
 
 PVOID su_Reference(SimpleUnit unit) {
   return unit._payload;
+}
+
+NeutralUnitType su_Type(SimpleUnit unit) {
+  return res_Type((Resource) {
+    ._payload = su_Reference(unit)
+  });
 }
 
 SimpleUnit su_Null() {

@@ -543,20 +543,18 @@ void att_ProcessHades() {
   uint32_t newIndexes[256];
   pickRandomUnits(units, total, newIndexes, sizeof(newIndexes) / sizeof(newIndexes[0]));
   for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
-    hades_CastAbilities(units[i]);
+    hades_CastAbilities(units[newIndexes[i]]);
   }
 }
 
 void att_ProcessSpecialAbilityUnits(PVOID _) {
-  // att_ProcessPriests();
-  // att_ProcessProphets();
-  // att_ProcessHades();
+  att_ProcessPriests();
+  att_ProcessProphets();
+  att_ProcessHades();
 }
 
 uint8_t hurricaneFilter(SimpleUnit unit) {
-  return res_Type((Resource) {
-    ._payload = su_Reference(unit)
-  }) == HURRICANE;
+  return su_Type(unit) == HURRICANE;
 }
 
 SimpleUnit getHurricane() {
