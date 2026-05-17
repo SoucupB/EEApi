@@ -262,12 +262,7 @@ void bt_AttackWithShipsEverywhere() {
   eeTa_AddFrameMethod(atom);
 }
 
-void bt_OnUnitIteration(Unit unit) {
-  pls_OnUnitIteration(unit);
-}
-
 void bt_OnUnitDestroy(Unit unit) {
-  pls_OnUnitDestory(unit);
 }
 
 void bt_InitAggresiveness() {

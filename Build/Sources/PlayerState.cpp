@@ -3,6 +3,7 @@
 #include "PlayerState.h"
 #include "Game.h"
 #include "Unit.h"
+#include "PlayerStatePrivate.h"
 
 using namespace std;
 
@@ -35,15 +36,6 @@ void pls_ProcessHealth(PVOID unit) {
     return ;
   }
   (*unitsHealth)[unit].isBeingAttacked = 0;
-}
-
-int8_t pls_IsUnitAttacked(Unit unit) {
-  PPlayerState ps = game_GetPlayerState();
-  return (*ps->unitsHealth)[unit._payload].isBeingAttacked;
-}
-
-void pls_OnUnitIteration(Unit unit) {
-  pls_ProcessHealth(unit._payload);
 }
 
 void pls_OnUnitDestory(Unit unit) {

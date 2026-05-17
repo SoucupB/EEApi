@@ -7,6 +7,7 @@
 #include "LibManager.h"
 #include "Game.h"
 #include "Unit.h"
+#include "PlayerStatePrivate.h"
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
@@ -28,6 +29,11 @@ uint8_t eeTa_NeutralPlayer() {
 
 // Money pointer is at ["EE-AOC.exe"+530DB8 + 0xAFC]
 
+void eeTa_OnUnitDestroy(Unit unit) {
+  pls_OnUnitDestory(unit);
+  bt_OnUnitDestroy(unit);
+}
+
 void __cdecl eeTa_OnUnitFrame(Unit unit) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
@@ -39,7 +45,7 @@ void __cdecl eeTa_OnUnitFrame(Unit unit) {
   if(unit_IsDead(unit)) {
     unitPresence[playerTeam]->erase(unit._payload);
     unitPresence[eeTwa->all_players]->erase(unit._payload);
-    bt_OnUnitDestroy(unit);
+    eeTa_OnUnitDestroy(unit);
     return ;
   }
   (*unitPresence[playerTeam])[unit._payload] = 1;
