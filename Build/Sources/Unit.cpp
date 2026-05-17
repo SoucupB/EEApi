@@ -7,6 +7,7 @@
 #include "EETwa.h"
 #include "Player.h"
 #include "Game.h"
+#include "Ability.h"
 
 uint8_t unit_IsPresent(Unit unit);
 
@@ -59,6 +60,67 @@ vector<Unit> unit_Player_GetUnits(Player ply) {
     }
   }
   return units;
+}
+
+int32_t unit_BuildablesCount(Unit unit) {
+  size_t *typeMetaPointer = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
+  int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x196DFF);
+  return method(typeMetaPointer);
+}
+
+PVOID unit_EpochStruct(PVOID building, PVOID unitType) {
+  size_t *buildingMetaData = (size_t *)util_Pointer((PVOID)building, 0x18, POINTER_TYPE);
+  size_t *epochStruct = (size_t *)util_Pointer((PVOID)buildingMetaData, 0x9CC, POINTER_TYPE);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x18A4);
+
+  return method((PVOID)epochStruct, unitType);
+}
+
+uint8_t unit_CanBuild(Unit building, UnitType type) {
+  size_t *epochStruct = (size_t *)unit_EpochStruct(unit_Reference(building), (PVOID)type);
+  if(!epochStruct) {
+    return 0;
+  }
+
+  size_t *checkMethod = (size_t *)util_Pointer((PVOID)(epochStruct[0]), 0x4, POINTER_TYPE);
+  int8_t __thiscall (*method)(PVOID) = (int8_t __thiscall (*)(PVOID)) ((uint8_t *)checkMethod);
+
+  return method((PVOID)epochStruct);
+}
+
+vector<UnitType> unit_AllBuildableTypes(Unit unit) {
+  size_t *typeMetaPointer = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
+  size_t *buildableTypes = (size_t *)util_Pointer((PVOID)typeMetaPointer, 0x30, POINTER_TYPE);
+  vector<UnitType> types;
+  if(!buildableTypes) {
+    return types;
+  }
+
+  int32_t totalBuildables = unit_BuildablesCount(unit);
+  for(int32_t i = 0; i < totalBuildables; i++) {
+    if(unit_CanBuild(unit, (UnitType)buildableTypes[i])) {
+      types.push_back((UnitType)buildableTypes[i]);
+    }
+  }
+
+  return types;
+}
+
+char *unit_Name(Unit unit) {
+  const PVOID ref = unit_Reference(unit);
+  return (char *)((size_t *)(*(size_t *)ref + 0x2C) + 0x1C);
+}
+
+void unit_Build(Unit building, UnitType type) {
+  Player currentPlayer = ply_GetPlayer(building);
+  if(ply_CurrentPopulation(currentPlayer) >= ply_TotalPop(currentPlayer)) {
+    return ;
+  }
+  int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1F5F97);
+  PEETwa eeTwa = game_EETwa();
+  eeTwa->shouldCostBeReduced = 1;
+  method(building._payload, (PVOID)type, 0);
+  eeTwa->shouldCostBeReduced = 0;
 }
 
 vector<Unit> unit_GetUnits(int8_t player) {
@@ -140,13 +202,28 @@ vector<Unit> unit_IdleBuildings(int8_t player) {
 }
 
 int8_t unit_Building_IsIdle(Unit building) {
-  return eeTa_CurrentlyBuilding(building) == IDLE;
+  return unit_CurrentlyBuilding(building) == IDLE;
 }
 
 int8_t unit_IsBuildingComplete(Unit unit) {
-  int8_t *isBuildingRef = (int8_t *)util_Pointer((PVOID)unit._payload, 0x34C, INT8_T_TYPE);
+  int8_t *isBuildingRef = (int8_t *)util_Pointer(unit_Reference(unit), 0x34C, INT8_T_TYPE);
   
   return *isBuildingRef;
+}
+
+vector<Unit> unit_FilterFromArray(vector<Unit> &units, uint8_t (*method)(Unit)) {
+  vector<Unit> filteredUnits;
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    if(method(units[i])) {
+      filteredUnits.push_back(units[i]);
+    }
+  }
+  return filteredUnits;
+}
+
+uint8_t unit_IsNeutral(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  return eeTa_Player(unit) == eeTwa->neutralPlayer;
 }
 
 int8_t unit_IsIdle(Unit unit) {
@@ -186,6 +263,10 @@ Unit unit_Null() {
   };
 }
 
+vector<AbilityTypes> unit_Abilities(Unit unit) {
+  return eeTypes_Abilities(unit_Type(unit));
+}
+
 PVOID unit_Reference(Unit unit) {
   return unit._payload;
 }
@@ -194,39 +275,43 @@ uint16_t unit_GetPlaneID(Unit unit) {
   return map_Tile_GetPlaneID(unit_Tile_Position(unit));
 }
 
-uint8_t unit_ProphetAbility_CanCast(Unit unit, Point target, Ability ability) {
-  if(ability == PROPHET_TORNADO && !map_Tile_IsWater(geom_Tile_FromPoint(target))) {
-    return 0;
-  }
-  return 1;
-}
-
-uint8_t unit_IsSpellValid(Unit unit, Point target, Ability ability) {
-  if(unit_Type(unit) == PROPHET) {
-    return unit_ProphetAbility_CanCast(unit, target, ability);
-  }
-  return 1;
-}
-
-void unit_CastAbility(Unit unit, Point target, Ability ability) {
-  if(!unit_IsSpellValid(unit, target, ability)) {
+void unit_Point_CastAbility(Unit unit, Point target, AbilityTypes ability) {
+  if(!unit_CanCast(unit, ability)) {
     return ;
   }
   helper_CastAbility_Remade(unit_Reference(unit), target, ability);
 }
 
+void unit_Object_CastAbility(Unit unit, Unit target, AbilityTypes ability) {
+  if(!unit_CanCast(unit, ability)) {
+    return ;
+  }
+  helper_CastAbility_Target(unit_Reference(unit), unit_Reference(target), unit_Point_Position(target), ability);
+}
+
 UnitType unit_Type(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
   return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
 }
 
 int32_t unit_CurrentHp(Unit unit) {
-  return *(int32_t *)util_Pointer((PVOID)unit._payload, 0x3C, INT32_T_TYPE);
+  return *(int32_t *)util_Pointer(unit_Reference(unit), 0x3C, INT32_T_TYPE);
 }
 
 int32_t unit_TotalHP(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
   return *(int32_t *)util_Pointer((PVOID)unitMetaData, 0x144, INT32_T_TYPE);
+}
+
+float unit_TotalDamage(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
+  return *(float *)util_Pointer((PVOID)unitMetaData, 0xD8, FLOAT_TYPE);
+}
+
+// This method is not good yet.
+float unit_TotalSpeed(Unit unit) {
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
+  return *(float *)util_Pointer((PVOID)unitMetaData, 0xBD4, FLOAT_TYPE);
 }
 
 uint8_t unit_GetPlayerIndex(Unit unit) {
@@ -276,31 +361,19 @@ void unit_Farm(Unit unit, Resource resource) {
   unit_Fishboat_Farm(unit, resource);
 }
 
-uint8_t unit_Prophet_CanCast(Unit unit, Ability ability) {
-  switch (ability)
-  {
-    case PROPHET_EARTHQUAKE:
-      return unit_CurrentEnergy(unit) >= 50;
-    case PROPHET_MALARIA:
-      return unit_CurrentEnergy(unit) >= 100;
-    case PROPHET_TORNADO:
-      return unit_CurrentEnergy(unit) >= 100;
-    
-    default:
+__declspec(dllexport) uint8_t unit_CanCast(Unit unit, AbilityTypes ability) {
+  uint8_t found = 0;
+  vector<AbilityTypes> abilityTypes = unit_Abilities(unit);
+  for(size_t i = 0, c = abilityTypes.size(); i < c; i++) {
+    if(abilityTypes[i] == ability) {
+      found = 1;
       break;
+    }
   }
-  return 0;
-}
-
-uint8_t unit_CanCast(Unit unit, Ability ability) {
-  switch(unit_Type(unit)) {
-    case PROPHET:
-      return unit_Prophet_CanCast(unit, ability);
-
-    default:
-      break;
+  if(!found) {
+    return 0;
   }
-  return 0;
+  return ability_Energy(ability) <= unit_CurrentEnergy(unit);
 }
 
 uint8_t unit_IsPresent(Unit unit) {
@@ -379,7 +452,7 @@ size_t unit_Transport_Population(Unit transport) {
   size_t totalPop = 0;
   PVOID unitRef = helper_Transport_Ref(unit_Reference(transport));
   for(size_t i = 0; i < unitsCount; i++) {
-    totalPop += eeTa_UnitPopulation((Unit) {
+    totalPop += unit_Population((Unit) {
       ._payload = (PVOID)*(size_t *)((size_t)unitRef + (i * 0x4))
     });
   }
@@ -394,7 +467,7 @@ void unit_Transport_Unload(Unit transport, TilePoint tile) {
 }
 
 float unit_Range(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x34, POINTER_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
   return *(float *)util_Pointer((PVOID)unitMetaData, 0x9C, FLOAT_TYPE);
 }
 
@@ -411,4 +484,13 @@ void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
     return ;
   }
   helper_Building_Create(unit_Reference(citizen), tile, unitClass);
+}
+
+int32_t unit_Population(Unit unit) {
+  PVOID unitTypeStruct = util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
+  PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
+  PVOID callee = util_Pointer(callerMethods, 0x6C, POINTER_TYPE);
+  int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callee);
+
+  return method(unitTypeStruct);
 }

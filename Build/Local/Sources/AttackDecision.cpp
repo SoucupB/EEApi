@@ -58,7 +58,7 @@ uint8_t enemyUnits(Unit unit) {
   int8_t unitPlayer = eeTa_Player(unit);
   int8_t playerTeam = eeTa_SelfPlayer();
   return unitPlayer != playerTeam && !ply_Index_AreAllies(unitPlayer, playerTeam) &&
-         !eeTa_IsNeutral(unit);
+         !unit_IsNeutral(unit);
 }
 
 uint8_t idleAttackingGroundUnits(Unit unit) {
@@ -99,10 +99,10 @@ void att_AddDamagedUnits(Unit unit) {
 }
 
 void att_AttackTransportWithNavals(vector<Unit> &units) {
-  vector<Unit> filteredUnits = eeTa_Filter(units, navalAttackFilter);
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, navalAttackFilter);
 
   for(uint32_t i = 0, c = min(6, filteredUnits.size()); i < c; i++) {
-    vector<Unit> enemyTransports = eeTa_Filter(units, enemyTransporters);
+    vector<Unit> enemyTransports = unit_FilterFromArray(units, enemyTransporters);
 
     for(uint32_t j = 0, p = enemyTransports.size(); j < p; j++) {
       Point currPos = unit_Point_Position(filteredUnits[i]);
@@ -122,9 +122,9 @@ void att_AttackTransportWithNavals(vector<Unit> &units) {
 }
 
 void att_ConvertIfNecessary(vector<Unit> &units) {
-  vector<Unit> filteredPriests = eeTa_Filter(units, priestsFilters);
+  vector<Unit> filteredPriests = unit_FilterFromArray(units, priestsFilters);
   for(size_t i = 0; i < filteredPriests.size(); i++) {
-    Unit enemy = geom_GetClosestUnitFrom(filteredPriests[i], eeTa_AllPlayers(), enemyFilter);
+    Unit enemy = geom_GetClosestUnitFrom(filteredPriests[i], ply_Null(), enemyFilter);
     if(!enemy._payload) {
       continue;
     }
@@ -204,7 +204,7 @@ uint8_t att_ScanAndAttack(vector<Unit> &selfUnits) {
 }
 
 void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(Unit), int32_t maxCommands) {
-  vector<Unit> filteredUnits = eeTa_Filter(selfUnits, checker);
+  vector<Unit> filteredUnits = unit_FilterFromArray(selfUnits, checker);
   if(!filteredUnits.size()) {
     return ;
   }
@@ -416,8 +416,8 @@ void prophet_CastMalaria(Unit prophet, vector<Unit> &units, uint8_t *casted) {
     return ;
   }
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && unit_CanCast(prophet, PROPHET_MALARIA)) {
-      unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_MALARIA);
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsGroundUnit(unit_Type(units[i])) && unit_CanCast(prophet, ABILITY_PROPHET_FAMINE_)) {
+      unit_Point_CastAbility(prophet, unit_Point_Position(units[i]), ABILITY_PROPHET_FAMINE_);
       *casted = 1;
       return ;
     }
@@ -429,8 +429,8 @@ void prophet_CastTornado(Unit prophet, vector<Unit> &units, uint8_t *casted) {
     return ;
   }
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsWaterUnit(unit_Type(units[i])) && unit_CanCast(prophet, PROPHET_TORNADO)) {
-      unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_TORNADO);
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && eeTypes_IsWaterUnit(unit_Type(units[i])) && unit_CanCast(prophet, ABILITY_PROPHET_HURRICANE_)) {
+      unit_Point_CastAbility(prophet, unit_Point_Position(units[i]), ABILITY_PROPHET_HURRICANE_);
       *casted = 1;
       return ;
     }
@@ -443,8 +443,8 @@ void prophet_CastEarthquake(Unit prophet, uint8_t *casted) {
   }
   vector<Unit> units = unit_Filter(enemyBuilding);
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && unit_CanCast(prophet, PROPHET_EARTHQUAKE)) {
-      unit_CastAbility(prophet, unit_Point_Position(units[i]), PROPHET_EARTHQUAKE);
+    if(unit_Distance(prophet, units[i]) <= unit_Range(prophet) && unit_CanCast(prophet, ABILITY_PROPHET_EARTHQUAKE_)) {
+      unit_Point_CastAbility(prophet, unit_Point_Position(units[i]), ABILITY_PROPHET_EARTHQUAKE_);
       *casted = 1;
       return ;
     }
@@ -454,8 +454,8 @@ void prophet_CastEarthquake(Unit prophet, uint8_t *casted) {
 void prophet_CastAbilities(Unit prophet) {
   vector<Unit> units = unit_Filter(enemyUnit);
   uint8_t casted = 0;
-  prophet_CastMalaria(prophet, units, &casted);
   prophet_CastTornado(prophet, units, &casted);
+  prophet_CastMalaria(prophet, units, &casted);
   prophet_CastEarthquake(prophet, &casted);
 }
 
@@ -472,6 +472,55 @@ void att_ProcessProphets() {
 void att_ProcessSpecialAbilityUnits(PVOID _) {
   att_ProcessPriests();
   att_ProcessProphets();
+}
+
+uint8_t hurricaneFilter(Unit unit) {
+  return unit_Type(unit) == UNIT_UNDEFINED && res_Type((Resource) {
+    ._payload = unit_Reference(unit)
+  }) == HURRICANE;
+}
+
+Unit getHurricane() {
+  vector<Unit> hurricanes = unit_Filter(hurricaneFilter);
+  if(!hurricanes.size()) {
+    return unit_Null();
+  }
+  return hurricanes[rand() % hurricanes.size()];
+}
+
+Unit getClosestEnemyShip(Unit hurricane) {
+  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  float closest = 1000000.0f;
+  Unit enemy = unit_Null();
+  for(size_t i = 0; i < units.size(); i++) {
+    UnitType type = unit_Type(units[i]);
+    if(eeTypes_IsWaterUnit(type) && !ply_Index_AreAllies(unit_GetPlayerIndex(units[i]), eeTa_SelfPlayer()) && 
+       ply_Reference(ply_GetPlayer(units[i])) != ply_Reference(ply_Self()) && 
+       ply_Reference(ply_GetPlayer(units[i])) != ply_Reference(ply_Neutral())) {
+      float currentDist = unit_Distance(hurricane, units[i]);
+      if(closest > currentDist) {
+        closest = currentDist;
+        enemy = units[i];
+      }
+    }
+  }
+  return enemy;
+}
+
+void att_HuntWithHurricane(PVOID _) {
+  Unit hurricane = getHurricane();
+  if(!unit_Reference(hurricane)) {
+    return ;
+  }
+  Unit enemyShip = getClosestEnemyShip(hurricane);
+  if(!unit_Reference(enemyShip)) {
+    return ;
+  }
+  unit_Action(hurricane, unit_Point_Position(enemyShip), UNIT_MOVE);
+}
+
+void att_HuntWithHades(PVOID _) {
+
 }
 
 void att_PatrolRandomPositions(vector<Unit> &selfUnits) {

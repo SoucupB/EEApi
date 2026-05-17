@@ -31,6 +31,16 @@ uint8_t ply_PlayerIndex(Player player) {
   return *(uint8_t *)util_Pointer(ply_Reference(player), 0x45C, INT8_T_TYPE);
 }
 
+TechTree ply_TechTree(Player player) {
+  return (TechTree) {
+    ._payload = (PVOID)*(size_t *)((size_t)ply_Reference(player) + 0x9CC)
+  };
+}
+
+PVOID ply_TechTree_Ref(TechTree techTree) {
+  return techTree._payload;
+}
+
 uint8_t ply_GetPlayerIndex(Unit unit) {
   return ply_PlayerIndex(ply_GetPlayer(unit));
 }
@@ -142,4 +152,16 @@ void ply_Print() {
     }
     eeTa_FilePrintf("\n");
   }
+}
+
+int32_t ply_CurrentPopulation(Player player) {
+  return *(int32_t *)util_Pointer(ply_Reference(player), 0xB14, INT32_T_TYPE);
+}
+
+int32_t ply_TotalPop(Player player) {
+  const PVOID plyRef = ply_Reference(player);
+  size_t additionPop = *(size_t *)((size_t)plyRef + 0xB24);
+  size_t skillsPop = *(size_t *)((size_t)plyRef + 0xB20);
+  size_t mapPop = *(size_t *)((size_t)lib_BaseAddress() + 0x530E14);
+  return additionPop + skillsPop + mapPop;
 }

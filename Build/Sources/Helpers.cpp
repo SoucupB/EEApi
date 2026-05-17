@@ -59,7 +59,7 @@ PVOID __thiscall help_Checker_4C2A3C(PVOID self, PVOID _1, PVOID _2, PVOID _3);
 void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit);
 void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst);
 PVOID __fastcall helper_ConvertUnit(PVOID movingStructure);
-void helper_CastPoint(PVOID unit, Point target, Ability ability);
+void helper_CastPoint(PVOID unit, Point target, AbilityTypes ability);
 
 static unordered_map<PVOID, size_t> memoryMap; // No need this into the general pointer
 
@@ -247,7 +247,7 @@ void help_SetActionPointerTset(PVOID self, Point pos, UnitAction action) {
   memcpy((PVOID)((size_t)self + 0x68), &actionPointer, sizeof(PVOID));
 }
 
-void helper_ReplaceOrder(PVOID unit, Point target, Ability ability) {
+void helper_ReplaceOrder(PVOID unit, Point target, AbilityTypes ability) {
   PVOID unitBuffer = help_New(0x34);
   int32_t valX = (int32_t)target.x;
   int32_t valY = (int32_t)target.y;
@@ -268,7 +268,7 @@ void helper_ReplaceOrder(PVOID unit, Point target, Ability ability) {
   memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
 }
 
-void helper_CastPoint(PVOID unit, Point target, Ability ability) {
+void helper_CastPoint(PVOID unit, Point target, AbilityTypes ability) {
   help_UnitMove(unit, target, UNIT_ATTACK);
   helper_ReplaceOrder(unit, target, ability);
 }
@@ -561,7 +561,7 @@ void help_MoveSecondMethod(PVOID unit, Point target) {
   memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
 }
 
-PVOID helper_CreateCalamityStruct(Point pos, Ability ability) {
+PVOID helper_CreateCalamityStruct(Point pos, AbilityTypes ability) {
   PVOID calamityBuffer = help_New(0x24);
   int32_t xPos = (int32_t)pos.x;
   int32_t yPos = (int32_t)pos.y;
@@ -604,7 +604,7 @@ void helper_UnknownMethod4BC7AF(PVOID unit) {
          (PVOID)0x1F40);
 }
 
-void helper_CastAbility(PVOID unit, Point target, Ability ability) {
+void helper_CastAbility(PVOID unit, Point target, AbilityTypes ability) {
   PVOID pntTarget = help_New(0x34);
   PVOID calamityStruct = helper_CreateCalamityStruct(target, ability);
   helper_FillCalamityStruct(unit, calamityStruct, pntTarget);
@@ -763,7 +763,7 @@ PVOID helper_Player_FromUnit(PVOID unit) {
   return util_Pointer((PVOID)unit, 0x18, POINTER_TYPE);
 }
 
-void helper_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, Ability ability) {
+void helper_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, AbilityTypes ability) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -776,7 +776,7 @@ void helper_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, Ability
          (PVOID)0x1);
 }
 
-void helper_CastAbility_Remade(PVOID unit, Point target, Ability ability) {
+void helper_CastAbility_Remade(PVOID unit, Point target, AbilityTypes ability) {
   PVOID buffer = help_New(0x34);
   TilePoint tile = geom_Tile_FromPoint(target);
   helper_Command_Method6209C9(buffer, unit, tile, ability);
@@ -825,7 +825,6 @@ void helper_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transpo
 void helper_Transport_Load(vector<PVOID> &units, PVOID transport) {
   size_t bufferSize = 0x68;
   PVOID buffer = help_New(bufferSize);
-  PVOID cpyBuffer = help_New(bufferSize);
   helper_Command_Method627286(buffer, units, transport);
   helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
   for(size_t i = 0, c = units.size(); i < c; i++) {
@@ -841,6 +840,26 @@ PVOID helper_Transport_Ref(PVOID unit) {
 
 size_t helper_Transport_UnitsCount(PVOID unit) {
   return (*(size_t *)((size_t)unit + 0x74) - *(size_t *)((size_t)unit + 0x70)) / 0x4;
+}
+
+PVOID helper_TechNode(TechTree tree, AbilityTypes ability) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x18A4);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(ply_TechTree_Ref(tree), 
+         (PVOID)ability);
+}
+
+PVOID helper_AbilityPointer(PVOID manager, size_t abilityIndex) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0xAE71D);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
+  return method(manager, 
+         (PVOID)&abilityIndex);
+}
+
+int32_t helper_AbilityEnergy(PVOID reference) {
+  PVOID energyMethod = (PVOID)*(size_t *)(*(size_t *)reference + 0x10);
+  PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)energyMethod);
+  return (int32_t)method(reference);
 }
 
 void helper_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
@@ -898,4 +917,24 @@ void helper_Building_Create(PVOID citizen, TilePoint position, PVOID type) {
     return ;
   }
   helper_RepairBuilding(citizen, building);
+}
+
+void helper_Command_Target_Method6209C9(PVOID self, PVOID unit, PVOID target, TilePoint tile, AbilityTypes ability) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
+  PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
+      (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(self, 
+         unit,
+         target,
+         (PVOID)tile.x,
+         (PVOID)tile.y,
+         (PVOID)ability,
+         (PVOID)0x1);
+}
+
+void helper_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, AbilityTypes ability) {
+  PVOID buffer = help_New(0x34);
+  TilePoint tile = geom_Tile_FromPoint(targetPoint);
+  helper_Command_Target_Method6209C9(buffer, unit, target, tile, ability);
+  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
 }

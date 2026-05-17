@@ -43,23 +43,23 @@ uint8_t workersFilter(Unit unit) {
 }
 
 int8_t shouldBuildAttackUnit() {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
-  vector<Unit> filteredUnits = eeTa_Filter(units, nonWorkersFilter);
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, nonWorkersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
-    currentPop += eeTa_UnitPopulation(filteredUnits[i]);
+    currentPop += unit_Population(filteredUnits[i]);
   }
-  return (float)currentPop < (float)eeTa_TotalPop() * 0.6f;
+  return (float)currentPop < (float)ply_TotalPop(ply_Self()) * 0.6f;
 }
 
 int8_t shouldBuildWorkers() {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
-  vector<Unit> filteredUnits = eeTa_Filter(units, workersFilter);
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, workersFilter);
   size_t currentPop = 0;
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
-    currentPop += eeTa_UnitPopulation(filteredUnits[i]);
+    currentPop += unit_Population(filteredUnits[i]);
   }
-  return (float)currentPop < (float)eeTa_TotalPop() * 0.4f;
+  return (float)currentPop < (float)ply_TotalPop(ply_Self()) * 0.4f;
 }
 
 uint8_t navalAirCarrierFilter(Unit unit) {
@@ -79,11 +79,11 @@ void buildUnit_t(PVOID attr) {
     if(eeTypes_CanProduceWorkers(unit_Type(building))) {
       continue;
     }
-    vector<int32_t> types = eeTa_AllBuildableTypes(building);
+    vector<UnitType> types = unit_AllBuildableTypes(building);
     if(!types.size()) {
       continue;
     }
-    eeTa_BuildUnit(building, (PVOID)types[rand() % types.size()]);
+    unit_Build(building, types[rand() % types.size()]);
     if(!maxBuildings) {
       break;
     }
@@ -93,18 +93,18 @@ void buildUnit_t(PVOID attr) {
 }
 
 void buildAirCarrierUnits(PVOID attr) {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
-  vector<Unit> filteredUnits = eeTa_Filter(units, navalAirCarrierFilter);
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, navalAirCarrierFilter);
   for(int32_t i = 0, c = filteredUnits.size(); i < c; i++) {
     Unit naval = filteredUnits[i];
-    if(!eeTa_IsIdle(naval)) {
+    if(!unit_Building_IsIdle(naval)) {
       continue;
     }
-    vector<int32_t> types = eeTa_AllBuildableTypes(naval);
+    vector<UnitType> types = unit_AllBuildableTypes(naval);
     if(!types.size()) {
       continue;
     }
-    eeTa_BuildUnit(naval, (PVOID)types[rand() % types.size()]);
+    unit_Build(naval, types[rand() % types.size()]);
   }
 }
 
@@ -113,19 +113,19 @@ uint8_t capitolFilter(Unit unit) {
   return eeTypes_CanProduceWorkers(def);
 }
 
-__declspec(dllexport) void bt_BuildWorkers(PVOID attr) {
+void bt_BuildWorkers(PVOID attr) {
   if(!shouldBuildWorkers()) {
     return ;
   }
   vector<Unit> buildings = unit_IdleBuildings(eeTa_SelfPlayer());
-  vector<Unit> capitols = eeTa_Filter(buildings, capitolFilter);
+  vector<Unit> capitols = unit_FilterFromArray(buildings, capitolFilter);
   if(!capitols.size()) {
     return ;
   }
   int32_t maxBuildings = 3;
   for(int32_t i = 0, c = capitols.size(); i < c; i++) {
     Unit building = capitols[i];
-    eeTa_BuildUnit(building, (PVOID)CITIZEN);
+    unit_Build(building, (UnitType)CITIZEN);
     if(!maxBuildings) {
       break;
     }
@@ -149,14 +149,14 @@ void checkEpochPointer() {
 
 void convert() {
   if(GetAsyncKeyState('P') & 0x8000) {
-    vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+    vector<Unit> units = unit_Player_GetUnits(ply_Self());
     att_ConvertIfNecessary(units);
     Beep(400, 250);
   }
 }
 
 void bt_HuntTransports(PVOID attributes) {
-  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
   att_AttackTransportWithNavals(units);
 }
 
@@ -182,7 +182,7 @@ void bt_InitTransportHunting() {
 }
 
 void patrolCommand(PVOID attr) {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   att_PatrolRandomPositions(units);
 }
 
@@ -207,6 +207,14 @@ void bt_InitPortNaval() {
   atom.method = (PVOID)buildAirCarrierUnits;
   atom.arguments = NULL;
   atom.time = 1528;
+  eeTa_AddFrameMethod(atom);
+}
+
+void bt_InitHurricaneHunt() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_HuntWithHurricane;
+  atom.arguments = NULL;
+  atom.time = 2678;
   eeTa_AddFrameMethod(atom);
 }
 
@@ -288,7 +296,6 @@ SpawnLocation getSelfCapitol() {
 }
 
 void att_LoadTransports(PVOID _) {
-  initCapitolPositions();
   SpawnLocation capitol = getSelfCapitol();
   if(capitol.player == 0xFF) {
     return ;
@@ -306,7 +313,7 @@ void bt_LoadUnits() {
 
 void initCapitolPositions() {
   capitolsLocations.clear();
-  vector<Unit> units = unit_GetBuildings(eeTa_AllPlayers());
+  vector<Unit> units = unit_Player_GetBuildings(ply_Null());
   for(size_t i = 0; i < units.size(); i++) {
     if(!eeTypes_CanProduceWorkers(unit_Type(units[i]))) {
       continue;
@@ -330,6 +337,7 @@ void bt_OnInit() {
   bt_ConvertUnits();
   bt_AttackWithBombers();
   bt_AttackWithShipsEverywhere();
+  bt_InitHurricaneHunt();
   bt_LoadUnits();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();

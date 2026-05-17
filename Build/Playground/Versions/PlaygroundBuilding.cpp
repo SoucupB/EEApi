@@ -27,6 +27,10 @@ Resource getFish();
 void farmFish();
 void convertUnit();
 void addProphetSpells();
+void printTransport();
+void loadTransport();
+void unloadTransport();
+void buildSomeShit();
 
 __declspec(dllexport) void castEarthquake();
 __declspec(dllexport) void castMalaria();
@@ -191,17 +195,31 @@ void execDataPengus() {
     // farmFish();
     // castEarthquake();
     // convertUnit();
+    // loadTransport();
+    buildSomeShit();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
-    printResources();
+    // printTransport();
+    unloadTransport();
     Beep (300, 250);
   }
 }
 
+void printPopulation() {
+  vector<Player> players = ply_All();
+  for(size_t i = 0; i < players.size(); i++) {
+    if(ply_Reference(players[i]) == ply_Reference(ply_Neutral())) {
+      continue;
+    }
+    eeTa_FilePrintf("Current pop for player %p is %d and total is %d\n", ply_Reference(players[i]), ply_CurrentPopulation(players[i]), ply_TotalPop(players[i]));
+  }
+}
+
 void bt_OnInit() {
-  addProphetSpells();
-  eeTa_FilePrintf("Added prophet spells\n");
+  // addProphetSpells();
+  printPopulation();
+  eeTa_FilePrintf("Spookly\n");
 }
 
 Point airNextPosition(Unit unit) {
@@ -281,6 +299,76 @@ void bt_MoveUnitsRandomly() {
   for(size_t i = 0; i < units.size(); i++) {
     moveUnit(units[i]);
   }
+}
+
+uint8_t transportFilter(Unit unit) {
+  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_IsTransport(unit);
+}
+
+uint8_t nonTransportFilter(Unit unit) {
+  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && !unit_IsTransport(unit);
+}
+
+void printTransport() {
+  vector<Unit> transport = unit_Filter(transportFilter);
+  for(size_t i = 0, c = transport.size(); i < c; i++) {
+    eeTa_FilePrintf("Transport %p with population %d\n", unit_Reference(transport[i]), unit_Transport_Population(transport[i]));
+    vector<Unit> unitsInside = unit_Transport_UnitsInside(transport[i]);
+    for(size_t j = 0; j < unitsInside.size(); j++) {
+      eeTa_FilePrintf(" Unit %p\n", unit_Reference(unitsInside[j]));
+    }
+  }
+}
+
+void unloadTransport() {
+  vector<Unit> transport = unit_Filter(transportFilter);
+  if(!transport.size()) {
+    return ;
+  }
+  unit_Transport_Unload(transport[0], (TilePoint) {
+    .x = 53,
+    .y = 48
+  });
+}
+
+void loadTransport() {
+  vector<Unit> transport = unit_Filter(transportFilter);
+  if(!transport.size()) {
+    return ;
+  }
+  vector<Unit> units = unit_Filter(nonTransportFilter);
+  if(!units.size()) {
+    return ;
+  }
+  unit_Transport_Load(transport[0], units);
+}
+
+Unit getCitizen() {
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTypes_IsCitizen(unit_Type(units[i]))) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
+void buildSomeShit() {
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  unit_Building_Build(citizen, (TilePoint) {
+    .x = 50,
+    .y = 65
+  }, B_BARRACKS);
+  // PVOID building = helper_Building_Create(0x22,
+  // (TilePoint) {
+  //   .x = 50,
+  //   .y = 46
+  // });
+
+  eeTa_FilePrintf("Building shit\n");
 }
 
 void bt_OnFrame() {

@@ -16,3 +16,7 @@ int8_t ply_PlayerCount();
 vector<Player> ply_All();
 int8_t ply_Index_AreAllies(uint8_t plySrc, uint8_t plyDst);
 uint8_t ply_PlayerIndex(Player player);
+int32_t ply_CurrentPopulation(Player player);
+int32_t ply_TotalPop(Player player);
+TechTree ply_TechTree(Player player);
+PVOID ply_TechTree_Ref(TechTree techTree);

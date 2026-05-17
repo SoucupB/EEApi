@@ -53,7 +53,7 @@ void printResources() {
 }
 
 void test_PrintUnits() {
-  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
   if(units.size()) {
     for(int32_t i = 0; i < units.size(); i++) {
       Point currentPoint = unit_Point_Position(units[i]);
@@ -62,7 +62,7 @@ void test_PrintUnits() {
                       eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]));
     }
   }
-  vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
+  vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
   if(buildings.size()) {
     for(int32_t i = 0; i < buildings.size(); i++) {
       Point currentPoint = unit_Point_Position(buildings[i]);
@@ -74,7 +74,7 @@ void test_PrintUnits() {
 }
 
 Unit getBuilding(Unit prophet) {
-  vector<Unit> units = unit_GetBuildings(eeTa_AllPlayers());
+  vector<Unit> units = unit_Player_GetBuildings(ply_Null());
   for(size_t i = 0, c = units.size(); i < c; i++) {
     if(eeTa_Player(units[i]) != eeTa_SelfPlayer()) {
       eeTa_FilePrintf("Some Dist %f %f\n", unit_Distance(prophet, units[i]), unit_Range(prophet));
@@ -92,11 +92,11 @@ void castEarthQuake(Unit prophet) {
   if(!unit_Reference(building)) {
     return ;
   }
-  unit_CastAbility(prophet, unit_Point_Position(building), PROPHET_EARTHQUAKE);
+  unit_Point_CastAbility(prophet, unit_Point_Position(building), PROPHET_EARTHQUAKE);
 }
 
 void prophetCommandSpells(PVOID _) {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   for(size_t i = 0, c = units.size(); i < c; i++) {
     if(unit_Type(units[i]) == PROPHET) {
       castEarthQuake(units[i]);
@@ -113,7 +113,7 @@ void addProphetSpells() {
 }
 
 Unit getProphet() {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   for(size_t i = 0; i < units.size(); i++) {
     if(unit_Type(units[i]) == PROPHET) {
       return units[i];
@@ -123,7 +123,7 @@ Unit getProphet() {
 }
 
 Unit getEnemyBuilding() {
-  vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
+  vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
   for(size_t i = 0; i < buildings.size(); i++) {
     if(eeTa_Player(buildings[i]) != eeTa_SelfPlayer() && unit_Type(buildings[i]) != B_TEMPLE) {
       return buildings[i];
@@ -133,7 +133,7 @@ Unit getEnemyBuilding() {
 }
 
 Unit getPriest() {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   for(size_t i = 0; i < units.size(); i++) {
     if(unit_Type(units[i]) == PRIEST) {
       return units[i];
@@ -151,12 +151,12 @@ void castEarthquake() {
   if(!unit_Reference(currentBuilding)) {
     return ;
   }
-  unit_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
+  unit_Point_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
   eeTa_FilePrintf("Some ability is casted lolol\n");
 }
 
 Unit getEnemy() {
-  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
   for(size_t i = 0; i < units.size(); i++) {
     if(eeTa_Player(units[i]) != eeTa_SelfPlayer()) {
       return units[i];
@@ -174,7 +174,7 @@ void convertUnit() {
   if(!unit_Reference(currentUnit)) {
     return ;
   }
-  // unit_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
+  // unit_Point_CastAbility(currentProphet, unit_Point_Position(currentBuilding), PROPHET_MALARIA);
   unit_Convert(currentPriest, currentUnit);
   eeTa_FilePrintf("Some convertion is made\n");
 }
@@ -273,7 +273,7 @@ void repairBuildings(vector<Unit> &units) {
   if(!unit_Reference(currentCitizen)) {
     return ;
   }
-  vector<Unit> buildings = unit_GetBuildings(eeTa_SelfPlayer());
+  vector<Unit> buildings = unit_Player_GetBuildings(ply_Self());
   for(size_t i = 0; i < buildings.size(); i++) {
     if(unit_CurrentHp(buildings[i]) < unit_TotalHP(buildings[i])) {
       unit_Repair(currentCitizen, buildings[i]);
@@ -283,7 +283,7 @@ void repairBuildings(vector<Unit> &units) {
 }
 
 void bt_MoveUnitsRandomly() {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   repairBuildings(units);
   for(size_t i = 0; i < units.size(); i++) {
     moveUnit(units[i]);
@@ -333,7 +333,7 @@ void loadTransport() {
 }
 
 Unit getCitizen() {
-  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
   for(size_t i = 0; i < units.size(); i++) {
     if(eeTypes_IsCitizen(unit_Type(units[i]))) {
       return units[i];

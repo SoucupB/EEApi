@@ -95,7 +95,7 @@ void repairBuildings() {
 }
 
 void test_PrintUnits() {
-  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
   if(units.size()) {
     for(int32_t i = 0; i < units.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(units[i]);
@@ -103,7 +103,7 @@ void test_PrintUnits() {
                       eeTa_UnitType(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(units[i])), unit_TotalHP(units[i]));
     }
   }
-  vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
+  vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
   if(buildings.size()) {
     for(int32_t i = 0; i < buildings.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(buildings[i]);
@@ -181,7 +181,7 @@ uint8_t navalAttackFilter(Unit unit) {
 
 Unit getEnemyShip() {
   vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
-  vector<Unit> filteredUnits = eeTa_Filter(units, navalAttackFilter);
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, navalAttackFilter);
   for(size_t i = 0; i < filteredUnits.size(); i++) {
     if(eeTa_Player(filteredUnits[i]) != eeTa_SelfPlayer()) {
       return filteredUnits[i];
@@ -265,7 +265,7 @@ __declspec(dllexport) void castEarthquake() {
     return ;
   }
   // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
-  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
+  unit_Point_CastAbility(currentProphet, eeTa_CurrentPosition(currentBuilding), PROPHET_EARTHQUAKE);
   eeTa_FilePrintf("Some ability\n");
 }
 
@@ -279,7 +279,7 @@ __declspec(dllexport) void castMalaria() {
     return ;
   }
   // queueCommand(eeTa_Unit_Reference(currentProphet), eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
-  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
+  unit_Point_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_MALARIA);
   eeTa_FilePrintf("Some ability\n");
 }
 
@@ -293,7 +293,7 @@ __declspec(dllexport) void castHurricane() {
   if(!eeTa_Unit_Reference(currentenemy)) {
     return ;
   }
-  unit_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_TORNADO);
+  unit_Point_CastAbility(currentProphet, eeTa_CurrentPosition(currentenemy), PROPHET_TORNADO);
   eeTa_FilePrintf("Some ability\n");
 }
 

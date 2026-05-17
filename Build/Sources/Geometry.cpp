@@ -25,8 +25,8 @@ uint8_t geom_Point_IsInvalid(Point point) {
   return point.x == -10000.0f && point.y == -10000.0f;
 }
 
-Unit geom_GetClosestUnitFrom(Unit unit, int8_t player, uint8_t (*filter)(Unit)) {
-  vector<Unit> units = unit_GetUnits(player);
+Unit geom_GetClosestUnitFrom(Unit unit, Player ply, uint8_t (*filter)(Unit)) {
+  vector<Unit> units = unit_Player_GetUnits(ply);
   float minDist = FLT_MAX;
   Unit selectedUnit;
   selectedUnit._payload = NULL;

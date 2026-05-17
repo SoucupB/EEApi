@@ -90,7 +90,7 @@ void repairBuildings() {
 }
 
 void test_PrintUnits() {
-  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
   if(units.size()) {
     for(int32_t i = 0; i < units.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(units[i]);
@@ -98,7 +98,7 @@ void test_PrintUnits() {
                       eeTa_UnitType(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(eeTa_EETypes_UnitType(units[i])), unit_TotalHP(units[i]));
     }
   }
-  vector<Unit> buildings = unit_GetBuildings(eeTa_AllPlayers());
+  vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
   if(buildings.size()) {
     for(int32_t i = 0; i < buildings.size(); i++) {
       Point currentPoint = eeTa_CurrentPosition(buildings[i]);
@@ -256,7 +256,7 @@ void farmFish() {
 
 Unit getEnemyShip() {
   vector<Unit> units = eeTa_Units(eeTa_AllPlayers());
-  vector<Unit> filteredUnits = eeTa_Filter(units, navalAttackFilter);
+  vector<Unit> filteredUnits = unit_FilterFromArray(units, navalAttackFilter);
   for(size_t i = 0; i < filteredUnits.size(); i++) {
     if(eeTa_Player(filteredUnits[i]) != eeTa_SelfPlayer()) {
       return filteredUnits[i];

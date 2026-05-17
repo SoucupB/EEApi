@@ -26,11 +26,6 @@ uint8_t eeTa_NeutralPlayer() {
   return eeTwa->neutralPlayer;
 }
 
-uint8_t eeTa_IsNeutral(Unit unit) {
-  PEETwa eeTwa = game_EETwa();
-  return eeTa_Player(unit) == eeTwa->neutralPlayer;
-}
-
 // Money pointer is at ["EE-AOC.exe"+530DB8 + 0xAFC]
 
 void __cdecl eeTa_OnUnitFrame(Unit unit) {
@@ -83,34 +78,8 @@ void __cdecl eeTa_OnUnitDeath(Unit unit) {
   bt_OnUnitDestroy(unit);
 }
 
-void eeTa_BuildUnit(Unit building, PVOID unitType) {
-  if(eeTa_CurrentPopulation() >= eeTa_TotalPop()) {
-    return ;
-  }
-  int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1F5F97);
-  PEETwa eeTwa = game_EETwa();
-  eeTwa->shouldCostBeReduced = 1;
-  method(building._payload, unitType, 0);
-  eeTwa->shouldCostBeReduced = 0;
-}
-
-int32_t eeTa_UnitPopulation(Unit unit) {
-  PVOID unitTypeStruct = util_Pointer(unit._payload, 0x2C, POINTER_TYPE);
-  PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
-  PVOID callee = util_Pointer(callerMethods, 0x6C, POINTER_TYPE);
-  int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callee);
-
-  return method(unitTypeStruct);
-}
-
 PVOID eeTa_GetPlayer() {
   return util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
-}
-
-int32_t eeTa_CurrentPopulation() {
-  PVOID unitTypeStruct = util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
-  int32_t *unitPop = (int32_t *)util_Pointer(unitTypeStruct, 0xB14, INT32_T_TYPE);
-  return *unitPop;
 }
 
 int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double)) {
@@ -128,29 +97,6 @@ void eeTa_SetCvCAggression(uint8_t botIndex, float aggression) {
   }
   float *_2 = (float *)util_Pointer(_1, 0xBF0, FLOAT_TYPE);
   *_2 = aggression;
-} 
-
-vector<Unit> eeTa_Filter(vector<Unit> &units, uint8_t (*method)(Unit)) {
-  vector<Unit> filteredUnits;
-  for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(method(units[i])) {
-      filteredUnits.push_back(units[i]);
-    }
-  }
-  return filteredUnits;
-}
-
-int32_t eeTa_TotalPop() {
-  PVOID unitTypeStruct = util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
-  PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
-  PVOID popMethod = util_Pointer(callerMethods, 0x7C, POINTER_TYPE);
-  int32_t __fastcall (*method)(PVOID, PVOID, PVOID) = (int32_t __fastcall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)popMethod);
-
-  return method(unitTypeStruct, NULL, NULL);
-}
-
-int8_t eeTa_IsIdle(Unit building) {
-  return eeTa_CurrentlyBuilding(building) == IDLE;
 }
 
 void eeta_FileClean() {
@@ -177,56 +123,6 @@ int8_t eeTa_SelfPlayer() {
 
 vector<PVOID> eeTa_UnitTypes(Unit building) {
   return vector<PVOID>();
-}
-
-PVOID _eeTa_EpochStruct(PVOID building, PVOID unitType) {
-  size_t *buildingMetaData = (size_t *)util_Pointer((PVOID)building, 0x18, POINTER_TYPE);
-  size_t *epochStruct = (size_t *)util_Pointer((PVOID)buildingMetaData, 0x9CC, POINTER_TYPE);
-  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x18A4);
-
-  return method((PVOID)epochStruct, unitType);
-}
-
-int32_t eeTa_Buildables(Unit unit) {
-  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x196DFF);
-  return method(typeMetaPointer);
-}
-
-vector<int32_t> eeTa_AllBuildableTypes(Unit unit) {
-  size_t *typeMetaPointer = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  size_t *buildableTypes = (size_t *)util_Pointer((PVOID)typeMetaPointer, 0x30, POINTER_TYPE);
-  vector<int32_t> types;
-  if(!buildableTypes) {
-    return types;
-  }
-
-  int32_t totalBuildables = eeTa_Buildables(unit);
-  for(int32_t i = 0; i < totalBuildables; i++) {
-    if(eeTa_CanBuild(unit, (PVOID)buildableTypes[i])) {
-      types.push_back(buildableTypes[i]);
-    }
-  }
-
-  return types;
-}
-
-int8_t eeTa_IsBuildingComplete(Unit unit) {
-  int8_t *isBuildingRef = (int8_t *)util_Pointer((PVOID)unit._payload, 0x34C, INT8_T_TYPE);
-  
-  return *isBuildingRef;
-}
-
-uint8_t eeTa_CanBuild(Unit building, PVOID type) {
-  size_t *epochStruct = (size_t *)_eeTa_EpochStruct(building._payload, type);
-  if(!epochStruct) {
-    return 0;
-  }
-
-  size_t *checkMethod = (size_t *)util_Pointer((PVOID)(epochStruct[0]), 0x4, POINTER_TYPE);
-  int8_t __thiscall (*method)(PVOID) = (int8_t __thiscall (*)(PVOID)) ((uint8_t *)checkMethod);
-
-  return method((PVOID)epochStruct);
 }
 
 int8_t *eeTa_PlayerIDs() {
@@ -298,26 +194,9 @@ Point eeTa_GetDestinationCommand(Unit unit) {
   };
 }
 
-int32_t eeTa_CurrentlyBuilding(Unit building) {
-  return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
-}
-
 int64_t eeTa_CurrentFrame() {
   PEETwa eeTwa = game_EETwa();
   return eeTwa->frames;
-}
-
-PVOID eeTa_Unit_Sample(int8_t player) {
-  vector<Unit> units = unit_GetUnits(player);
-  if(!units.size()) {
-    return NULL;
-  }
-
-  return units[rand() % units.size()]._payload;
-}
-
-int8_t eeTa_PlayerIndex() {
-  return *(int8_t *)util_Pointer(lib_BaseAddress(), 0x5318C4, POINTER_TYPE);
 }
 
 uint8_t eeTa_ShouldOnInitExecute() {
@@ -327,8 +206,4 @@ uint8_t eeTa_ShouldOnInitExecute() {
 int8_t eeTa_Player(Unit unit) {
   PVOID nextStruct = util_Pointer((PVOID)unit._payload, 0x18, POINTER_TYPE);
   return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
-}
-
-uint8_t eeTa_Tile_IsWater(TilePoint self) {
-  return map_Tile_IsWater(self);
 }
