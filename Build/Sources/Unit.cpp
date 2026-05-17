@@ -386,12 +386,9 @@ uint8_t unit_CanCast(Unit unit, AbilityTypes ability) {
 uint8_t unit_IsPresent(Unit unit) {
   PEETwa eeTwa = game_EETwa();
   unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
-  for(size_t i = 0, c = eeTwa->playersCount; i < c; i++) {
-    if(unitPresence[i]->find(unit_Reference(unit)) != unitPresence[i]->end()) {
-      return 1;
-    }
-  }
-  return 0;
+  unordered_map<PVOID, uint8_t> **simpleUnitPresence = eeTwa->simpleUnitPresence;
+  return unitPresence[ply_PlayerIndex(ply_Self())]->find(unit_Reference(unit)) != unitPresence[ply_PlayerIndex(ply_Self())]->end() ||
+         simpleUnitPresence[ply_PlayerIndex(ply_Self())]->find(unit_Reference(unit)) != simpleUnitPresence[ply_PlayerIndex(ply_Self())]->end();
 }
 
 int8_t unit_IsDead(Unit unit) {
