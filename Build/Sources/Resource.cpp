@@ -4,6 +4,7 @@
 #include "EETwa.h"
 #include "Unit.h"
 #include "ResourcePrivate.h"
+#include "PlayerPrivate.h"
 
 uint8_t res_IsUnitResource(PVOID simpleUnit);
 

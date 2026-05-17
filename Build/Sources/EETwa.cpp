@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "Unit.h"
 #include "PlayerStatePrivate.h"
+#include "PlayerPrivate.h"
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
