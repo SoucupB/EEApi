@@ -12,7 +12,7 @@
 #include "EETypesStructPrivate.h"
 #include "EETwaPrivate.h"
 #include "InjectUtilities.h"
-#include "Helpers.h"
+#include "Driver.h"
 #include "Offset.h"
 
 void bt_OnUnitDestroy(Unit unit);

@@ -281,14 +281,14 @@ void unit_Point_CastAbility(Unit unit, Point target, AbilityTypes ability) {
   if(!unit_CanCast(unit, ability)) {
     return ;
   }
-  helper_CastAbility_Remade(unit_Reference(unit), target, ability);
+  driver_CastAbility_Remade(unit_Reference(unit), target, ability);
 }
 
 void unit_Object_CastAbility(Unit unit, Unit target, AbilityTypes ability) {
   if(!unit_CanCast(unit, ability)) {
     return ;
   }
-  helper_CastAbility_Target(unit_Reference(unit), unit_Reference(target), unit_Point_Position(target), ability);
+  driver_CastAbility_Target(unit_Reference(unit), unit_Reference(target), unit_Point_Position(target), ability);
 }
 
 UnitType unit_Type(Unit unit) {
@@ -332,7 +332,7 @@ void unit_Repair(Unit unit, Unit target) {
   if(unit_GetPlayerIndex(unit) != unit_GetPlayerIndex(target)) {
     return ;
   }
-  helper_RepairBuilding(unit_Reference(unit), unit_Reference(target));
+  driver_RepairBuilding(unit_Reference(unit), unit_Reference(target));
 }
 
 void unit_Citizen_Farm(Unit unit, Resource resource) {
@@ -341,7 +341,7 @@ void unit_Citizen_Farm(Unit unit, Resource resource) {
   if(!eeTypes_IsCitizen(unitType) || neutralRes == RES_FISH) {
     return ;
   }
-  helper_Citizen_Gather(unit_Reference(unit), res_Reference(resource));
+  driver_Citizen_Gather(unit_Reference(unit), res_Reference(resource));
 }
 
 void unit_Fishboat_Farm(Unit unit, Resource resource) {
@@ -350,7 +350,7 @@ void unit_Fishboat_Farm(Unit unit, Resource resource) {
   if(eeTypes_IsFishBoat(unitType) && neutralRes != RES_FISH) {
     return ;
   }
-  helper_Citizen_Gather(unit_Reference(unit), res_Reference(resource));
+  driver_Citizen_Gather(unit_Reference(unit), res_Reference(resource));
 }
 
 void unit_Farm(Unit unit, Resource resource) {
@@ -398,14 +398,14 @@ void unit_Convert(Unit src, Unit dst) {
   if(unit_IsBuilding(dst) || unit_IsDead(dst)) {
     return ;
   }
-  helper_Convert_Remade(unit_Reference(src), unit_Reference(dst));
+  driver_Convert_Remade(unit_Reference(src), unit_Reference(dst));
 }
 
 void unit_Action(Unit unit, Point point, UnitAction action) {
   if(!unit_IsPresent(unit)) {
     return ;
   }
-  helper_Unit_Command(unit_Reference(unit), point, action);
+  driver_Unit_Command(unit_Reference(unit), point, action);
 }
 
 uint8_t unit_IsTransport(Unit unit) {
@@ -420,7 +420,7 @@ void unit_Transport_Load(Unit transport, vector<Unit> &units) {
   for(size_t i = 0, c = units.size(); i < c; i++) {
     bufferUnits.push_back(unit_Reference(units[i]));
   }
-  helper_Transport_Load(bufferUnits, unit_Reference(transport));
+  driver_Transport_Load(bufferUnits, unit_Reference(transport));
 }
 
 vector<Unit> unit_Transport_UnitsInside(Unit transport) {
@@ -428,11 +428,11 @@ vector<Unit> unit_Transport_UnitsInside(Unit transport) {
   if(!unit_IsTransport(transport)) {
     return response;
   }
-  size_t unitsCount = helper_Transport_UnitsCount(unit_Reference(transport));
+  size_t unitsCount = driver_Transport_UnitsCount(unit_Reference(transport));
   if(!unitsCount) {
     return response;
   }
-  PVOID unitRef = helper_Transport_Ref(unit_Reference(transport));
+  PVOID unitRef = driver_Transport_Ref(unit_Reference(transport));
   for(size_t i = 0; i < unitsCount; i++) {
     response.push_back((Unit) {
       ._payload = (PVOID)*(size_t *)((size_t)unitRef + (i * 0x4))
@@ -445,12 +445,12 @@ size_t unit_Transport_Population(Unit transport) {
   if(!unit_IsTransport(transport)) {
     return 0;
   }
-  size_t unitsCount = helper_Transport_UnitsCount(unit_Reference(transport));
+  size_t unitsCount = driver_Transport_UnitsCount(unit_Reference(transport));
   if(!unitsCount) {
     return 0;
   }
   size_t totalPop = 0;
-  PVOID unitRef = helper_Transport_Ref(unit_Reference(transport));
+  PVOID unitRef = driver_Transport_Ref(unit_Reference(transport));
   for(size_t i = 0; i < unitsCount; i++) {
     totalPop += unit_Population((Unit) {
       ._payload = (PVOID)*(size_t *)((size_t)unitRef + (i * 0x4))
@@ -463,7 +463,7 @@ void unit_Transport_Unload(Unit transport, TilePoint tile) {
   if(!unit_IsTransport(transport)) {
     return ;
   }
-  helper_Transport_Unload(unit_Reference(transport), tile);
+  driver_Transport_Unload(unit_Reference(transport), tile);
 }
 
 float unit_Range(Unit unit) {
@@ -483,7 +483,7 @@ void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
   if(!unitClass) {
     return ;
   }
-  helper_Building_Create(unit_Reference(citizen), tile, unitClass);
+  driver_Building_Create(unit_Reference(citizen), tile, unitClass);
 }
 
 int32_t unit_Population(Unit unit) {

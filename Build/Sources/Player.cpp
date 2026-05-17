@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "Game.h"
 #include "InjectUtilities.h"
-#include "Helpers.h"
+#include "Driver.h"
 #include "LibManager.h"
 #include "EETwa.h"
 #include "EETypesStructPrivate.h"
@@ -12,7 +12,7 @@ void ply_RegisterNeutral(PPlayers playerData, Player self);
 
 void ply_Inits(PVOID self) {
   PPlayers playerData = game_Players();
-  PVOID currentPlayer = helper_Player_FromUnit(self);
+  PVOID currentPlayer = driver_Player_FromUnit(self);
   (*playerData->playerData)[currentPlayer] = 1;
   ply_RegisterSelf(playerData, (Player) {
     ._payload = currentPlayer
@@ -49,7 +49,7 @@ uint8_t ply_GetPlayerIndex(Unit unit) {
 
 Player ply_GetPlayer(Unit unit) {
   return (Player) {
-    ._payload = helper_Player_FromUnit(unit_Reference(unit))
+    ._payload = driver_Player_FromUnit(unit_Reference(unit))
   };
 }
 

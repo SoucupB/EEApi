@@ -5,7 +5,7 @@
 #include "MethodsDefinitions.h"
 #include "LibManager.h"
 #include "EETwa.h"
-#include "Helpers.h"
+#include "Driver.h"
 #include "Resource.h"
 #include "ResourcePrivate.h"
 #include "EETypesStructPrivate.h"

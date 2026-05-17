@@ -1,11 +1,11 @@
-#include "Helpers.h"
+#include "Driver.h"
 #include <iostream>
 #include "EETwa.h"
 #include <unordered_map>
 #include <stdint.h>
 #include <Windows.h>
 #include "MethodsDefinitions.h"
-#include "Helpers.h"
+#include "Driver.h"
 #include "LibManager.h"
 #include "EETypes.h"
 #include "Geometry.h"
@@ -58,10 +58,10 @@ PVOID __fastcall help_SearchUnits(PVOID self);
 MoveAction *help_GetAction(PVOID parent, Point pos, UnitAction action);
 void __cdecl help_Delete(PVOID pointer);
 PVOID __thiscall help_Checker_4C2A3C(PVOID self, PVOID _1, PVOID _2, PVOID _3);
-void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit);
-void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst);
-PVOID __fastcall helper_ConvertUnit(PVOID movingStructure);
-void helper_CastPoint(PVOID unit, Point target, AbilityTypes ability);
+void driver_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit);
+void driver_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst);
+PVOID __fastcall driver_ConvertUnit(PVOID movingStructure);
+void driver_CastPoint(PVOID unit, Point target, AbilityTypes ability);
 
 static unordered_map<PVOID, size_t> memoryMap; // No need this into the general pointer
 
@@ -79,7 +79,7 @@ PVOID __cdecl help_New(size_t size) {
   return response;
 }
 
-void helper_Convert_FillConstants(PVOID mem, PVOID currentUnit) {
+void driver_Convert_FillConstants(PVOID mem, PVOID currentUnit) {
   PVOID unitBuffer = help_New(0x8);
   builder_FillValue(unitBuffer, 0x0, (size_t)currentUnit);
   builder_FillValue(mem, 0x4, 0x2);
@@ -106,19 +106,19 @@ void helper_Convert_FillConstants(PVOID mem, PVOID currentUnit) {
   builder_FillValue(mem, 0xAC, 0x3D96DE33);
 }
 
-void helper_Convert(PVOID src, PVOID dst) {
+void driver_Convert(PVOID src, PVOID dst) {
   PVOID actionMove = help_New(0xB8);
   PVOID secondary = help_New(0x44);
   memset(actionMove, 0x0, 0xB8);
   memset(secondary, 0x0, 0x44);
-  helper_Convert_Fill(actionMove, secondary, src);
+  driver_Convert_Fill(actionMove, secondary, src);
   builder_FillValue(actionMove, 0x68, (size_t)secondary);
-  helper_Convert_Secondary(secondary, src, dst);
+  driver_Convert_Secondary(secondary, src, dst);
   builder_FillValue(actionMove, 0x6C, (size_t)0x7D1);
-  helper_ConvertUnit(actionMove);
+  driver_ConvertUnit(actionMove);
 }
 
-void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst) {
+void driver_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst) {
   PVOID classNameRef = (PVOID)((size_t)lib_BaseAddress() + (size_t)0x447380);
   builder_FillValue(unitAction, 0x0, (size_t)classNameRef);
   builder_FillValue(unitAction, 0x4, 0x201);
@@ -134,26 +134,26 @@ void helper_Convert_Secondary(PVOID unitAction, PVOID src, PVOID dst) {
   builder_FillValue(unitAction, 0x38, 0x31);
 }
 
-PVOID helper_FindSuperClass_BB884() {
+PVOID driver_FindSuperClass_BB884() {
   PVOID hModule = lib_BaseAddress();
   PVOID param = (PVOID)((size_t)hModule + (size_t)0x530D40);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x139670);
   return method(param, (PVOID)0xFE);
 }
 
-PVOID helper_Fill_BB8FD(PVOID moveAction, PVOID baseClass) {
+PVOID driver_Fill_BB8FD(PVOID moveAction, PVOID baseClass) {
   PVOID hModule = lib_BaseAddress();
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)hModule + 0x1EBC86);
   return method(moveAction, baseClass);
 }
 
-void helper_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit) {
-  PVOID baseAddres = helper_FindSuperClass_BB884();
-  helper_Fill_BB8FD(mem, baseAddres);
-  helper_Convert_FillConstants(mem, unit);
+void driver_Convert_Fill(PVOID mem, PVOID unitAction, PVOID unit) {
+  PVOID baseAddres = driver_FindSuperClass_BB884();
+  driver_Fill_BB8FD(mem, baseAddres);
+  driver_Convert_FillConstants(mem, unit);
 }
 
-PVOID __fastcall helper_ConvertUnit(PVOID movingStructure) {
+PVOID __fastcall driver_ConvertUnit(PVOID movingStructure) {
   PVOID hModule = lib_BaseAddress();
   PVOID __fastcall (*method)(PVOID) = (PVOID __fastcall (*)(PVOID)) ((uint8_t *)hModule + 0x1EDCC0);
   return method(movingStructure);
@@ -249,7 +249,7 @@ void help_SetActionPointerTset(PVOID self, Point pos, UnitAction action) {
   memcpy((PVOID)((size_t)self + 0x68), &actionPointer, sizeof(PVOID));
 }
 
-void helper_ReplaceOrder(PVOID unit, Point target, AbilityTypes ability) {
+void driver_ReplaceOrder(PVOID unit, Point target, AbilityTypes ability) {
   PVOID unitBuffer = help_New(0x34);
   int32_t valX = (int32_t)target.x;
   int32_t valY = (int32_t)target.y;
@@ -270,9 +270,9 @@ void helper_ReplaceOrder(PVOID unit, Point target, AbilityTypes ability) {
   memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
 }
 
-void helper_CastPoint(PVOID unit, Point target, AbilityTypes ability) {
+void driver_CastPoint(PVOID unit, Point target, AbilityTypes ability) {
   help_UnitMove(unit, target, UNIT_ATTACK);
-  helper_ReplaceOrder(unit, target, ability);
+  driver_ReplaceOrder(unit, target, ability);
 }
 
 PVOID __fastcall help_SearchUnits(PVOID self) {
@@ -563,7 +563,7 @@ void help_MoveSecondMethod(PVOID unit, Point target) {
   memcpy((PVOID)((size_t)unit + 0x1F0), &unitBuffer, sizeof(size_t));
 }
 
-PVOID helper_CreateCalamityStruct(Point pos, AbilityTypes ability) {
+PVOID driver_CreateCalamityStruct(Point pos, AbilityTypes ability) {
   PVOID calamityBuffer = help_New(0x24);
   int32_t xPos = (int32_t)pos.x;
   int32_t yPos = (int32_t)pos.y;
@@ -581,7 +581,7 @@ PVOID helper_CreateCalamityStruct(Point pos, AbilityTypes ability) {
   return calamityBuffer;
 }
 
-void helper_FillCalamityStruct(PVOID unit, PVOID calamityStruct, PVOID originalPointer) {
+void driver_FillCalamityStruct(PVOID unit, PVOID calamityStruct, PVOID originalPointer) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
   void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(originalPointer, 
@@ -593,33 +593,33 @@ void helper_FillCalamityStruct(PVOID unit, PVOID calamityStruct, PVOID originalP
          (PVOID)0x1);
 }
 
-void helper_AddCommandToUnit(PVOID unit, PVOID calamityStruct) {
+void driver_AddCommandToUnit(PVOID unit, PVOID calamityStruct) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
   void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(unit, calamityStruct, NULL, NULL);
 }
 
-void helper_UnknownMethod4BC7AF(PVOID unit) {
+void driver_UnknownMethod4BC7AF(PVOID unit) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
   void __thiscall (*method)(PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(unit, 
          (PVOID)0x1F40);
 }
 
-void helper_CastAbility(PVOID unit, Point target, AbilityTypes ability) {
+void driver_CastAbility(PVOID unit, Point target, AbilityTypes ability) {
   PVOID pntTarget = help_New(0x34);
-  PVOID calamityStruct = helper_CreateCalamityStruct(target, ability);
-  helper_FillCalamityStruct(unit, calamityStruct, pntTarget);
-  helper_AddCommandToUnit(unit, pntTarget);
-  helper_UnknownMethod4BC7AF(unit); // This is the method which makes the unit move.
+  PVOID calamityStruct = driver_CreateCalamityStruct(target, ability);
+  driver_FillCalamityStruct(unit, calamityStruct, pntTarget);
+  driver_AddCommandToUnit(unit, pntTarget);
+  driver_UnknownMethod4BC7AF(unit); // This is the method which makes the unit move.
 }
 
-PVOID helper_Unit_GetPlayer(PVOID player) {
+PVOID driver_Unit_GetPlayer(PVOID player) {
   size_t *buffer = (size_t *)((size_t)player + 0x18);
   return (PVOID)*buffer;
 }
 
-PVOID helper_Method61E164(PVOID buffer, PVOID building, PVOID player) {
+PVOID driver_Method61E164(PVOID buffer, PVOID building, PVOID player) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x21E164);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(buffer,
@@ -628,12 +628,12 @@ PVOID helper_Method61E164(PVOID buffer, PVOID building, PVOID player) {
         (PVOID)0x1);
 }
 
-PVOID helper_Repair_ClassInit(PVOID buffer, PVOID unit, PVOID building) {
-  PVOID player = helper_Unit_GetPlayer(unit);
-  return helper_Method61E164(buffer, building, player);
+PVOID driver_Repair_ClassInit(PVOID buffer, PVOID unit, PVOID building) {
+  PVOID player = driver_Unit_GetPlayer(unit);
+  return driver_Method61E164(buffer, building, player);
 }
 
-PVOID helper_Method5FE863(PVOID buffer, PVOID unit) {
+PVOID driver_Method5FE863(PVOID buffer, PVOID unit) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(unit, 
@@ -642,25 +642,25 @@ PVOID helper_Method5FE863(PVOID buffer, PVOID unit) {
                 (PVOID)0x0);
 }
 
-PVOID helper_Method5FDFA5(PVOID unit, PVOID command) {
+PVOID driver_Method5FDFA5(PVOID unit, PVOID command) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(unit, 
                 command);
 }
 
-void helper_Repair_PushCommandToUnit(PVOID buffer, PVOID unit) {
-  helper_Method5FE863(buffer, unit);
-  helper_Method5FDFA5(unit, (PVOID)0x1F51);
+void driver_Repair_PushCommandToUnit(PVOID buffer, PVOID unit) {
+  driver_Method5FE863(buffer, unit);
+  driver_Method5FDFA5(unit, (PVOID)0x1F51);
 }
 
-void helper_RepairBuilding(PVOID unit, PVOID building) {
+void driver_RepairBuilding(PVOID unit, PVOID building) {
   PVOID pntTarget = help_New(0x5C);
-  (void)helper_Repair_ClassInit(pntTarget, unit, building);
-  (void)helper_Repair_PushCommandToUnit(pntTarget, unit);
+  (void)driver_Repair_ClassInit(pntTarget, unit, building);
+  (void)driver_Repair_PushCommandToUnit(pntTarget, unit);
 }
 
-void helper_Gather_Method621E95(PVOID self, PVOID targetResource) {
+void driver_Gather_Method621E95(PVOID self, PVOID targetResource) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x221E95);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self, 
@@ -669,7 +669,7 @@ void helper_Gather_Method621E95(PVOID self, PVOID targetResource) {
         (PVOID)0x1);
 }
 
-void helper_Gather_Method5FE863(PVOID self, PVOID buffer) {
+void driver_Gather_Method5FE863(PVOID self, PVOID buffer) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self, 
@@ -678,52 +678,52 @@ void helper_Gather_Method5FE863(PVOID self, PVOID buffer) {
          (PVOID)0x0);
 }
 
-void helper_Gather_Method5FDFA5(PVOID self) {
+void driver_Gather_Method5FDFA5(PVOID self) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self, 
         (PVOID)0xFB7);
 }
 
-PVOID helper_Gather_ClassInit(PVOID buffer, PVOID targetResource) {
-  helper_Gather_Method621E95(buffer, targetResource);
+PVOID driver_Gather_ClassInit(PVOID buffer, PVOID targetResource) {
+  driver_Gather_Method621E95(buffer, targetResource);
 }
 
-void helper_Gather_Citizen_QueueCommand(PVOID unit, PVOID buffer) {
-  helper_Gather_Method5FE863(unit, buffer);
-  helper_Gather_Method5FDFA5(unit);
+void driver_Gather_Citizen_QueueCommand(PVOID unit, PVOID buffer) {
+  driver_Gather_Method5FE863(unit, buffer);
+  driver_Gather_Method5FDFA5(unit);
 }
 
-PVOID helper_Gather_UnitClassStruct(PVOID unit) {
+PVOID driver_Gather_UnitClassStruct(PVOID unit) {
   size_t *unitMetaData = (size_t *)util_Pointer(unit, 0x2C, POINTER_TYPE);
   return (PVOID)*unitMetaData;
 }
 
-PVOID helper_Gather_UnitClass(PVOID unit) {
+PVOID driver_Gather_UnitClass(PVOID unit) {
   size_t *unitMetaData = (size_t *)util_Pointer(unit, 0x2C, POINTER_TYPE);
   return (PVOID)unitMetaData;
 }
 
-PVOID helper_Gather_UnitClassMethod(PVOID unit) {
-  size_t rsp = *(size_t *)helper_Gather_UnitClass(unit);
+PVOID driver_Gather_UnitClassMethod(PVOID unit) {
+  size_t rsp = *(size_t *)driver_Gather_UnitClass(unit);
   return (PVOID)*(size_t *)(rsp + 0x74);
 }
 
-void helper_Register(PVOID unit) {
-  PVOID className = helper_Gather_UnitClass(unit);
-  PVOID methodStruct = helper_Gather_UnitClassMethod(unit);
+void driver_Register(PVOID unit) {
+  PVOID className = driver_Gather_UnitClass(unit);
+  PVOID methodStruct = driver_Gather_UnitClassMethod(unit);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(className, unit);
 }
 
-void helper_Citizen_Gather(PVOID unit, PVOID resource) {
+void driver_Citizen_Gather(PVOID unit, PVOID resource) {
   PVOID buffer = help_New(0x44);
-  helper_Gather_ClassInit(buffer, resource);
-  helper_Gather_Citizen_QueueCommand(unit, buffer);
-  helper_Register(unit);
+  driver_Gather_ClassInit(buffer, resource);
+  driver_Gather_Citizen_QueueCommand(unit, buffer);
+  driver_Register(unit);
 }
 
-void helper_Command_Method627742(PVOID self, Point point, uint8_t move) {
+void driver_Command_Method627742(PVOID self, Point point, uint8_t move) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227742);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -738,34 +738,34 @@ void helper_Command_Method627742(PVOID self, Point point, uint8_t move) {
          (PVOID)(0x1 ^ (!move)));
 }
 
-void helper_IssueCommand(PVOID unit, PVOID buffer, PVOID command) {
-  helper_Gather_Method5FE863(unit, buffer);
-  helper_Method5FDFA5(unit, command);
-  helper_Register(unit);
+void driver_IssueCommand(PVOID unit, PVOID buffer, PVOID command) {
+  driver_Gather_Method5FE863(unit, buffer);
+  driver_Method5FDFA5(unit, command);
+  driver_Register(unit);
 }
 
-void helper_Unit_Command(PVOID unit, Point position, UnitAction action) {
+void driver_Unit_Command(PVOID unit, Point position, UnitAction action) {
   PVOID buffer = help_New(0x38);
   switch (action)
   {
     case UNIT_ATTACK:
-      helper_Command_Method627742(buffer, position, 0);
+      driver_Command_Method627742(buffer, position, 0);
       break;
     case UNIT_MOVE:
-      helper_Command_Method627742(buffer, position, 1);
+      driver_Command_Method627742(buffer, position, 1);
       break;
     
     default:
       break;
   }
-  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
+  driver_IssueCommand(unit, buffer, (PVOID)0x1F40);
 }
 
-PVOID helper_Player_FromUnit(PVOID unit) {
+PVOID driver_Player_FromUnit(PVOID unit) {
   return util_Pointer((PVOID)unit, 0x18, POINTER_TYPE);
 }
 
-void helper_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, AbilityTypes ability) {
+void driver_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, AbilityTypes ability) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -778,14 +778,14 @@ void helper_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, Ability
          (PVOID)0x1);
 }
 
-void helper_CastAbility_Remade(PVOID unit, Point target, AbilityTypes ability) {
+void driver_CastAbility_Remade(PVOID unit, Point target, AbilityTypes ability) {
   PVOID buffer = help_New(0x34);
   TilePoint tile = geom_Tile_FromPoint(target);
-  helper_Command_Method6209C9(buffer, unit, tile, ability);
-  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
+  driver_Command_Method6209C9(buffer, unit, tile, ability);
+  driver_IssueCommand(unit, buffer, (PVOID)0x1F40);
 }
 
-void helper_Command_Method61D337(PVOID self, PVOID unit, PVOID target) {
+void driver_Command_Method61D337(PVOID self, PVOID unit, PVOID target) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x21D337);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -796,10 +796,10 @@ void helper_Command_Method61D337(PVOID self, PVOID unit, PVOID target) {
          (PVOID)0x0);
 }
 
-void helper_Convert_Remade(PVOID unit, PVOID target) {
+void driver_Convert_Remade(PVOID unit, PVOID target) {
   PVOID buffer = help_New(0x44);
-  helper_Command_Method61D337(buffer, unit, target);
-  helper_IssueCommand(unit, buffer, (PVOID)0x7D4);
+  driver_Command_Method61D337(buffer, unit, target);
+  driver_IssueCommand(unit, buffer, (PVOID)0x7D4);
 }
 
 PVOID createArray(vector<PVOID> &units) {
@@ -810,7 +810,7 @@ PVOID createArray(vector<PVOID> &units) {
   return unitBuffer;
 }
 
-void helper_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transport) {
+void driver_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transport) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227286);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -824,47 +824,47 @@ void helper_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transpo
          (PVOID)0x1);
 }
 
-void helper_Transport_Load(vector<PVOID> &units, PVOID transport) {
+void driver_Transport_Load(vector<PVOID> &units, PVOID transport) {
   size_t bufferSize = 0x68;
   PVOID buffer = help_New(bufferSize);
-  helper_Command_Method627286(buffer, units, transport);
-  helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
+  driver_Command_Method627286(buffer, units, transport);
+  driver_IssueCommand(transport, buffer, (PVOID)0x1F40);
   for(size_t i = 0, c = units.size(); i < c; i++) {
     PVOID cpyBuffer = help_New(bufferSize);
-    helper_Command_Method627286(cpyBuffer, units, transport);
-    helper_IssueCommand(units[i], cpyBuffer, (PVOID)0x1F40);
+    driver_Command_Method627286(cpyBuffer, units, transport);
+    driver_IssueCommand(units[i], cpyBuffer, (PVOID)0x1F40);
   }
 }
 
-PVOID helper_Transport_Ref(PVOID unit) {
+PVOID driver_Transport_Ref(PVOID unit) {
   return (PVOID)(*(size_t *)((size_t)unit + 0x70));
 }
 
-size_t helper_Transport_UnitsCount(PVOID unit) {
+size_t driver_Transport_UnitsCount(PVOID unit) {
   return (*(size_t *)((size_t)unit + 0x74) - *(size_t *)((size_t)unit + 0x70)) / 0x4;
 }
 
-PVOID helper_TechNode(TechTree tree, AbilityTypes ability) {
+PVOID driver_TechNode(TechTree tree, AbilityTypes ability) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x18A4);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(ply_TechTree_Ref(tree), 
          (PVOID)ability);
 }
 
-PVOID helper_AbilityPointer(PVOID manager, size_t abilityIndex) {
+PVOID driver_AbilityPointer(PVOID manager, size_t abilityIndex) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0xAE71D);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(manager, 
          (PVOID)&abilityIndex);
 }
 
-int32_t helper_AbilityEnergy(PVOID reference) {
+int32_t driver_AbilityEnergy(PVOID reference) {
   PVOID energyMethod = (PVOID)*(size_t *)(*(size_t *)reference + 0x10);
   PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)energyMethod);
   return (int32_t)method(reference);
 }
 
-void helper_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
+void driver_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2283FF);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -875,21 +875,21 @@ void helper_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
          (PVOID)0x1);
 }
 
-void helper_Transport_Unload(PVOID transport, TilePoint tile) {
+void driver_Transport_Unload(PVOID transport, TilePoint tile) {
   PVOID buffer = help_New(0x40);
-  helper_Command_Method6283FF(buffer, transport, tile);
-  helper_IssueCommand(transport, buffer, (PVOID)0x1F40);
+  driver_Command_Method6283FF(buffer, transport, tile);
+  driver_IssueCommand(transport, buffer, (PVOID)0x1F40);
 }
 
-PVOID helper_Building_Ref() {
+PVOID driver_Building_Ref() {
   return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + 0x449520 + 0x30);
 }
 
-PVOID helper_Building_GetTemplate(size_t index) {
+PVOID driver_Building_GetTemplate(size_t index) {
   return (PVOID)*(size_t *)(index * 0x4 + 0x5636AC + (size_t)lib_BaseAddress());
 }
 
-void helper_Building_629A56(PVOID unit) {
+void driver_Building_629A56(PVOID unit) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x229A56);
   PVOID __thiscall (*method)(PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -897,8 +897,8 @@ void helper_Building_629A56(PVOID unit) {
   method(unit, (PVOID)0x1);
 }
 
-PVOID helper_Building_CreateBuilding(PVOID buildingTemplate, TilePoint position) {
-  PVOID methodBaseAddress = helper_Building_Ref();
+PVOID driver_Building_CreateBuilding(PVOID buildingTemplate, TilePoint position) {
+  PVOID methodBaseAddress = driver_Building_Ref();
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodBaseAddress);
   PVOID unit = method(
@@ -909,19 +909,19 @@ PVOID helper_Building_CreateBuilding(PVOID buildingTemplate, TilePoint position)
     (PVOID)0x1,
     (PVOID)0x0
   );
-  helper_Building_629A56(unit);
+  driver_Building_629A56(unit);
   return unit;
 }
 
-void helper_Building_Create(PVOID citizen, TilePoint position, PVOID type) {
-  PVOID building = helper_Building_CreateBuilding(type, position);
+void driver_Building_Create(PVOID citizen, TilePoint position, PVOID type) {
+  PVOID building = driver_Building_CreateBuilding(type, position);
   if(!citizen || !building) {
     return ;
   }
-  helper_RepairBuilding(citizen, building);
+  driver_RepairBuilding(citizen, building);
 }
 
-void helper_Command_Target_Method6209C9(PVOID self, PVOID unit, PVOID target, TilePoint tile, AbilityTypes ability) {
+void driver_Command_Target_Method6209C9(PVOID self, PVOID unit, PVOID target, TilePoint tile, AbilityTypes ability) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -934,9 +934,9 @@ void helper_Command_Target_Method6209C9(PVOID self, PVOID unit, PVOID target, Ti
          (PVOID)0x1);
 }
 
-void helper_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, AbilityTypes ability) {
+void driver_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, AbilityTypes ability) {
   PVOID buffer = help_New(0x34);
   TilePoint tile = geom_Tile_FromPoint(targetPoint);
-  helper_Command_Target_Method6209C9(buffer, unit, target, tile, ability);
-  helper_IssueCommand(unit, buffer, (PVOID)0x1F40);
+  driver_Command_Target_Method6209C9(buffer, unit, target, tile, ability);
+  driver_IssueCommand(unit, buffer, (PVOID)0x1F40);
 }

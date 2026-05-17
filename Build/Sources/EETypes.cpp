@@ -142,7 +142,7 @@ char *eeTypes_Name(UnitType type) {
 void eeTypes_InitUnitTemplates() {
   PEETypes eTypes = game_GetEETypes();
   for(size_t i = 0; i < EETYPES_TEMPLATE_COUNT; i++) {
-    PVOID unitTemplate = helper_Building_GetTemplate(i);
+    PVOID unitTemplate = driver_Building_GetTemplate(i);
     if(!unitTemplate) {
       continue;
     }
@@ -154,7 +154,7 @@ void eeTypes_InitUnitTemplates() {
 void eeTypes_InitAbilitiesTemplate() {
   PEETypes eTypes = game_GetEETypes();
   for(size_t i = 0; i < EETYPES_TEMPLATE_COUNT; i++) {
-    PVOID unitTemplate = helper_Building_GetTemplate(i);
+    PVOID unitTemplate = driver_Building_GetTemplate(i);
     if(!unitTemplate) {
       continue;
     }

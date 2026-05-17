@@ -10,7 +10,7 @@ typedef struct TimeAtom_t {
   size_t _lastCheckedTime;
 } TimeAtom;
 
-typedef struct TimerHelper_t *PTimerHelper;
+typedef struct Timerdriver_t *PTimerHelper;
 
 uint64_t tmr_Milliseconds();
 void tmrs_AddMethod(PTimerHelper self, TimeAtom atom);

@@ -1,7 +1,7 @@
 #pragma once
 #include "TimerHelper.h"
 
-typedef struct TimerHelper_t {
+typedef struct Timerdriver_t {
   std::vector<TimeAtom> *fractures;
 } TimerHelper;
 
