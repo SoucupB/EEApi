@@ -10,6 +10,7 @@
 #include "EETypes.h"
 #include "Geometry.h"
 #include "Unit.h"
+#include "EETypesStructPrivate.h"
 
 #define ACTION_BUFFER_SIZE 0xB8
 

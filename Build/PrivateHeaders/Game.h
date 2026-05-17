@@ -9,6 +9,7 @@
 #include "TimerHelper.h"
 #include "Player.h"
 #include "TimerHelperPrivate.h"
+#include "EETypesStructPrivate.h"
 
 using namespace std;
 

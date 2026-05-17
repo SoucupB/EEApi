@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "LibManager.h"
 #include "Game.h"
+#include "EETypesStructPrivate.h"
 
 using namespace std;
 

@@ -9,6 +9,7 @@
 #include "Unit.h"
 #include "PlayerStatePrivate.h"
 #include "PlayerPrivate.h"
+#include "EETypesStructPrivate.h"
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();

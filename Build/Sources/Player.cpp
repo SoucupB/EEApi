@@ -4,6 +4,7 @@
 #include "Helpers.h"
 #include "LibManager.h"
 #include "EETwa.h"
+#include "EETypesStructPrivate.h"
 
 void ply_RegisterSelf(PPlayers playerData, Player self);
 void ply_RegisterNeutral(PPlayers playerData, Player self);

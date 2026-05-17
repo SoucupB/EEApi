@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "Unit.h"
 #include "PlayerStatePrivate.h"
+#include "EETypesStructPrivate.h"
 
 using namespace std;
 

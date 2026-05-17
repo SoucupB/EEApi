@@ -8,6 +8,7 @@
 #include "Helpers.h"
 #include "Resource.h"
 #include "ResourcePrivate.h"
+#include "EETypesStructPrivate.h"
 
 static size_t mapPolygons;
 void eeTa_RebuildExtraDataStructure();

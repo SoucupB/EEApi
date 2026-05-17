@@ -1,5 +1,6 @@
 #include "EETypes.h"
 #include "Game.h"
+#include "EETypesStructPrivate.h"
 
 void eeTypes_InitUnitTemplates();
 static inline UnitType eeTypes_TypeFromTemplate(PVOID unitTemplate);

@@ -5,6 +5,7 @@
 #include "MapData.h"
 #include "EETypes.h"
 #include "TimerHelperPrivate.h"
+#include "EETypesStructPrivate.h"
 
 using namespace std;
 

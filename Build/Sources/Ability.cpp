@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Helpers.h"
 #include "LibManager.h"
+#include "EETypesStructPrivate.h"
 
 PVOID ability_Manager() {
   return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + 0x4E5FB0);

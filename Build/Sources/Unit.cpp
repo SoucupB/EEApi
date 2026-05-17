@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Game.h"
 #include "Ability.h"
+#include "EETypesStructPrivate.h"
 
 uint8_t unit_IsPresent(Unit unit);
 

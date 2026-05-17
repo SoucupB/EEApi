@@ -2,6 +2,7 @@
 #include "EETwa.h"
 #include <map>
 #include "LibManager.h"
+#include "EETypesStructPrivate.h"
 
 std::map<size_t, std::pair<size_t, std::vector<size_t> > > storeBuilder;
 uint8_t isMemoryValid(PVOID addr);
