@@ -594,7 +594,6 @@ void att_HuntWithHurricane(PVOID _) {
   if(!unit_Reference(enemyShip)) {
     return ;
   }
-  eeTa_FilePrintf("Move hurricane %p to %p\n", hurricaneUnit._payload, enemyShip._payload);
   unit_Action(hurricaneUnit, unit_Point_Position(enemyShip), UNIT_MOVE);
 }
 
