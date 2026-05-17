@@ -12,11 +12,12 @@
 #include "Unit.h"
 #include "EETypesStructPrivate.h"
 #include "PlayerPrivate.h"
+#include "Offset.h"
 
 using namespace std;
 
 PVOID __cdecl driver_New(size_t size) {
-  PVOID __cdecl (*method)(size_t) = (PVOID __cdecl (*)(size_t)) ((uint8_t *)lib_BaseAddress() + 0x29D178);
+  PVOID __cdecl (*method)(size_t) = (PVOID __cdecl (*)(size_t)) ((uint8_t *)lib_BaseAddress() + DRIVER_REMOTE_METHOD_NEW);
   PVOID response = method(size);
   if(!response) {
     return NULL;
@@ -26,17 +27,17 @@ PVOID __cdecl driver_New(size_t size) {
 }
 
 void __cdecl driver_Delete(PVOID pointer) {
-  PVOID __cdecl (*method)(PVOID) = (PVOID __cdecl (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x29D150);
+  PVOID __cdecl (*method)(PVOID) = (PVOID __cdecl (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + DRIVER_REMOTE_METHOD_DELETE);
   method(pointer);
 }
 
-PVOID driver_Unit_GetPlayer(PVOID player) {
-  size_t *buffer = (size_t *)((size_t)player + 0x18);
+PVOID driver_Unit_GetPlayer(PVOID unit) {
+  size_t *buffer = (size_t *)((size_t)unit + DRIVER_PLAYER_FROM_UNIT);
   return (PVOID)*buffer;
 }
 
 PVOID driver_Method61E164(PVOID buffer, PVOID building, PVOID player) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x21E164);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_REPAIR_001);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(buffer,
          player, 
@@ -50,7 +51,7 @@ PVOID driver_Repair_ClassInit(PVOID buffer, PVOID unit, PVOID building) {
 }
 
 PVOID driver_Method5FE863(PVOID buffer, PVOID unit) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_REPAIR_002);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(unit, 
                 buffer,
@@ -59,7 +60,7 @@ PVOID driver_Method5FE863(PVOID buffer, PVOID unit) {
 }
 
 PVOID driver_Method5FDFA5(PVOID unit, PVOID command) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_REPAIR_003);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(unit, 
                 command);
@@ -67,7 +68,7 @@ PVOID driver_Method5FDFA5(PVOID unit, PVOID command) {
 
 void driver_Repair_PushCommandToUnit(PVOID buffer, PVOID unit) {
   driver_Method5FE863(buffer, unit);
-  driver_Method5FDFA5(unit, (PVOID)0x1F51);
+  driver_Method5FDFA5(unit, (PVOID)DRIVER_REPAIR_SPECIAL_CONST);
 }
 
 void driver_RepairBuilding(PVOID unit, PVOID building) {
@@ -77,7 +78,7 @@ void driver_RepairBuilding(PVOID unit, PVOID building) {
 }
 
 void driver_Gather_Method621E95(PVOID self, PVOID targetResource) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x221E95);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_GATHER_001);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self, 
         targetResource,
@@ -86,7 +87,7 @@ void driver_Gather_Method621E95(PVOID self, PVOID targetResource) {
 }
 
 void driver_Gather_Method5FE863(PVOID self, PVOID buffer) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FE863);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_GATHER_002);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self, 
          buffer,
@@ -95,10 +96,10 @@ void driver_Gather_Method5FE863(PVOID self, PVOID buffer) {
 }
 
 void driver_Gather_Method5FDFA5(PVOID self) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x1FDFA5);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_GATHER_003);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self, 
-        (PVOID)0xFB7);
+        (PVOID)DRIVER_GATHER_SPECIAL_CONST);
 }
 
 PVOID driver_Gather_ClassInit(PVOID buffer, PVOID targetResource) {
@@ -111,18 +112,18 @@ void driver_Gather_Citizen_QueueCommand(PVOID unit, PVOID buffer) {
 }
 
 PVOID driver_Gather_UnitClassStruct(PVOID unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer(unit, 0x2C, POINTER_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit, DRIVER_UNIT_CLASS, POINTER_TYPE);
   return (PVOID)*unitMetaData;
 }
 
 PVOID driver_Gather_UnitClass(PVOID unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer(unit, 0x2C, POINTER_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit, DRIVER_UNIT_CLASS, POINTER_TYPE);
   return (PVOID)unitMetaData;
 }
 
 PVOID driver_Gather_UnitClassMethod(PVOID unit) {
   size_t rsp = *(size_t *)driver_Gather_UnitClass(unit);
-  return (PVOID)*(size_t *)(rsp + 0x74);
+  return (PVOID)*(size_t *)(rsp + DRIVER_METHOD_INSTANCE_UNIT_CLASS);
 }
 
 void driver_Register(PVOID unit) {
@@ -140,7 +141,7 @@ void driver_Citizen_Gather(PVOID unit, PVOID resource) {
 }
 
 void driver_Command_Method627742(PVOID self, Point point, uint8_t move) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227742);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_COMMAND);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   PVOID specialConst = (PVOID)(0x26080500 ^ move);
@@ -174,15 +175,15 @@ void driver_Unit_Command(PVOID unit, Point position, UnitAction action) {
     default:
       break;
   }
-  driver_IssueCommand(unit, buffer, (PVOID)0x1F40);
+  driver_IssueCommand(unit, buffer, (PVOID)DRIVER_DEFAULT_SPECIAL_CONST);
 }
 
 PVOID driver_Player_FromUnit(PVOID unit) {
-  return util_Pointer((PVOID)unit, 0x18, POINTER_TYPE);
+  return util_Pointer((PVOID)unit, DRIVER_PLAYER_FROM_UNIT, POINTER_TYPE);
 }
 
 void driver_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, AbilityTypes ability) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAST_ABILITY_001);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self, 
@@ -198,11 +199,11 @@ void driver_CastAbility_Remade(PVOID unit, Point target, AbilityTypes ability) {
   PVOID buffer = driver_New(0x34);
   TilePoint tile = geom_Tile_FromPoint(target);
   driver_Command_Method6209C9(buffer, unit, tile, ability);
-  driver_IssueCommand(unit, buffer, (PVOID)0x1F40);
+  driver_IssueCommand(unit, buffer, (PVOID)DRIVER_DEFAULT_SPECIAL_CONST);
 }
 
 void driver_Command_Method61D337(PVOID self, PVOID unit, PVOID target) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x21D337);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CONVERT_001);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self, 
@@ -215,7 +216,7 @@ void driver_Command_Method61D337(PVOID self, PVOID unit, PVOID target) {
 void driver_Convert_Remade(PVOID unit, PVOID target) {
   PVOID buffer = driver_New(0x44);
   driver_Command_Method61D337(buffer, unit, target);
-  driver_IssueCommand(unit, buffer, (PVOID)0x7D4);
+  driver_IssueCommand(unit, buffer, (PVOID)DRIVER_CONVERT_SPECIAL_CONST);
 }
 
 PVOID createArray(vector<PVOID> &units) {
@@ -227,13 +228,13 @@ PVOID createArray(vector<PVOID> &units) {
 }
 
 void driver_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transport) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x227286);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_LOAD_001);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
-  size_t physicsBuffer = *(size_t *)((size_t)lib_BaseAddress() + 0x5318F0);
+  size_t physicsBuffer = *(size_t *)((size_t)lib_BaseAddress() + DRIVER_PHYSICS_BUFFER_OFFSET);
   PVOID variablePointer = (PVOID)((physicsBuffer & 0xFFFFFF00) | 0x2);
   PVOID unitBuffer = createArray(units);
-  PVOID input[] = {variablePointer, unitBuffer, (PVOID)((size_t)unitBuffer + 0x4 * units.size())};
+  PVOID input[] = {variablePointer, unitBuffer, (PVOID)((size_t)unitBuffer + sizeof(PVOID) * units.size())};
   method(self, 
          transport,
          &input,
@@ -244,44 +245,44 @@ void driver_Transport_Load(vector<PVOID> &units, PVOID transport) {
   size_t bufferSize = 0x68;
   PVOID buffer = driver_New(bufferSize);
   driver_Command_Method627286(buffer, units, transport);
-  driver_IssueCommand(transport, buffer, (PVOID)0x1F40);
+  driver_IssueCommand(transport, buffer, (PVOID)DRIVER_DEFAULT_SPECIAL_CONST);
   for(size_t i = 0, c = units.size(); i < c; i++) {
     PVOID cpyBuffer = driver_New(bufferSize);
     driver_Command_Method627286(cpyBuffer, units, transport);
-    driver_IssueCommand(units[i], cpyBuffer, (PVOID)0x1F40);
+    driver_IssueCommand(units[i], cpyBuffer, (PVOID)DRIVER_DEFAULT_SPECIAL_CONST);
   }
 }
 
 PVOID driver_Transport_Ref(PVOID unit) {
-  return (PVOID)(*(size_t *)((size_t)unit + 0x70));
+  return (PVOID)(*(size_t *)((size_t)unit + DRIVER_TRANSPORT_UNITS_OFFSET_START));
 }
 
 size_t driver_Transport_UnitsCount(PVOID unit) {
-  return (*(size_t *)((size_t)unit + 0x74) - *(size_t *)((size_t)unit + 0x70)) / 0x4;
+  return (*(size_t *)((size_t)unit + DRIVER_TRANSPORT_UNITS_OFFSET_END) - *(size_t *)((size_t)unit + DRIVER_TRANSPORT_UNITS_OFFSET_START)) / sizeof(PVOID);
 }
 
 PVOID driver_TechNode(TechTree tree, AbilityTypes ability) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x18A4);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_TECH_NODE);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(ply_TechTree_Ref(tree), 
          (PVOID)ability);
 }
 
 PVOID driver_AbilityPointer(PVOID manager, size_t abilityIndex) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0xAE71D);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_ABILITY_POINTER);
   PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
   return method(manager, 
          (PVOID)&abilityIndex);
 }
 
 int32_t driver_AbilityEnergy(PVOID reference) {
-  PVOID energyMethod = (PVOID)*(size_t *)(*(size_t *)reference + 0x10);
+  PVOID energyMethod = (PVOID)*(size_t *)(*(size_t *)reference + DRIVER_INSTANCE_ABILITY_COST);
   PVOID __thiscall (*method)(PVOID) = (PVOID __thiscall (*)(PVOID)) ((uint8_t *)energyMethod);
   return (int32_t)method(reference);
 }
 
 void driver_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2283FF);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_UNLOAD);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self,
@@ -294,19 +295,19 @@ void driver_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
 void driver_Transport_Unload(PVOID transport, TilePoint tile) {
   PVOID buffer = driver_New(0x40);
   driver_Command_Method6283FF(buffer, transport, tile);
-  driver_IssueCommand(transport, buffer, (PVOID)0x1F40);
+  driver_IssueCommand(transport, buffer, (PVOID)DRIVER_DEFAULT_SPECIAL_CONST);
 }
 
 PVOID driver_Building_Ref() {
-  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + 0x449520 + 0x30);
+  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + DRIVER_BUILDING_REF);
 }
 
 PVOID driver_Building_GetTemplate(size_t index) {
-  return (PVOID)*(size_t *)(index * 0x4 + 0x5636AC + (size_t)lib_BaseAddress());
+  return (PVOID)*(size_t *)(index * sizeof(PVOID) + DRIVER_BUILDING_TEMPLATE + (size_t)lib_BaseAddress());
 }
 
 void driver_Building_629A56(PVOID unit) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x229A56);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_BUILDING_001);
   PVOID __thiscall (*method)(PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)methodStruct);
 
@@ -338,7 +339,7 @@ void driver_Building_Create(PVOID citizen, TilePoint position, PVOID type) {
 }
 
 void driver_Command_Target_Method6209C9(PVOID self, PVOID unit, PVOID target, TilePoint tile, AbilityTypes ability) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + 0x2209C9);
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAST_UNIT_ABILITY);
   PVOID __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
       (PVOID __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
   method(self, 
@@ -354,5 +355,5 @@ void driver_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, Abil
   PVOID buffer = driver_New(0x34);
   TilePoint tile = geom_Tile_FromPoint(targetPoint);
   driver_Command_Target_Method6209C9(buffer, unit, target, tile, ability);
-  driver_IssueCommand(unit, buffer, (PVOID)0x1F40);
+  driver_IssueCommand(unit, buffer, (PVOID)DRIVER_DEFAULT_SPECIAL_CONST);
 }
