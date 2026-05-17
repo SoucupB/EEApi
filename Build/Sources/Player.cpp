@@ -5,6 +5,7 @@
 #include "LibManager.h"
 #include "EETwa.h"
 #include "EETypesStructPrivate.h"
+#include "Offset.h"
 
 void ply_RegisterSelf(PPlayers playerData, Player self);
 void ply_RegisterNeutral(PPlayers playerData, Player self);
@@ -27,14 +28,14 @@ int8_t ply_PlayerCount() {
 
 uint8_t ply_PlayerIndex(Player player) {
   if(!ply_Reference(player)) {
-    return 20;
+    return PLAYER_ALL;
   }
-  return *(uint8_t *)util_Pointer(ply_Reference(player), 0x45C, INT8_T_TYPE);
+  return *(uint8_t *)util_Pointer(ply_Reference(player), PLAYER_INDEX, INT8_T_TYPE);
 }
 
 TechTree ply_TechTree(Player player) {
   return (TechTree) {
-    ._payload = (PVOID)*(size_t *)((size_t)ply_Reference(player) + 0x9CC)
+    ._payload = (PVOID)*(size_t *)((size_t)ply_Reference(player) + PLAYER_TECH_TREE)
   };
 }
 
@@ -85,7 +86,7 @@ Player ply_Neutral() {
 
 void ply_RegisterSelf(PPlayers playerData, Player self) {
   size_t playerClass = *(size_t *)ply_Reference(self);
-  if(playerClass != 0x43C330 + (size_t)lib_BaseAddress()) {
+  if(playerClass != PLAYER_INSTANCE_CLASS_INSTANCE + (size_t)lib_BaseAddress()) {
     return ;
   }
   uint8_t playerIndex = ply_PlayerIndex(self);
@@ -96,7 +97,7 @@ void ply_RegisterSelf(PPlayers playerData, Player self) {
 
 void ply_RegisterNeutral(PPlayers playerData, Player player) {
   size_t playerClass = *(size_t *)ply_Reference(player);
-  if(playerClass != 0x43C330 + (size_t)lib_BaseAddress()) {
+  if(playerClass != PLAYER_INSTANCE_CLASS_INSTANCE + (size_t)lib_BaseAddress()) {
     return ;
   }
   uint8_t playerIndex = ply_PlayerIndex(player);
@@ -106,11 +107,11 @@ void ply_RegisterNeutral(PPlayers playerData, Player player) {
 }
 
 int8_t ply_Index_AreAllies(uint8_t plySrc, uint8_t plyDst) {
-  PVOID _1 = util_Pointer(lib_BaseAddress(), 0x530DB4 + 0x4 * plySrc, POINTER_TYPE);
+  PVOID _1 = util_Pointer(lib_BaseAddress(), PLAYER_PLAYER_OFFSETS + 0x4 * plySrc, POINTER_TYPE);
   if(!_1) {
     return 0;
   }
-  uint8_t *_2 = (uint8_t *)util_Pointer(_1, 0x4 * plyDst + 0x9DC, INT8_T_TYPE);
+  uint8_t *_2 = (uint8_t *)util_Pointer(_1, 0x4 * plyDst + PLAYER_PLAYER_ALLY_OFFSET, INT8_T_TYPE);
 
   return !*_2;
 }
@@ -156,13 +157,13 @@ void ply_Print() {
 }
 
 int32_t ply_CurrentPopulation(Player player) {
-  return *(int32_t *)util_Pointer(ply_Reference(player), 0xB14, INT32_T_TYPE);
+  return *(int32_t *)util_Pointer(ply_Reference(player), PLAYER_CURRENT_POPULATION, INT32_T_TYPE);
 }
 
 int32_t ply_TotalPop(Player player) {
   const PVOID plyRef = ply_Reference(player);
-  size_t additionPop = *(size_t *)((size_t)plyRef + 0xB24);
-  size_t skillsPop = *(size_t *)((size_t)plyRef + 0xB20);
-  size_t mapPop = *(size_t *)((size_t)lib_BaseAddress() + 0x530E14);
+  size_t additionPop = *(size_t *)((size_t)plyRef + PLAYER_VARIABLE_TOTAL_POP);
+  size_t skillsPop = *(size_t *)((size_t)plyRef + PLAYER_VARIABLE_CIV_POINTS_TOTAL_POP);
+  size_t mapPop = *(size_t *)((size_t)lib_BaseAddress() + PLAYER_MAP_TOTAL_POP);
   return additionPop + skillsPop + mapPop;
 }
