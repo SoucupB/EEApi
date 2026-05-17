@@ -7,6 +7,7 @@
 #include "PlayerPrivate.h"
 #include "EETypesStructPrivate.h"
 #include "MethodsDefinitions.h"
+#include "Offset.h"
 
 uint8_t res_IsUnitResource(PVOID simpleUnit);
 
@@ -37,14 +38,14 @@ vector<Resource> res_All() {
 
 char *res_Name(Resource self) {
   PVOID ref = res_Reference(self);
-  size_t classOffset = *(size_t *)((size_t)ref + 0x2C);
+  size_t classOffset = *(size_t *)((size_t)ref + RESOURCE_CLASS);
   
-  return (char *)(*(size_t *)(classOffset + 0x1C));
+  return (char *)(*(size_t *)(classOffset + RESOURCE_CLASS_NAME));
 }
 
 NeutralUnitType res_Type(Resource unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, 0x2C, POINTER_TYPE);
-  return (NeutralUnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x260, INT32_T_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer((PVOID)unit._payload, RESOURCE_CLASS, POINTER_TYPE);
+  return (NeutralUnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, RESOURCE_CLASS_TYPE, INT32_T_TYPE);
 }
 
 uint8_t res_IsUnitResource(PVOID simpleUnit) {
@@ -66,8 +67,8 @@ Resource res_Null() {
 }
 
 TilePoint res_Tile_Position(Resource self) {
-  int32_t x = *(int32_t *)util_Pointer(res_Reference(self), 0x1C, INT32_T_TYPE);
-  int32_t y = *(int32_t *)util_Pointer(res_Reference(self), 0x20, INT32_T_TYPE);
+  int32_t x = *(int32_t *)util_Pointer(res_Reference(self), RESOURCE_TILE_X, INT32_T_TYPE);
+  int32_t y = *(int32_t *)util_Pointer(res_Reference(self), RESOURCE_TILE_Y, INT32_T_TYPE);
   return (TilePoint) {
     .x = x,
     .y = y
@@ -75,8 +76,8 @@ TilePoint res_Tile_Position(Resource self) {
 }
 
 Point res_Point_Position(Resource self) {
-  float *x = (float *)util_Pointer(res_Reference(self), 0x13C, FLOAT_TYPE);
-  float *y = (float *)util_Pointer(res_Reference(self), 0x14C, FLOAT_TYPE);
+  float *x = (float *)util_Pointer(res_Reference(self), RESOURCE_POINT_X, FLOAT_TYPE);
+  float *y = (float *)util_Pointer(res_Reference(self), RESOURCE_POINT_Y, FLOAT_TYPE);
   return (Point) {
     .x = *x,
     .y = *y
