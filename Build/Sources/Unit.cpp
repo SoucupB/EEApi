@@ -9,6 +9,7 @@
 #include "Game.h"
 #include "Ability.h"
 #include "EETypesStructPrivate.h"
+#include "Offset.h"
 
 uint8_t unit_IsPresent(Unit unit);
 
@@ -64,15 +65,15 @@ vector<Unit> unit_Player_GetUnits(Player ply) {
 }
 
 int32_t unit_BuildablesCount(Unit unit) {
-  size_t *typeMetaPointer = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
-  int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x196DFF);
+  size_t *typeMetaPointer = (size_t *)util_Pointer(unit_Reference(unit), UNIT_CLASS, POINTER_TYPE);
+  int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + UNIT_METHOD_BUILDABLE_COUNT);
   return method(typeMetaPointer);
 }
 
 PVOID unit_EpochStruct(PVOID building, PVOID unitType) {
-  size_t *buildingMetaData = (size_t *)util_Pointer((PVOID)building, 0x18, POINTER_TYPE);
-  size_t *epochStruct = (size_t *)util_Pointer((PVOID)buildingMetaData, 0x9CC, POINTER_TYPE);
-  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x18A4);
+  size_t *buildingMetaData = (size_t *)util_Pointer((PVOID)building, UNIT_PLAYER_OFFSET, POINTER_TYPE);
+  size_t *epochStruct = (size_t *)util_Pointer((PVOID)buildingMetaData, UNIT_EPOCH_STRUCT, POINTER_TYPE);
+  PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + UNIT_METHOD_EPOCH_STRUCT);
 
   return method((PVOID)epochStruct, unitType);
 }
@@ -83,15 +84,15 @@ uint8_t unit_CanBuild(Unit building, UnitType type) {
     return 0;
   }
 
-  size_t *checkMethod = (size_t *)util_Pointer((PVOID)(epochStruct[0]), 0x4, POINTER_TYPE);
+  size_t *checkMethod = (size_t *)util_Pointer((PVOID)(epochStruct[0]), UNIT_METHOD_INSTANCE_OFFSET_EPOCH_STRUCT, POINTER_TYPE);
   int8_t __thiscall (*method)(PVOID) = (int8_t __thiscall (*)(PVOID)) ((uint8_t *)checkMethod);
 
   return method((PVOID)epochStruct);
 }
 
 vector<UnitType> unit_AllBuildableTypes(Unit unit) {
-  size_t *typeMetaPointer = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
-  size_t *buildableTypes = (size_t *)util_Pointer((PVOID)typeMetaPointer, 0x30, POINTER_TYPE);
+  size_t *typeMetaPointer = (size_t *)util_Pointer(unit_Reference(unit), UNIT_CLASS, POINTER_TYPE);
+  size_t *buildableTypes = (size_t *)util_Pointer((PVOID)typeMetaPointer, UNIT_BUILDABLE_OBJECTS, POINTER_TYPE);
   vector<UnitType> types;
   if(!buildableTypes) {
     return types;
@@ -109,7 +110,7 @@ vector<UnitType> unit_AllBuildableTypes(Unit unit) {
 
 char *unit_Name(Unit unit) {
   const PVOID ref = unit_Reference(unit);
-  return (char *)((size_t *)(*(size_t *)ref + 0x2C) + 0x1C);
+  return (char *)((size_t *)(*(size_t *)ref + UNIT_CLASS) + UNIT_CLASS_NAME);
 }
 
 void unit_Build(Unit building, UnitType type) {
@@ -117,7 +118,7 @@ void unit_Build(Unit building, UnitType type) {
   if(ply_CurrentPopulation(currentPlayer) >= ply_TotalPop(currentPlayer)) {
     return ;
   }
-  int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1F5F97);
+  int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + UNIT_METHOD_BUILD);
   PEETwa eeTwa = game_EETwa();
   eeTwa->shouldCostBeReduced = 1;
   method(building._payload, (PVOID)type, 0);
@@ -177,7 +178,7 @@ vector<Unit> unit_FilterWithBuffer(uint8_t (*method)(Unit, PVOID), PVOID buffer)
 }
 
 int32_t unit_CurrentlyBuilding(Unit building) {
-  return *(int32_t *)util_Pointer((PVOID)building._payload, 0x260, INT32_T_TYPE);
+  return *(int32_t *)util_Pointer((PVOID)building._payload, UNIT_CURRENTLY_BUILDING, INT32_T_TYPE);
 }
 
 vector<Unit> unit_IdleBuildings(int8_t player) {
@@ -207,7 +208,7 @@ int8_t unit_Building_IsIdle(Unit building) {
 }
 
 int8_t unit_IsBuildingComplete(Unit unit) {
-  int8_t *isBuildingRef = (int8_t *)util_Pointer(unit_Reference(unit), 0x34C, INT8_T_TYPE);
+  int8_t *isBuildingRef = (int8_t *)util_Pointer(unit_Reference(unit), UNIT_IS_BUILDING_COMPLETE, INT8_T_TYPE);
   
   return *isBuildingRef;
 }
@@ -228,12 +229,12 @@ uint8_t unit_IsNeutral(Unit unit) {
 }
 
 int8_t unit_IsIdle(Unit unit) {
-  return !util_Pointer(unit_Reference(unit), 0x1F0, POINTER_TYPE);
+  return !util_Pointer(unit_Reference(unit), UNIT_ACTION_POINTER_INSTANCE, POINTER_TYPE);
 }
 
 Point unit_Point_Position(Unit unit) {
-  float *x = (float *)util_Pointer(unit_Reference(unit), 0x13C, FLOAT_TYPE);
-  float *y = (float *)util_Pointer(unit_Reference(unit), 0x14C, FLOAT_TYPE);
+  float *x = (float *)util_Pointer(unit_Reference(unit), UNIT_POINT_X, FLOAT_TYPE);
+  float *y = (float *)util_Pointer(unit_Reference(unit), UNIT_POINT_Y, FLOAT_TYPE);
   return (Point) {
     .x = *x,
     .y = *y
@@ -245,8 +246,8 @@ int8_t unit_IsBuilding(Unit unit) {
 }
 
 TilePoint unit_Tile_Position(Unit unit) {
-  int32_t x = *(int32_t *)util_Pointer(unit_Reference(unit), 0x1C, INT32_T_TYPE);
-  int32_t y = *(int32_t *)util_Pointer(unit_Reference(unit), 0x20, INT32_T_TYPE);
+  int32_t x = *(int32_t *)util_Pointer(unit_Reference(unit), UNIT_TILE_X, INT32_T_TYPE);
+  int32_t y = *(int32_t *)util_Pointer(unit_Reference(unit), UNIT_TILE_Y, INT32_T_TYPE);
   return (TilePoint) {
     .x = x,
     .y = y
@@ -254,7 +255,7 @@ TilePoint unit_Tile_Position(Unit unit) {
 }
 
 uint8_t unit_CurrentEnergy(Unit unit) {
-  uint8_t *energyPointer = (uint8_t *)util_Pointer(unit_Reference(unit), 0x2D4, INT8_T_TYPE);
+  uint8_t *energyPointer = (uint8_t *)util_Pointer(unit_Reference(unit), UNIT_ENERGY, INT8_T_TYPE);
   return *energyPointer;
 }
 
@@ -291,33 +292,31 @@ void unit_Object_CastAbility(Unit unit, Unit target, AbilityTypes ability) {
 }
 
 UnitType unit_Type(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
-  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, 0x1E4, INT32_T_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), UNIT_CLASS, POINTER_TYPE);
+  return (UnitType)*(int32_t *)util_Pointer((PVOID)unitMetaData, UNIT_TYPE, INT32_T_TYPE);
 }
 
 int32_t unit_CurrentHp(Unit unit) {
-  return *(int32_t *)util_Pointer(unit_Reference(unit), 0x3C, INT32_T_TYPE);
+  return *(int32_t *)util_Pointer(unit_Reference(unit), UNIT_CURRENT_HP, INT32_T_TYPE);
 }
 
 int32_t unit_TotalHP(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
-  return *(int32_t *)util_Pointer((PVOID)unitMetaData, 0x144, INT32_T_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), UNIT_CIV_ATTRIBUTE, POINTER_TYPE);
+  return *(int32_t *)util_Pointer((PVOID)unitMetaData, UNIT_CIV_ATTRIBUTE_TOTAL_HP, INT32_T_TYPE);
 }
 
 float unit_TotalDamage(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
-  return *(float *)util_Pointer((PVOID)unitMetaData, 0xD8, FLOAT_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), UNIT_CIV_ATTRIBUTE, POINTER_TYPE);
+  return *(float *)util_Pointer((PVOID)unitMetaData, UNIT_CIV_ATTRIBUTE_TOTAL_DAMAGE, FLOAT_TYPE);
 }
 
 // This method is not good yet.
 float unit_TotalSpeed(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
-  return *(float *)util_Pointer((PVOID)unitMetaData, 0xBD4, FLOAT_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), UNIT_CIV_ATTRIBUTE, POINTER_TYPE);
+  return *(float *)util_Pointer((PVOID)unitMetaData, UNIT_CIV_ATTRIBUTE_TOTAL_SPEED, FLOAT_TYPE);
 }
 
 uint8_t unit_GetPlayerIndex(Unit unit) {
-  // PVOID nextStruct = util_Pointer(unit_Reference(unit), 0x18, POINTER_TYPE);
-  // return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
   return ply_GetPlayerIndex(unit);
 }
 
@@ -468,8 +467,8 @@ void unit_Transport_Unload(Unit transport, TilePoint tile) {
 }
 
 float unit_Range(Unit unit) {
-  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), 0x34, POINTER_TYPE);
-  return *(float *)util_Pointer((PVOID)unitMetaData, 0x9C, FLOAT_TYPE);
+  size_t *unitMetaData = (size_t *)util_Pointer(unit_Reference(unit), UNIT_CIV_ATTRIBUTE, POINTER_TYPE);
+  return *(float *)util_Pointer((PVOID)unitMetaData, UNIT_CIV_ATTRIBUTE_TOTAL_RANGE, FLOAT_TYPE);
 }
 
 float unit_Distance(Unit first, Unit dst) {
@@ -488,9 +487,9 @@ void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
 }
 
 int32_t unit_Population(Unit unit) {
-  PVOID unitTypeStruct = util_Pointer(unit_Reference(unit), 0x2C, POINTER_TYPE);
+  PVOID unitTypeStruct = util_Pointer(unit_Reference(unit), UNIT_CLASS, POINTER_TYPE);
   PVOID callerMethods = util_Pointer(unitTypeStruct, 0x0, POINTER_TYPE);
-  PVOID callee = util_Pointer(callerMethods, 0x6C, POINTER_TYPE);
+  PVOID callee = util_Pointer(callerMethods, UNIT_METHOD_INSTANCE_OFFSET_POPULATION, POINTER_TYPE);
   int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callee);
 
   return method(unitTypeStruct);
