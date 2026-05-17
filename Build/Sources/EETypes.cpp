@@ -1,6 +1,7 @@
 #include "EETypes.h"
 #include "Game.h"
 #include "EETypesStructPrivate.h"
+#include "Offset.h"
 
 void eeTypes_InitUnitTemplates();
 static inline UnitType eeTypes_TypeFromTemplate(PVOID unitTemplate);
@@ -96,11 +97,11 @@ NeutralClassType eeTypes_Neutral_Type(NeutralUnitType unitType) {
 }
 
 static inline UnitType eeTypes_TypeFromTemplate(const PVOID unitTemplate) {
-  return (UnitType)*(size_t *)((size_t)unitTemplate + 0x1E4);
+  return (UnitType)*(size_t *)((size_t)unitTemplate + EETYPES_TYPE_FROM_TEMPLATE);
 }
 
 static inline AbilityTypes eeTypes_GetAbilityRef(const PVOID unitTemplate, const size_t index) {
-  const size_t unitTemplateOffset = (*(size_t *)((size_t)unitTemplate + 0x30));
+  const size_t unitTemplateOffset = (*(size_t *)((size_t)unitTemplate + EETYPES_UNIT_TEMPLATE_OFFSET));
   if(!unitTemplateOffset) {
     return (AbilityTypes)NULL;
   }
@@ -135,12 +136,12 @@ char *eeTypes_Name(UnitType type) {
     return NULL;
   }
   PVOID temp = (*eTypes->unitTemplatePointers)[type];
-  return (char *)*(size_t *)((size_t)temp + 0x1C);
+  return (char *)*(size_t *)((size_t)temp + EETYPES_UNIT_NAME_FROM_TEMPLATE);
 }
 
 void eeTypes_InitUnitTemplates() {
   PEETypes eTypes = game_GetEETypes();
-  for(size_t i = 0; i < 0xD3C / 0x4; i++) {
+  for(size_t i = 0; i < EETYPES_TEMPLATE_COUNT; i++) {
     PVOID unitTemplate = helper_Building_GetTemplate(i);
     if(!unitTemplate) {
       continue;
@@ -152,7 +153,7 @@ void eeTypes_InitUnitTemplates() {
 
 void eeTypes_InitAbilitiesTemplate() {
   PEETypes eTypes = game_GetEETypes();
-  for(size_t i = 0; i < 0xD3C / 0x4; i++) {
+  for(size_t i = 0; i < EETYPES_TEMPLATE_COUNT; i++) {
     PVOID unitTemplate = helper_Building_GetTemplate(i);
     if(!unitTemplate) {
       continue;
@@ -162,7 +163,7 @@ void eeTypes_InitAbilitiesTemplate() {
 }
 
 static inline size_t eeTypes_AbilityCount(PVOID unitTemplate) {
-  return (*(size_t *)((size_t)unitTemplate + 0x34) - *(size_t *)((size_t)unitTemplate + 0x30)) / sizeof(PVOID);
+  return (*(size_t *)((size_t)unitTemplate + EETYPES_ABILITY_ARRAY_END) - *(size_t *)((size_t)unitTemplate + EETYPES_ABILITY_ARRAY_START)) / sizeof(PVOID);
 }
 
 PVOID eeTypes_GetTemplate(UnitType typeIndex) {

@@ -13,6 +13,7 @@
 #include "EETwaPrivate.h"
 #include "InjectUtilities.h"
 #include "Helpers.h"
+#include "Offset.h"
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
@@ -89,10 +90,6 @@ void __cdecl eeTa_OnUnitDeath(Unit unit) {
   bt_OnUnitDestroy(unit);
 }
 
-PVOID eeTa_GetPlayer() {
-  return util_Pointer(lib_BaseAddress(), 0x530DB8, POINTER_TYPE);
-}
-
 int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double)) {
   PEETwa eeTwa = game_EETwa();
   if(eeTwa->shouldCostBeReduced) {
@@ -158,35 +155,29 @@ void eeTa_AddFrameMethod(TimeAtom atom) {
   tmrs_AddMethod(game_EETwa()->timers, atom);
 }
 
-PVOID eeTa_CreateDestionationPointer() {
-  size_t totalSize = 0x38;
-  PVOID response = help_New(totalSize);
-  memset(response, 0, totalSize);
-  return response;
-}
-
 PVOID eeTa_SetPlayers(PVOID unit) {
   PVOID selectedUnits = help_New(sizeof(PVOID));
   memcpy(selectedUnits, &unit, sizeof(PVOID));
   return selectedUnits;
 }
 
-Point eeTa_GetDestinationCommand(Unit unit) {
-  PVOID commandPointer = util_Pointer(unit._payload, 0x1C8, POINTER_TYPE);
-  if(!commandPointer) {
-    return (Point) {
-      .x = -1.0f,
-      .y = -1.0f
-    };
-  }
-  PVOID metaPointer = util_Pointer(commandPointer, 0x34, POINTER_TYPE);
-  float *positionPointer = (float *)util_Pointer(metaPointer, 0x48, FLOAT_TYPE);
+// Needs refactoring.
+// Point eeTa_GetDestinationCommand(Unit unit) {
+//   PVOID commandPointer = util_Pointer(unit._payload, 0x1C8, POINTER_TYPE);
+//   if(!commandPointer) {
+//     return (Point) {
+//       .x = -1.0f,
+//       .y = -1.0f
+//     };
+//   }
+//   PVOID metaPointer = util_Pointer(commandPointer, 0x34, POINTER_TYPE);
+//   float *positionPointer = (float *)util_Pointer(metaPointer, 0x48, FLOAT_TYPE);
 
-  return (Point) {
-    .x = positionPointer[0],
-    .y = positionPointer[1]
-  };
-}
+//   return (Point) {
+//     .x = positionPointer[0],
+//     .y = positionPointer[1]
+//   };
+// }
 
 int64_t eeTa_CurrentFrame() {
   PEETwa eeTwa = game_EETwa();
@@ -198,6 +189,6 @@ uint8_t eeTa_ShouldOnInitExecute() {
 }
 
 int8_t eeTa_Player(Unit unit) {
-  PVOID nextStruct = util_Pointer((PVOID)unit._payload, 0x18, POINTER_TYPE);
-  return *(uint8_t *)util_Pointer((PVOID)nextStruct, 0x45C, INT8_T_TYPE);
+  PVOID nextStruct = util_Pointer((PVOID)unit._payload, UNIT_PLAYER_OFFSET, POINTER_TYPE);
+  return *(uint8_t *)util_Pointer((PVOID)nextStruct, UNIT_PLAYER_OFFSET_INDEX, INT8_T_TYPE);
 }

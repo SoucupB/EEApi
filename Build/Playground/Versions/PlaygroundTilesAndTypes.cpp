@@ -129,8 +129,6 @@ void printPositions() {
   }
 }
 
-
-
 uint8_t isUnitChar(char element) {
   return isdigit(element) || isalpha(element);
 }
