@@ -4,6 +4,9 @@
 #include <windows.h>
 #include "MapData.h"
 #include "EETypes.h"
+#include "TimerHelperPrivate.h"
+#include "EETypesStructPrivate.h"
+#include "Offset.h"
 
 using namespace std;
 
@@ -52,9 +55,10 @@ void game_EETwa_Init(PGame game) {
   memset(game->eeTwa, 0, sizeof(EETwa));
   for(size_t i = 0; i < sizeof(game->eeTwa->unitPresence) / sizeof(unordered_map<PVOID, uint8_t> *); i++) {
     game->eeTwa->unitPresence[i] = new unordered_map<PVOID, uint8_t>();
+    game->eeTwa->simpleUnitPresence[i] = new unordered_map<PVOID, uint8_t>();
   }
   game->eeTwa->playersCount = (int8_t)(sizeof(game->eeTwa->unitPresence) / sizeof(unordered_map<PVOID, uint8_t> *));
-  game->eeTwa->all_players = 20;
+  game->eeTwa->all_players = PLAYER_ALL;
   game->eeTwa->playerIndex = 1;
   game->eeTwa->neutralPlayer = 0;
   game->eeTwa->shouldCostBeReduced = 0;
@@ -114,6 +118,9 @@ void game_EETwa_Delete(PGame game) {
   for(size_t i = 0, c = game->eeTwa->playersCount; i < c; i++) {
     if(game->eeTwa->unitPresence[i]) {
       delete game->eeTwa->unitPresence[i];
+    }
+    if(game->eeTwa->simpleUnitPresence[i]) {
+      delete game->eeTwa->simpleUnitPresence[i];
     }
   }
   tmrs_Delete(game->eeTwa->timers);

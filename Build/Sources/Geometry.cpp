@@ -5,6 +5,7 @@
 #include "EETwa.h"
 #include "Unit.h"
 #include "Player.h"
+#include "EETypesStructPrivate.h"
 
 float distancef(Point a, Point b) {
   return fabs(a.x - b.x) + fabs(a.y - b.y);

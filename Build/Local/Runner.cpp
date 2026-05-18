@@ -147,14 +147,6 @@ void checkEpochPointer() {
   }
 }
 
-void convert() {
-  if(GetAsyncKeyState('P') & 0x8000) {
-    vector<Unit> units = unit_Player_GetUnits(ply_Self());
-    att_ConvertIfNecessary(units);
-    Beep(400, 250);
-  }
-}
-
 void bt_HuntTransports(PVOID attributes) {
   vector<Unit> units = unit_Player_GetUnits(ply_Null());
   att_AttackTransportWithNavals(units);
@@ -262,21 +254,16 @@ void bt_AttackWithShipsEverywhere() {
   eeTa_AddFrameMethod(atom);
 }
 
-void bt_OnUnitIteration(Unit unit) {
-  pls_OnUnitIteration(unit);
-}
-
 void bt_OnUnitDestroy(Unit unit) {
-  pls_OnUnitDestory(unit);
 }
 
 void bt_InitAggresiveness() {
-  int8_t *playerIndexes = eeTa_PlayerIDs();
-  for(size_t i = 0; i < 20; i++) {
-    if(i != 1 && playerIndexes[i]) {
-      eeTa_SetCvCAggression(i, 50.0f);
-    }
-  }
+  // int8_t *playerIndexes = eeTa_PlayerIDs();
+  // for(size_t i = 0; i < 20; i++) {
+  //   if(i != 1 && playerIndexes[i]) {
+  //     eeTa_SetCvCAggression(i, 50.0f);
+  //   }
+  // }
 }
 
 SpawnLocation getSelfCapitol() {

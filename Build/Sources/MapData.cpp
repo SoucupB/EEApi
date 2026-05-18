@@ -3,16 +3,18 @@
 #include <stdlib.h>
 #include "LibManager.h"
 #include "Game.h"
+#include "EETypesStructPrivate.h"
+#include "Offset.h"
 
 using namespace std;
 
 #define PLANE_MARK_BIT (1<<15)
 
-static const size_t mapPointer = 0x530DFC;
-static const size_t mapTileCount = 0x195618;
-static const size_t tileStructPointer = 0x1955F0;
-static const size_t isWaterMethodOffset = 0x12681;
-static const size_t mapPointerTileOffset = 0x1C;
+static const size_t mapPointer = MAPDATA_REMOTE_METHOD_MAP_POINTER;
+static const size_t mapTileCount = MAPDATA_TILE_COUNT;
+static const size_t tileStructPointer = MAPDATA_TILE_STRUCT_POINTER;
+static const size_t isWaterMethodOffset = MAPDATA_REMOTE_METHOD_IS_WATER_TILE;
+static const size_t mapPointerTileOffset = MAPDATA_MAP_POINTER_TILE_OFFSET;
 
 static inline uint8_t map_TileConnex_IsMarked(TileConnexStruct self);
 static inline void map_TileConnex_Mark(TileConnexStruct *self);

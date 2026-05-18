@@ -204,7 +204,7 @@ __declspec(dllexport) void randomChecker() {
 }
 
 PVOID createCalamityStruct(Point pos, Ability ability) {
-  PVOID calamityBuffer = help_New(0x24);
+  PVOID calamityBuffer = driver_New(0x24);
   int32_t xPos = (int32_t)pos.x;
   int32_t yPos = (int32_t)pos.y;
 
@@ -247,7 +247,7 @@ void unknownMethod4BC7AF(PVOID unit) {
 }
 
 void queueCommand(PVOID unit, Point target, Ability ability) {
-  PVOID pntTarget = help_New(0x34);
+  PVOID pntTarget = driver_New(0x34);
   PVOID calamityStruct = createCalamityStruct(target, ability);
   fillCalamityStruct(unit, calamityStruct, pntTarget);
   addCommandToUnit(unit, pntTarget);

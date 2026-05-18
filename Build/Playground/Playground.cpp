@@ -9,6 +9,7 @@
 #include "Resource.h"
 #include "Player.h"
 #include "Ability.h"
+#include "PlayerPrivate.h"
 
 void test_PrintUnits();
 void printSpells();

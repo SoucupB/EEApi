@@ -5,8 +5,13 @@
 #include "MethodsDefinitions.h"
 #include "LibManager.h"
 #include "EETwa.h"
-#include "Helpers.h"
+#include "Driver.h"
 #include "Resource.h"
+#include "ResourcePrivate.h"
+#include "EETypesStructPrivate.h"
+#include "EETwaPrivate.h"
+#include "Offset.h"
+#include "MethodsDefinitions.h"
 
 static size_t mapPolygons;
 void eeTa_RebuildExtraDataStructure();
@@ -15,7 +20,7 @@ void rebuildDataStructures();
 
 extern "C" {
   __declspec(dllexport) int32_t __thiscall onUnitIteration(PVOID self) {
-    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1540DC);
+    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_UNIT_ITERATION);
     PEmpireEarthHook hook = game_EmpHook();
     eeTa_OnUnitFrame((Unit) {
       ._payload = self
@@ -25,7 +30,7 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t __thiscall onFrame(PVOID self) {
-    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x15401E);
+    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_FRAME);
     PEmpireEarthHook hook = game_EmpHook();
     if(!hook->hasIterationBeenExecuted) {
       return method(self);
@@ -42,7 +47,7 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t __thiscall onUnitDeath(PVOID self, PVOID _a, PVOID _b, PVOID _c) {
-    int32_t __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x22975A);
+    int32_t __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_UNIT_DEATH);
     eeTa_OnUnitDeath((Unit) {
       ._payload = self
     });
@@ -50,7 +55,7 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t __thiscall onPlanePark(PVOID self) {
-    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1FDAF3);
+    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_PLANE_PARK);
     eeTa_OnUnitDeath((Unit) {
       ._payload = self
     });
@@ -58,7 +63,7 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t __fastcall onUnitDelete(PVOID self) {
-    int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1DB4);
+    int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_UNIT_DELETE);
     eeTa_OnUnitDeath((Unit) {
       ._payload = self
     });
@@ -66,7 +71,7 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t __thiscall onResourceRelease(PVOID self) {
-    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1DB4);
+    int32_t __thiscall (*method)(PVOID) = (int32_t __thiscall (*)(PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_UNIT_DELETE);
     res_OnRelease((Resource) {
       ._payload = self
     });
@@ -74,12 +79,12 @@ extern "C" {
   }
 
   __declspec(dllexport) int32_t onUnitBuy(long double multiplier) {
-    int32_t (*method)(long double) = (int32_t (*)(long double)) ((uint8_t *)lib_BaseAddress() + 0x148291);
+    int32_t (*method)(long double) = (int32_t (*)(long double)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_UNIT_BUY);
     return eeTa_OnUnitBuy(multiplier, method);
   }
 
   __declspec(dllexport) PVOID __thiscall onResourceInit(PVOID player, PVOID unit) {
-    PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x16F49E);
+    PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_RESOURCE_INIT);
     res_InitResource(unit);
     return method(player, unit);
   }
@@ -96,20 +101,20 @@ void rebuildDataStructures() {
 }
 
 void setMapStart() {
-  size_t *methodPointer = (size_t *)((size_t)(lib_BaseAddress()) + 0x437924);
+  size_t *methodPointer = (size_t *)((size_t)(lib_BaseAddress()) + REMOTE_METHOD_SET_MAP_START);
   builder_AllowRules(methodPointer, sizeof(size_t) * 2);
   mapPolygons = *methodPointer;
   *methodPointer = (size_t)onGameStart;
 }
 
 void addBotMethodsHooks() {
-  builder_Definition((PVOID)0x1540CD, (PVOID)onUnitIteration);
-  builder_Definition((PVOID)0x15321F, (PVOID)onFrame);
-  builder_Definition((PVOID)0x13B8CF, (PVOID)onUnitDelete);
-  builder_Definition((PVOID)0x1F5E09, (PVOID)onPlanePark);
-  builder_Definition((PVOID)0x16B3C3, (PVOID)onUnitBuy);
-  builder_Definition((PVOID)0x16F275, (PVOID)onResourceInit);
-  builder_Definition((PVOID)0x16F33E, (PVOID)onResourceRelease);
+  builder_Definition((PVOID)METHOD_HOOK_ON_UNIT_ITERATION, (PVOID)onUnitIteration);
+  builder_Definition((PVOID)METHOD_HOOK_ON_FRAME, (PVOID)onFrame);
+  builder_Definition((PVOID)METHOD_HOOK_ON_UNIT_DELETE, (PVOID)onUnitDelete);
+  builder_Definition((PVOID)METHOD_HOOK_ON_PLANE_PARK, (PVOID)onPlanePark);
+  builder_Definition((PVOID)METHOD_HOOK_ON_UNIT_BUY, (PVOID)onUnitBuy);
+  builder_Definition((PVOID)METHOD_HOOK_ON_RESOURCE_INIT, (PVOID)onResourceInit);
+  builder_Definition((PVOID)METHOD_HOOK_ON_RESOURCE_RELEASE, (PVOID)onResourceRelease);
   #if defined(REPLACE_MMU)
     builder_ReplaceMMUMethods();
   #endif
