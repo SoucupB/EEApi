@@ -1050,3 +1050,8 @@ From 0066E906 to 0066E970.
 
 I have all the variables for this 0066E970.
 004BC75C for the ability spawner.
+
+##########################################
+Finding if the building position can be made.
+Starting at 0x00644CAB <- 004BBE04 <- 004B8F10 <- 005537BA.
+The pointer at 0064CBAB seems interesting.

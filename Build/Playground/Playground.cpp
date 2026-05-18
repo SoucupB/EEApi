@@ -48,11 +48,10 @@ void test_PrintUnits() {
 }
 
 void printTileMethod() {
-  Unit citizen = getCitizen();
-  if(!unit_Reference(citizen)) {
-    return ;
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
+  for(int32_t i = 0; i < units.size(); i++) {
+    eeTa_FilePrintf("Is tile Z is %f\n", map_Tile_GetZ(unit_Tile_Position(units[i])));
   }
-  eeTa_FilePrintf("Is tile Z is %f\n", map_Tile_GetZ(unit_Tile_Position(citizen)));
 }
 
 void execDataPengus() {
