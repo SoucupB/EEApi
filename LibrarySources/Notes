@@ -1055,3 +1055,9 @@ I have all the variables for this 0066E970.
 Finding if the building position can be made.
 Starting at 0x00644CAB <- 004BBE04 <- 004B8F10 <- 005537BA.
 The pointer at 0064CBAB seems interesting.
+The method at 00643A12 is triggered when I want to build around it.
+00643A12 <- 0063E55D <- 0063E530
+I thing this method at 0063E530 is checking whether a buildinging can be built.
+#####################################################################
+The method at 0064F25A controls whether the building can be build here or not.
+It is _cdecl and returns into EAX 0 or 1 on the last 2 bytes.
