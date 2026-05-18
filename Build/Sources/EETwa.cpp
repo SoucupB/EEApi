@@ -3,7 +3,7 @@
 #include <vector>
 #include <stdarg.h>
 #include "PlayerState.h"
-#include "MapData.h"
+#include "MapDataPrivate.h"
 #include "LibManager.h"
 #include "Game.h"
 #include "Unit.h"

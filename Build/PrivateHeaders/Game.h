@@ -4,7 +4,7 @@
 #include <vector>
 #include <windows.h>
 #include <map>
-#include "MapData.h"
+#include "MapDataPrivate.h"
 #include "EETypes.h"
 #include "TimerHelper.h"
 #include "Player.h"

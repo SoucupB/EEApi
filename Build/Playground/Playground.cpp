@@ -16,6 +16,16 @@ void onLosingHealth(Unit unit) {
   eeTa_FilePrintf("Unit %p taking damage\n", unit_Reference(unit));
 }
 
+Unit getCitizen() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTypes_IsCitizen(unit_Type(units[i]))) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
 void test_PrintUnits() {
   vector<Unit> units = unit_Player_GetUnits(ply_Null());
   if(units.size()) {
@@ -37,6 +47,14 @@ void test_PrintUnits() {
   }
 }
 
+void printTileMethod() {
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  eeTa_FilePrintf("Is tile Z is %f\n", map_Tile_GetZ(unit_Tile_Position(citizen)));
+}
+
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
     test_PrintUnits();
@@ -48,6 +66,7 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {
+    printTileMethod();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {

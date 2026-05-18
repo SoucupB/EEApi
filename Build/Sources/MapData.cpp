@@ -16,6 +16,7 @@ static const size_t tileStructPointer = MAPDATA_TILE_STRUCT_POINTER;
 static const size_t isWaterMethodOffset = MAPDATA_REMOTE_METHOD_IS_WATER_TILE;
 static const size_t mapPointerTileOffset = MAPDATA_MAP_POINTER_TILE_OFFSET;
 static const size_t isEdgeMethodOffset = MAPDATA_REMOTE_METHOD_IS_EDGE_TILE;
+static const size_t zTileMethodOffset = MAPDATA_REMOTE_METHOD_TILE_GET_Z;
 
 static inline uint8_t map_TileConnex_IsMarked(TileConnexStruct self);
 static inline void map_TileConnex_Mark(TileConnexStruct *self);
@@ -108,6 +109,13 @@ uint8_t map_Tile_IsEdge(TilePoint self) {
   PVOID mapPointer = map_GetMapPointer();
   size_t isEdgeTileMethodOffset = (size_t)lib_LowLevelEngine() + isEdgeMethodOffset;
   uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isEdgeTileMethodOffset;
+  return method((PVOID)((size_t)mapPointer + mapPointerTileOffset), (PVOID)self.x, (PVOID)self.y);
+}
+
+float map_Tile_GetZ(TilePoint self) {
+  PVOID mapPointer = map_GetMapPointer();
+  size_t isEdgeTileMethodOffset = (size_t)lib_LowLevelEngine() + zTileMethodOffset;
+  float __thiscall (*method)(PVOID, PVOID, PVOID) = (float __thiscall (*)(PVOID, PVOID, PVOID))isEdgeTileMethodOffset;
   return method((PVOID)((size_t)mapPointer + mapPointerTileOffset), (PVOID)self.x, (PVOID)self.y);
 }
 
