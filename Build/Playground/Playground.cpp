@@ -99,8 +99,54 @@ void bt_OnInit() {
   // printSpells();
 }
 
+Point getNextPosition(Unit unit) {
+  Point currentPosition = unit_Point_Position(unit);
+  Point copyPosition = currentPosition;
+  currentPosition.x += sinf(rand()) * 20.0f;
+  currentPosition.y += sinf(rand()) * 20.0f;
+  int32_t index = 5;
+  while(index && map_Tile_GetPlaneID(geom_Tile_FromPoint(copyPosition)) != map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition))) {
+    currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
+    currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
+    index--;
+  }
+  if(!index) {
+    return geom_Point_Invalid();
+  }
+  return currentPosition;
+}
+
+uint8_t searchAndBuild(Unit citizen, UnitType buildingType) {
+  if(!unit_Reference(citizen) || !unit_IsIdle(citizen)) {
+    return 0;
+  }
+  int32_t index = 5;
+  while(index--) {
+    Point nextPos = getNextPosition(citizen);
+    TilePoint tile = geom_Tile_FromPoint(nextPos);
+    uint8_t canBuild = unit_Building_CanBuildAt(citizen, buildingType, tile);
+    if(!canBuild) {
+      continue;
+    }
+    unit_Building_Build(citizen, tile, buildingType);
+    return 1;
+  }
+  return 0;
+}
+
+void citizenOperate() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  int32_t index = 2;
+  for(size_t i = 0; i < units.size(); i++) {
+    if(index && eeTypes_IsCitizen(unit_Type(units[i])) && searchAndBuild(units[i], B_BARRACKS)) {
+      index--;
+    }
+  }
+}
+
 void bt_OnFrame() {
   execDataPengus();
+  citizenOperate();
 }
 
 void bt_OnUnitDestroy(Unit unit) {
