@@ -1073,3 +1073,4 @@ I think that in the parent method, the method at 0064F359 actually tells if tile
 A is reachable
 The method at 0064F3A1 seems like the method that checks if the tile 
 is reachable from the current tile.
+28C might be the size, it is.

@@ -121,6 +121,14 @@ static inline void eeTypes_InitAbilities(const PEETypes eTypes, const PVOID unit
   }
 }
 
+size_t eeTypes_BuildingSize(UnitType type) {
+  PVOID unitTemplate = eeTypes_GetTemplate(type);
+  if(!unitTemplate) {
+    return 0;
+  }
+  return *(size_t *)((size_t)unitTemplate + EETYPES_UNIT_BUILDING_SIZE);
+}
+
 size_t eeTypes_UnitTypeIndex(UnitType type) {
   PVOID unitTemplate = eeTypes_GetTemplate(type);
   if(!unitTemplate) {

@@ -500,14 +500,33 @@ int32_t unit_Population(Unit unit) {
   return method(unitTypeStruct);
 }
 
-uint8_t unit_Building_CanBuildAt(Unit citizen, UnitType buildingType, TilePoint tile) {
-  const UnitType type = unit_Type(citizen);
+uint8_t unit_CanBuildAtPosition(Unit citizen, UnitType buildingType, TilePoint tile) {
+  const size_t typeSize = eeTypes_BuildingSize(buildingType);
   const Player currentPlayer = ply_GetPlayer(citizen);
   const PVOID playerRef = ply_Reference(currentPlayer);
-  if(!eeTypes_IsCitizen(type) || !playerRef) {
-    return 0;
-  }
   size_t buildingTypeID = eeTypes_UnitTypeIndex(buildingType);
 
-  return (uint8_t)driver_CanBuiltAt(playerRef, tile, buildingTypeID);
+  if(!playerRef) {
+    return 0;
+  }
+  for(int32_t i = 0; i < typeSize; i++) {
+    for(int32_t j = 0; j < typeSize; j++) {
+      TilePoint nextTile = (TilePoint) {
+        .x = tile.x + i,
+        .y = tile.y + j
+      };
+      if(!driver_CanBuiltAt(playerRef, nextTile, buildingTypeID)) {
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
+
+uint8_t unit_Building_CanBuildAt(Unit citizen, UnitType buildingType, TilePoint tile) {
+  const UnitType type = unit_Type(citizen);
+  if(!eeTypes_IsCitizen(type) || !eeTypes_IsBuilding(buildingType)) {
+    return 0;
+  }
+  return unit_CanBuildAtPosition(citizen, buildingType, tile);
 }

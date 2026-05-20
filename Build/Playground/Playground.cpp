@@ -28,8 +28,19 @@ Unit getCitizen() {
 }
 
 void printBuildingsOffset() {
-  eeTa_FilePrintf("File type %p for type %p\n", eeTypes_UnitTypeIndex(B_BARRACKS), B_BARRACKS);
-  eeTa_FilePrintf("File type %p for type %p\n", eeTypes_UnitTypeIndex(B_ARCHERY_RANGE), B_ARCHERY_RANGE);
+  vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
+  for(int32_t i = 0; i < buildings.size(); i++) {
+    UnitType type = unit_Type(buildings[i]);
+    eeTa_FilePrintf("File type %p for type %p and template %p with size %d\n", eeTypes_UnitTypeIndex(type), type, eeTypes_GetTemplate(type), eeTypes_BuildingSize(type));
+  }
+}
+
+void buildStuff() {
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  unit_Building_Build(citizen, unit_Tile_Position(citizen), B_BARRACKS);
 }
 
 void printCanBuild(UnitType type) {
@@ -47,25 +58,21 @@ void printCanBuild(UnitType type) {
 }
 
 void test_PrintUnits() {
-  vector<Unit> units = unit_Player_GetUnits(ply_Null());
-  if(units.size()) {
-    for(int32_t i = 0; i < units.size(); i++) {
-      Point currentPoint = unit_Point_Position(units[i]);
-      eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d and range %f\n", units[i]._payload, 
-                      unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, 
-                      eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]));
-    }
-  }
-  vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
-  if(buildings.size()) {
-    for(int32_t i = 0; i < buildings.size(); i++) {
-      Point currentPoint = unit_Point_Position(buildings[i]);
-      eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", 
-                      buildings[i]._payload, unit_Type(buildings[i]), 
-                      eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
-    }
-  }
-  printBuildingsOffset();
+  // vector<Unit> units = unit_Player_GetUnits(ply_Null());
+  // for(int32_t i = 0; i < units.size(); i++) {
+  //   Point currentPoint = unit_Point_Position(units[i]);
+  //   eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d and range %f\n", units[i]._payload, 
+  //                   unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, 
+  //                   eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]));
+  // }
+  // vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
+  // for(int32_t i = 0; i < buildings.size(); i++) {
+  //   Point currentPoint = unit_Point_Position(buildings[i]);
+  //   eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", 
+  //                   buildings[i]._payload, unit_Type(buildings[i]), 
+  //                   eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
+  // }
+  // printBuildingsOffset();
   printCanBuild(B_BARRACKS);
 }
 
@@ -91,6 +98,7 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
+    buildStuff();
     Beep (300, 250);
   }
 }
@@ -146,7 +154,7 @@ void citizenOperate() {
 
 void bt_OnFrame() {
   execDataPengus();
-  citizenOperate();
+  // citizenOperate();
 }
 
 void bt_OnUnitDestroy(Unit unit) {

@@ -20,6 +20,7 @@ uint8_t eeTypes_CanProduceWorkers(UnitType type);
 PVOID eeTypes_GetTemplate(UnitType typeIndex);
 char *eeTypes_Name(UnitType type);
 vector<AbilityTypes> eeTypes_Abilities(UnitType type);
+size_t eeTypes_BuildingSize(UnitType type);
 
 UnitClassType eeTypes_UnitClass(UnitType unitType);
 uint8_t eeTypes_IsBuilding(UnitType unitType);
