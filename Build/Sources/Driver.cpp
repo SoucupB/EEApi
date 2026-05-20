@@ -359,16 +359,16 @@ void driver_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, Abil
 }
 
 PVOID driver_CanBuildAt_GetSelectorRef(PVOID player) {
-  PVOID selectedGroup = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
-  return (PVOID)*(size_t *)((size_t)selectedGroup + DRIVER_SELECTED_GROUP_OFFSET_LIST);
+  PVOID selectedGroupRef = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
+  return (PVOID)*(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST);
 }
 
 void driver_CanBuildAt_SetSelectorRef(PVOID player, PVOID selectedGroup) {
-  PVOID selectedGroup = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
-  *(size_t *)((size_t)selectedGroup + DRIVER_SELECTED_GROUP_OFFSET_LIST) = (size_t)selectedGroup;
+  PVOID selectedGroupRef = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
+  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST) = (size_t)selectedGroup;
 }
 
-size_t driver_CanBuiltAt_64F264(PVOID player, TilePoint tile, size_t buildingTypeID) {
+__declspec(dllexport) size_t driver_CanBuiltAt_64F264(PVOID player, TilePoint tile, size_t buildingTypeID) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD);
   size_t __cdecl (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
        (size_t __cdecl (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);

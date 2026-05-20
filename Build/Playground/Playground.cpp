@@ -33,16 +33,17 @@ void printBuildingsOffset() {
 }
 
 void printCanBuild(UnitType type) {
-  TilePoint tile = (TilePoint) {
-    .x = 69,
-    .y = 51
-  };
   Unit citizen = getCitizen();
   if(!unit_Reference(citizen)) {
     return ;
   }
-  uint8_t canBuild = unit_Building_CanBuildAt(citizen, type, tile);
-  eeTa_FilePrintf("Citizen %p can build %p at (%d %d)\n", unit_Reference(citizen), type, tile.x, tile.y);
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
+  for(int32_t i = 0; i < units.size(); i++) {
+    TilePoint tile = unit_Tile_Position(units[i]);
+    uint8_t canBuild = unit_Building_CanBuildAt(citizen, type, tile);
+    Point currentPoint = unit_Point_Position(units[i]);
+    eeTa_FilePrintf("Citizen %p can build %p at (%d %d)? %d\n", unit_Reference(citizen), type, tile.x, tile.y, canBuild);
+  }
 }
 
 void test_PrintUnits() {
