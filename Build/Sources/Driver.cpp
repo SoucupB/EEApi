@@ -357,3 +357,36 @@ void driver_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, Abil
   driver_Command_Target_Method6209C9(buffer, unit, target, tile, ability);
   driver_IssueCommand(unit, buffer, (PVOID)DRIVER_DEFAULT_SPECIAL_CONST);
 }
+
+PVOID driver_CanBuildAt_GetSelectorRef(PVOID player) {
+  PVOID selectedGroup = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
+  return (PVOID)*(size_t *)((size_t)selectedGroup + DRIVER_SELECTED_GROUP_OFFSET_LIST);
+}
+
+void driver_CanBuildAt_SetSelectorRef(PVOID player, PVOID selectedGroup) {
+  PVOID selectedGroup = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
+  *(size_t *)((size_t)selectedGroup + DRIVER_SELECTED_GROUP_OFFSET_LIST) = (size_t)selectedGroup;
+}
+
+size_t driver_CanBuiltAt_64F264(PVOID player, TilePoint tile, size_t buildingTypeID) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD);
+  size_t __cdecl (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
+       (size_t __cdecl (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  uint8_t fixStack = 0x0;
+  PVOID selectorRef = driver_CanBuildAt_GetSelectorRef(player);
+  driver_CanBuildAt_SetSelectorRef(player, (PVOID)0x0);
+  size_t canBuild = method(player,
+         (PVOID)0x0,
+         (PVOID)buildingTypeID,
+         (PVOID)tile.x,
+         (PVOID)tile.y,
+         (PVOID)0x0,
+         (PVOID)0x0,
+         (PVOID)&fixStack);
+  driver_CanBuildAt_SetSelectorRef(player, selectorRef);
+  return canBuild;
+}
+
+size_t driver_CanBuiltAt(PVOID player, TilePoint tile, size_t buildingTypeID) {
+  return driver_CanBuiltAt_64F264(player, tile, buildingTypeID);
+}
