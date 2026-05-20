@@ -1061,3 +1061,13 @@ I thing this method at 0063E530 is checking whether a buildinging can be built.
 #####################################################################
 The method at 0064F25A controls whether the building can be build here or not.
 It is _cdecl and returns into EAX 0 or 1 on the last 2 bytes.
+
+The method at 0064F25A does check the [citizen + 0x1C] - [citizen + 0x20] values
+[edi + 0x9AC] is the selected group.
+Here 0064F359 the units from the selected group are checked.
+
+This method 0064F350 might be interesting. (Also this sets a tile 0064F29B)
+I just don't know yet what tile.
+
+I think that in the parent method, the method at 0064F359 actually tells if tile
+A is reachable

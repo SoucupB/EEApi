@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=gnu++11 -IHeaders/ -IPrivateHeaders/ -O2
+CXXFLAGS = -std=gnu++11 -IHeaders/ -IPrivateHeaders/ -DREPLACE_MMU -O2
 EXTRA_EXE_FLAGS = -lPsapi -lgdi32 -luser32
 
 SRC_DIR = InjectorSources
