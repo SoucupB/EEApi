@@ -27,3 +27,5 @@ typedef struct UnitStatistics_t {
 typedef struct TechTree_t {
   PVOID _payload;
 } TechTree;
+
+size_t eeTypes_UnitTypeIndex(UnitType type);

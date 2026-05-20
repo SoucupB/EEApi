@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "Ability.h"
 #include "PlayerPrivate.h"
+#include "EETypesStructPrivate.h"
 
 // I think I find the water tile.
 void onLosingHealth(Unit unit) {
@@ -24,6 +25,11 @@ Unit getCitizen() {
     }
   }
   return unit_Null();
+}
+
+void printBuildingsOffset() {
+  eeTa_FilePrintf("File type %p for type %p\n", eeTypes_UnitTypeIndex(B_BARRACKS), B_BARRACKS);
+  eeTa_FilePrintf("File type %p for type %p\n", eeTypes_UnitTypeIndex(B_ARCHERY_RANGE), B_ARCHERY_RANGE);
 }
 
 void test_PrintUnits() {
@@ -45,6 +51,7 @@ void test_PrintUnits() {
                       eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
     }
   }
+  printBuildingsOffset();
 }
 
 void printTileMethod() {
