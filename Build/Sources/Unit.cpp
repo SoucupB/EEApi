@@ -12,6 +12,7 @@
 #include "Offset.h"
 #include "SimpleUnit.h"
 #include "EETypesStructPrivate.h"
+#include <math.h>
 
 uint8_t unit_IsPresent(Unit unit);
 
@@ -485,7 +486,7 @@ void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
     return ;
   }
   PVOID unitClass = eeTypes_GetTemplate(unitType);
-  if(!unitClass) {
+  if(!unitClass || !unit_Building_CanBuildAt(citizen, unitType, tile)) {
     return ;
   }
   driver_Building_Create(unit_Reference(citizen), tile, unitClass);
@@ -521,6 +522,43 @@ uint8_t unit_CanBuildAtPosition(Unit citizen, UnitType buildingType, TilePoint t
     }
   }
   return 1;
+}
+
+// will need to handle ports and airports
+Point unit_GetNextPosition(Point currentPosition) {
+  Point copyPosition = currentPosition;
+  float distance = 15.0f;
+  currentPosition.x += sinf(rand()) * distance;
+  currentPosition.y += sinf(rand()) * distance;
+  int32_t index = 4;
+  while(index && map_Tile_GetPlaneID(geom_Tile_FromPoint(copyPosition)) != map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition))) {
+    currentPosition.x = copyPosition.x + sinf(rand()) * distance;
+    currentPosition.y = copyPosition.y + sinf(rand()) * distance;
+    index--;
+  }
+  if(!index) {
+    return geom_Point_Invalid();
+  }
+  return currentPosition;
+}
+
+TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingType, TilePoint tile) {
+  if(unit_Building_CanBuildAt(citizen, buildingType, tile)) {
+    return tile;
+  }
+  int32_t index = 5;
+  Point pointTile = geom_Point_FromTile(tile);
+  while(index--) {
+    Point nextPoint = unit_GetNextPosition(pointTile);
+    if(geom_Point_IsInvalid(nextPoint)) {
+      continue;
+    }
+    TilePoint tilePoint = geom_Tile_FromPoint(nextPoint);
+    if(unit_Building_CanBuildAt(citizen, buildingType, tilePoint)) {
+      return tilePoint;
+    }
+  }
+  return geom_Tile_Invalid();
 }
 
 uint8_t unit_Building_CanBuildAt(Unit citizen, UnitType buildingType, TilePoint tile) {

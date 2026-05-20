@@ -128,18 +128,24 @@ uint8_t searchAndBuild(Unit citizen, UnitType buildingType) {
   if(!unit_Reference(citizen) || !unit_IsIdle(citizen)) {
     return 0;
   }
-  int32_t index = 5;
-  while(index--) {
-    Point nextPos = getNextPosition(citizen);
-    TilePoint tile = geom_Tile_FromPoint(nextPos);
-    uint8_t canBuild = unit_Building_CanBuildAt(citizen, buildingType, tile);
-    if(!canBuild) {
-      continue;
-    }
-    unit_Building_Build(citizen, tile, buildingType);
-    return 1;
+  TilePoint pnt = unit_Building_FindBuildablePosition(citizen, buildingType, unit_Tile_Position(citizen));
+  if(geom_Tile_IsInvalid(pnt)) {
+    return 0;
   }
-  return 0;
+  unit_Building_Build(citizen, pnt, buildingType);
+  return 1;
+  // int32_t index = 5;
+  // while(index--) {
+  //   Point nextPos = getNextPosition(citizen);
+  //   TilePoint tile = geom_Tile_FromPoint(nextPos);
+  //   uint8_t canBuild = unit_Building_CanBuildAt(citizen, buildingType, tile);
+  //   if(!canBuild) {
+  //     continue;
+  //   }
+  //   unit_Building_Build(citizen, tile, buildingType);
+  //   return 1;
+  // }
+  // return 0;
 }
 
 void citizenOperate() {

@@ -52,3 +52,4 @@ Unit unit_SimpleUnitToUnit(SimpleUnit su);
 vector<Unit> unit_Player_GetBuildings(Player ply);
 vector<Unit> unit_Player_GetUnits(Player ply);
 uint8_t unit_Building_CanBuildAt(Unit citizen, UnitType buildingType, TilePoint tile);
+TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingType, TilePoint tile);
