@@ -154,7 +154,7 @@ void citizenOperate() {
 
 void bt_OnFrame() {
   execDataPengus();
-  // citizenOperate();
+  citizenOperate();
 }
 
 void bt_OnUnitDestroy(Unit unit) {
