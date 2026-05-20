@@ -32,6 +32,19 @@ void printBuildingsOffset() {
   eeTa_FilePrintf("File type %p for type %p\n", eeTypes_UnitTypeIndex(B_ARCHERY_RANGE), B_ARCHERY_RANGE);
 }
 
+void printCanBuild(UnitType type) {
+  TilePoint tile = (TilePoint) {
+    .x = 69,
+    .y = 51
+  };
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  uint8_t canBuild = unit_Building_CanBuildAt(citizen, type, tile);
+  eeTa_FilePrintf("Citizen %p can build %p at (%d %d)\n", unit_Reference(citizen), type, tile.x, tile.y);
+}
+
 void test_PrintUnits() {
   vector<Unit> units = unit_Player_GetUnits(ply_Null());
   if(units.size()) {
@@ -52,6 +65,7 @@ void test_PrintUnits() {
     }
   }
   printBuildingsOffset();
+  printCanBuild(B_BARRACKS);
 }
 
 void printTileMethod() {

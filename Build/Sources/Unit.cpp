@@ -11,6 +11,7 @@
 #include "EETypesStructPrivate.h"
 #include "Offset.h"
 #include "SimpleUnit.h"
+#include "EETypesStructPrivate.h"
 
 uint8_t unit_IsPresent(Unit unit);
 
@@ -497,4 +498,16 @@ int32_t unit_Population(Unit unit) {
   int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callee);
 
   return method(unitTypeStruct);
+}
+
+uint8_t unit_Building_CanBuildAt(Unit citizen, UnitType buildingType, TilePoint tile) {
+  const UnitType type = unit_Type(citizen);
+  const Player currentPlayer = ply_GetPlayer(citizen);
+  const PVOID playerRef = ply_Reference(currentPlayer);
+  if(!eeTypes_IsCitizen(type) || !playerRef) {
+    return 0;
+  }
+  size_t buildingTypeID = eeTypes_UnitTypeIndex(buildingType);
+
+  return (uint8_t)driver_CanBuiltAt(playerRef, tile, buildingTypeID);
 }
