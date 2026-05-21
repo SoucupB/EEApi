@@ -368,7 +368,7 @@ void driver_CanBuildAt_SetSelectorRef(PVOID player, PVOID selectedGroup) {
   *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST) = (size_t)selectedGroup;
 }
 
-__declspec(dllexport) size_t driver_CanBuiltAt_64F264(PVOID player, TilePoint tile, size_t buildingTypeID) {
+size_t driver_CanBuiltAt_64F264(PVOID player, TilePoint tile, size_t buildingTypeID) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD);
   size_t __cdecl (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
        (size_t __cdecl (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
@@ -389,4 +389,17 @@ __declspec(dllexport) size_t driver_CanBuiltAt_64F264(PVOID player, TilePoint ti
 
 size_t driver_CanBuiltAt(PVOID player, TilePoint tile, size_t buildingTypeID) {
   return driver_CanBuiltAt_64F264(player, tile, buildingTypeID);
+}
+
+size_t driver_CanBuiltAt_603DD6(PVOID player, TilePoint tile, size_t buildingTypeID) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD_SHADOW_UNIT);
+  size_t __thiscall (*method)(PVOID) = 
+       (size_t __thiscall (*)(PVOID)) ((uint8_t *)methodStruct);
+  PVOID shadowUnit = 0x0;
+  size_t canBuild = method(shadowUnit);
+  return canBuild;
+}
+
+size_t driver_CanBuiltAt_Complete(PVOID player, TilePoint tile, size_t buildingTypeID) {
+  return driver_CanBuiltAt_603DD6(player, tile, buildingTypeID);
 }

@@ -1074,3 +1074,5 @@ A is reachable
 The method at 0064F3A1 seems like the method that checks if the tile 
 is reachable from the current tile.
 28C might be the size, it is.
+The method to check the DOCK (or other types) is here 00603E28.
+This method is more complet 00604DF7.

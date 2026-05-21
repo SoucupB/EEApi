@@ -12,6 +12,7 @@
 #include "PlayerPrivate.h"
 #include "EETypesStructPrivate.h"
 
+void buildDock();
 // I think I find the water tile.
 void onLosingHealth(Unit unit) {
   eeTa_FilePrintf("Unit %p taking damage\n", unit_Reference(unit));
@@ -98,7 +99,7 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
-    buildStuff();
+    buildDock();
     Beep (300, 250);
   }
 }
@@ -134,18 +135,6 @@ uint8_t searchAndBuild(Unit citizen, UnitType buildingType) {
   }
   unit_Building_Build(citizen, pnt, buildingType);
   return 1;
-  // int32_t index = 5;
-  // while(index--) {
-  //   Point nextPos = getNextPosition(citizen);
-  //   TilePoint tile = geom_Tile_FromPoint(nextPos);
-  //   uint8_t canBuild = unit_Building_CanBuildAt(citizen, buildingType, tile);
-  //   if(!canBuild) {
-  //     continue;
-  //   }
-  //   unit_Building_Build(citizen, tile, buildingType);
-  //   return 1;
-  // }
-  // return 0;
 }
 
 void citizenOperate() {
@@ -158,9 +147,69 @@ void citizenOperate() {
   }
 }
 
+uint32_t tileHash(TilePoint tile) {
+  return tile.x * 300 + tile.y;
+}
+
+TilePoint findDockPosition(Unit citizen, TilePoint tile) {
+  int32_t xPos[] = {1, 0, -1, 0};
+  int32_t yPos[] = {0, -1, 0, 1};
+  int32_t index = 155, head = 0;
+  vector<TilePoint> vct;
+  map<uint32_t, uint8_t> valid;
+  vct.push_back(tile);
+  valid[tileHash(tile)] = 1;
+  while(index-- && head < vct.size()) {
+    TilePoint currentTile = vct[head];
+    if(unit_Building_CanBuildAt(citizen, B_DOCK, currentTile)) {
+      return currentTile;
+    }
+    for(size_t i = 0; i < sizeof(xPos) / sizeof(int8_t); i++) {
+      TilePoint nextPoint = (TilePoint) {
+        .x = xPos[i] + currentTile.x,
+        .y = yPos[i] + currentTile.y,
+      };
+      if(valid.find(tileHash(nextPoint)) != valid.end()) {
+        continue;
+      }
+      vct.push_back(nextPoint);
+      valid[tileHash(nextPoint)] = 1;
+    }
+    head++;
+  }
+  return geom_Tile_Invalid();
+}
+
+Unit findWaterUnit() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTypes_IsWaterUnit(unit_Type(units[i]))) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
+void buildDock() {
+  Unit unit = findWaterUnit();
+  if(!unit_Reference(unit)) {
+    return ;
+  }
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  TilePoint currentTile = findDockPosition(citizen, unit_Tile_Position(unit));
+  if(geom_Tile_IsInvalid(currentTile)) {
+    return ;
+  }
+  unit_Building_Build(citizen, currentTile, B_DOCK);
+  eeTa_FilePrintf("Cococcdadada\n");
+}
+
 void bt_OnFrame() {
   execDataPengus();
-  citizenOperate();
+  // citizenOperate();
 }
 
 void bt_OnUnitDestroy(Unit unit) {
