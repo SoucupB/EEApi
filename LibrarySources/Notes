@@ -1076,3 +1076,5 @@ is reachable from the current tile.
 28C might be the size, it is.
 The method to check the DOCK (or other types) is here 00603E28.
 This method is more complet 00604DF7.
+The class is created at 006042AF and is instantiated here 006042C7.
+The points are set here 00604BA9.

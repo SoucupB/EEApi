@@ -59,20 +59,20 @@ void printCanBuild(UnitType type) {
 }
 
 void test_PrintUnits() {
-  // vector<Unit> units = unit_Player_GetUnits(ply_Null());
-  // for(int32_t i = 0; i < units.size(); i++) {
-  //   Point currentPoint = unit_Point_Position(units[i]);
-  //   eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d and range %f\n", units[i]._payload, 
-  //                   unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, 
-  //                   eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]));
-  // }
-  // vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
-  // for(int32_t i = 0; i < buildings.size(); i++) {
-  //   Point currentPoint = unit_Point_Position(buildings[i]);
-  //   eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", 
-  //                   buildings[i]._payload, unit_Type(buildings[i]), 
-  //                   eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
-  // }
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
+  for(int32_t i = 0; i < units.size(); i++) {
+    Point currentPoint = unit_Point_Position(units[i]);
+    eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d and range %f\n", units[i]._payload, 
+                    unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, 
+                    eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]));
+  }
+  vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
+  for(int32_t i = 0; i < buildings.size(); i++) {
+    Point currentPoint = unit_Point_Position(buildings[i]);
+    eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", 
+                    buildings[i]._payload, unit_Type(buildings[i]), 
+                    eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
+  }
   // printBuildingsOffset();
   printCanBuild(B_BARRACKS);
 }
@@ -99,7 +99,7 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
-    buildDock();
+    // buildDock();
     Beep (300, 250);
   }
 }

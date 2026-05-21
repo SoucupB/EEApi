@@ -25,3 +25,4 @@ PVOID driver_AbilityPointer(PVOID manager, size_t abilityIndex);
 int32_t driver_AbilityEnergy(PVOID reference);
 void driver_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, AbilityTypes ability);
 size_t driver_CanBuiltAt(PVOID player, TilePoint tile, size_t buildingTypeID);
+size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, size_t buildingTypeID);
