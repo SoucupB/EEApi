@@ -514,18 +514,6 @@ uint8_t unit_CanBuildAtPosition(Unit citizen, UnitType buildingType, TilePoint t
     .x = tile.x + typeSize,
     .y = tile.y + typeSize
   }, buildingTypeID);
-  // for(int32_t i = 0; i < typeSize; i++) {
-  //   for(int32_t j = 0; j < typeSize; j++) {
-  //     TilePoint nextTile = (TilePoint) {
-  //       .x = tile.x + i,
-  //       .y = tile.y + j
-  //     };
-  //     if(!driver_CanBuiltAt(playerRef, nextTile, buildingTypeID)) {
-  //       return 0;
-  //     }
-  //   }
-  // }
-  // return 1;
 }
 
 // will need to handle ports and airports
