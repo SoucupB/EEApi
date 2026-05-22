@@ -453,7 +453,7 @@ size_t driver_CanBuildHere_603DD6(PVOID buffer, PVOID player, PVOID unit) {
   return canBuild;
 }
 
-__declspec(dllexport) size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, size_t buildingTypeID) {
+size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, size_t buildingTypeID) {
   PVOID buffer = driver_New(0x334);
   driver_InstantiateClass_6042C7(buffer, player, buildingTypeID);
   driver_FillTileData(buffer, tile);
