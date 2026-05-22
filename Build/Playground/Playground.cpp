@@ -74,7 +74,7 @@ void test_PrintUnits() {
                     eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
   }
   // printBuildingsOffset();
-  printCanBuild(B_BARRACKS);
+  printCanBuild(B_DOCK);
 }
 
 void printTileMethod() {
@@ -99,7 +99,7 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
-    // buildDock();
+    buildDock();
     Beep (300, 250);
   }
 }
@@ -154,7 +154,7 @@ uint32_t tileHash(TilePoint tile) {
 TilePoint findDockPosition(Unit citizen, TilePoint tile) {
   int32_t xPos[] = {1, 0, -1, 0};
   int32_t yPos[] = {0, -1, 0, 1};
-  int32_t index = 155, head = 0;
+  int32_t index = 255, head = 0;
   vector<TilePoint> vct;
   map<uint32_t, uint8_t> valid;
   vct.push_back(tile);
@@ -164,7 +164,7 @@ TilePoint findDockPosition(Unit citizen, TilePoint tile) {
     if(unit_Building_CanBuildAt(citizen, B_DOCK, currentTile)) {
       return currentTile;
     }
-    for(size_t i = 0; i < sizeof(xPos) / sizeof(int8_t); i++) {
+    for(size_t i = 0; i < sizeof(xPos) / sizeof(int32_t); i++) {
       TilePoint nextPoint = (TilePoint) {
         .x = xPos[i] + currentTile.x,
         .y = yPos[i] + currentTile.y,
