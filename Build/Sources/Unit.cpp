@@ -550,7 +550,7 @@ TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingTyp
   PVOID unitGhostBuilding = unit_Building_GhostUnit(citizen, buildingType);
   int32_t xPos[] = {1, 0, -1, 0, 1, 1, -1, -1};
   int32_t yPos[] = {0, -1, 0, 1, 1, -1, 1, -1};
-  int32_t index = 64, head = 0;
+  int32_t index = 32, head = 0;
   vector<TilePoint> vct;
   unordered_map<uint32_t, uint8_t> valid;
   vct.push_back(tile);

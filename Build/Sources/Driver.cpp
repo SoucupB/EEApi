@@ -411,10 +411,10 @@ void driver_FillTileData(PVOID buffer, TilePoint tile) {
   float xPos = (float)tile.x;
   float yPos = (float)tile.y;
 
-  *(size_t *)((size_t)buffer + 0x284) = tile.x;
-  *(size_t *)((size_t)buffer + 0x288) = tile.y;
-  *(float *)((size_t)buffer + 0x10) = xPos;
-  *(float *)((size_t)buffer + 0x20) = yPos;
+  *(size_t *)((size_t)buffer + DRIVER_BUILDABLE_POSITION_INT_32_POS_X) = tile.x;
+  *(size_t *)((size_t)buffer + DRIVER_BUILDABLE_POSITION_INT_32_POS_Y) = tile.y;
+  *(float *)((size_t)buffer + DRIVER_BUILDABLE_POSITION_FLOAT_POS_X) = xPos;
+  *(float *)((size_t)buffer + DRIVER_BUILDABLE_POSITION_FLOAT_POS_Y) = yPos;
 }
 
 typedef struct SelectedGroupArray_t {
