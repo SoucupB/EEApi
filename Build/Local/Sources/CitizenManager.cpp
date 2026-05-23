@@ -28,7 +28,7 @@ void citizen_RepairBuildings(PVOID _) {
 }
 
 uint8_t isIdleCitizen(Unit unit) {
-  return unit_IsIdle(unit) && eeTypes_IsCitizen(unit_Type(unit));
+  return unit_IsIdle(unit) && eeTypes_IsCitizen(unit_Type(unit)) && ply_Reference(ply_GetPlayer(unit)) == ply_Reference(ply_Self());
 }
 
 uint8_t citizen_BuildMissingBuilding(Unit citizen) {
@@ -74,12 +74,15 @@ uint8_t citizen_IsTower(const UnitType type) {
       break;
   }
 
-  return 1;
+  return 0;
 }
 
 uint8_t citizen_IsRebuilable(Unit unit) {
   const UnitType type = unit_Type(unit);
-  return citizen_IsTower(type) || (ply_Reference(ply_GetPlayer(unit)) != ply_Reference(ply_Self()));
+  if(citizen_IsTower(type) && ply_Reference(ply_GetPlayer(unit)) == ply_Reference(ply_Self())) {
+    return 1;
+  }
+  return 0;
 }
 
 void citizen_DeleteBuilding(Unit unit) {

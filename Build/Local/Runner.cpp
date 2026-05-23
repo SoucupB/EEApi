@@ -263,7 +263,6 @@ void bt_RebuildMissingBuildings() {
 }
 
 void bt_OnUnitDestroy(Unit unit) {
-  eeTa_FilePrintf("Unit died %p!\n", unit_Reference(unit));
   citizen_DeleteBuilding(unit);
 }
 
