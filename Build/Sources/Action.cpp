@@ -74,74 +74,69 @@ ActionType act_GetActionType(PVOID actionInstance) {
   return ACTION_IDLE;
 }
 
-Action act_GetAction(PVOID actionInstance) {
+Action act_GetAction(PVOID actionInstance)
+{
+  Action action;
   ActionType type = act_GetActionType(actionInstance);
+  action.type = type;
   switch (type)
   {
-    case ACTION_ATTACK_TARGET:
-      return (Action) {
-        .type = ACTION_ATTACK_TARGET,
-        .target = unit_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x20))
-      };
-    case ACTION_ATTACK_AREA:
-      return (Action) {
-        .type = ACTION_ATTACK_AREA,
-        .targetPoint = (Point) {
-          .x = *(float *)((size_t)actionInstance + 0x20),
-          .y = *(float *)((size_t)actionInstance + 0x24),
-        }
-      };
-    case ACTION_MOVE:
-      return (Action) {
-        .type = ACTION_MOVE,
-        .targetPoint = (Point) {
-          .x = *(float *)((size_t)actionInstance + 0x20),
-          .y = *(float *)((size_t)actionInstance + 0x24),
-        }
-      };
-    case ACTION_CAST_TARGET:
-      return (Action) {
-        .type = ACTION_CAST_TARGET,
-        .target = unit_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x24))
-      };
-    case ACTION_CAST_AREA:
-      return (Action) {
-        .type = ACTION_CAST_AREA,
-        .targetTile = (TilePoint) {
-          .x = *(size_t *)((size_t)actionInstance + 0x28),
-          .y = *(size_t *)((size_t)actionInstance + 0x2C),
-        }
-      };
-    case ACTION_GATHER:
-      return (Action) {
-        .type = ACTION_GATHER,
-        .targetSimpleUnit = su_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x38))
-      };
-    case ACTION_REPAIR:
-      return (Action) {
-        .type = ACTION_REPAIR,
-        .target = unit_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x3C))
-      };
-    case ACTION_LOAD:
-      return (Action) {
-        .type = ACTION_LOAD,
-        .loadStartTarget = (PVOID)*(size_t *)((size_t)actionInstance + 0x28),
-        .loadEndTarget = (PVOID)*(size_t *)((size_t)actionInstance + 0x2C)
-      };
-    case ACTION_UNLOAD:
-      return (Action) {
-        .type = ACTION_UNLOAD,
-        .targetTile = (TilePoint) {
-          .x = *(size_t *)((size_t)actionInstance + 0x34),
-          .y = *(size_t *)((size_t)actionInstance + 0x38),
-        }
-      };
-    
-    default:
+    case ACTION_ATTACK_TARGET: {
+      action.target = unit_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x20));
       break;
+    }
+
+    case ACTION_ATTACK_AREA: {
+      action.targetPoint.x = *(float *)((size_t)actionInstance + 0x20);
+      action.targetPoint.y = *(float *)((size_t)actionInstance + 0x24);
+      break;
+    }
+
+    case ACTION_MOVE: {
+      action.targetPoint.x = *(float *)((size_t)actionInstance + 0x20);
+      action.targetPoint.y = *(float *)((size_t)actionInstance + 0x24);
+      break;
+    }
+
+    case ACTION_CAST_TARGET: {
+      action.target = unit_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x24));
+      break;
+    }
+
+    case ACTION_CAST_AREA: {
+      action.targetTile.x = *(size_t *)((size_t)actionInstance + 0x28);
+      action.targetTile.y = *(size_t *)((size_t)actionInstance + 0x2C);
+      break;
+    }
+
+    case ACTION_GATHER: {
+      action.targetSimpleUnit = su_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x38));
+      break;
+    }
+
+    case ACTION_REPAIR: {
+      action.target = unit_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x3C));
+      break;
+    }
+
+    case ACTION_LOAD: {
+      action.loadStartTarget = (PVOID)*(size_t *)((size_t)actionInstance + 0x28);
+      action.loadEndTarget = (PVOID)*(size_t *)((size_t)actionInstance + 0x2C);
+      break;
+    }
+
+    case ACTION_UNLOAD: {
+      action.targetTile.x = *(size_t *)((size_t)actionInstance + 0x34);
+      action.targetTile.y = *(size_t *)((size_t)actionInstance + 0x38);
+      break;
+    }
+
+    case ACTION_IDLE: {
+    default:
+      action.type = ACTION_IDLE;
+      break;
+    }
   }
 
-  return (Action) {
-    .type = ACTION_IDLE
-  };
+  return action;
 }
