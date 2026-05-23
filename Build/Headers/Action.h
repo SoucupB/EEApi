@@ -1,0 +1,18 @@
+#pragma once
+
+enum ActionType {
+  ACTION_MOVE,
+  ACTION_IDLE,
+  ACTION_REPAIR,
+  ACTION_ATTACK_AREA,
+  ACTION_ATTACK_TARGET,
+  ACTION_LOAD,
+  ACTION_UNLOAD,
+  ACTION_CAST_AREA,
+  ACTION_CAST_TARGET,
+  ACTION_GATHER
+};
+
+typedef struct Action_t {
+
+} Action;

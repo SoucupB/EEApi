@@ -1078,3 +1078,43 @@ The method to check the DOCK (or other types) is here 00603E28.
 This method is more complet 00604DF7.
 The class is created at 006042AF and is instantiated here 006042C7.
 The points are set here 00604BA9.
+
+#########
+#Actions#
+#########
+
+Moving unit class is 008478A0.
+[action + 0x20] = x float
+[action + 0x24] = y float
+[action + 0x30] = action. (0x101 for move, 0x100 for attack).
+
+Attacking unit is 00847380
+[action + 0x20] = target.
+
+Casting spell is 0084748C.
+For non target
+[action + 0x28] = x int tile
+[action + 0x2C] = y int tile
+[action + 0x30] the spell index.
+
+For target
+[action + 0x24] = x int tile
+
+For gather is 008475A8.
+[action + 0x38] is the unit that is gathered.
+
+For building/repair with citizen is 0084740C.
+[action + 0x3C] is the target building. (It was created)
+
+For unit convertion is 00847380.
+[action + 0x30] is the target.
+
+For unit loading into transports is 008477F8.
+Transporter.
+[action + 0x28] Starting array.
+[action + 0x30] Ending array pointer.
+
+Transported.
+[action + 0x28] Starting array.
+[action + 0x30] Ending array pointer.
+(Their pointers are relatively identical but not the same).
