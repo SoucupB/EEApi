@@ -1118,3 +1118,7 @@ Transported.
 [action + 0x28] Starting array.
 [action + 0x30] Ending array pointer.
 (Their pointers are relatively identical but not the same).
+
+For unit unloading is 008479A0.
+[action + 0x34] is x tile
+[action + 0x38] is y tile.
