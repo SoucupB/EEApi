@@ -18,3 +18,7 @@ void citizen_RepairBuildings(PVOID _) {
     }
   }
 }
+
+void citizen_RebuildBuildings(PVOID _) {
+
+}

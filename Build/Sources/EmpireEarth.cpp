@@ -85,6 +85,7 @@ extern "C" {
 
   __declspec(dllexport) PVOID __thiscall onResourceInit(PVOID player, PVOID unit) {
     PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_RESOURCE_INIT);
+    eeTa_OnUnitCreate(unit);
     res_InitResource(unit);
     return method(player, unit);
   }

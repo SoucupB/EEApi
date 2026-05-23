@@ -312,6 +312,10 @@ void initCapitolPositions() {
   }
 }
 
+void bt_OnUnitCreate(Unit unit) {
+  
+}
+
 void bt_OnInit() {
   initCapitolPositions();
   bt_InitUnitMovement();

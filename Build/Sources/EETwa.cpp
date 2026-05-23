@@ -14,15 +14,27 @@
 #include "InjectUtilities.h"
 #include "Driver.h"
 #include "Offset.h"
+#include "UnitPrivate.h"
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
 void bt_OnFrame();
+void bt_OnUnitCreate(Unit unit);
 
 void eeta_FileClean();
 void eeTa_RebuildDTs();
 
 using namespace std;
+
+void eeTa_OnUnitCreate(PVOID unitBuffer) {
+  Unit unit = {
+    ._payload = unitBuffer
+  };
+  if(!unit_IsComplexUnit(unit)) {
+    return ;
+  }
+  bt_OnUnitCreate(unit);
+}
 
 void eeTa_RebuildExtraDataStructure() {
   eeTa_RebuildDTs();

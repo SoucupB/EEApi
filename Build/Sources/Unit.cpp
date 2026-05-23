@@ -399,6 +399,14 @@ int8_t unit_IsDead(Unit unit) {
   return !unit_CurrentHp(unit);
 }
 
+uint8_t unit_IsComplexUnit(Unit unit) {
+  UnitType type = unit_Type(unit);
+  if(type != UNIT_UNDEFINED) {
+    return 1;
+  }
+  return 0;
+}
+
 void unit_Convert(Unit src, Unit dst) {
   if(!eeTypes_IsPriest(unit_Type(src))) {
     return ;
