@@ -544,10 +544,11 @@ TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingTyp
   if(!eeTypes_IsCitizen(type) || !eeTypes_IsBuilding(buildingType)) {
     return geom_Tile_Invalid();
   }
-  if(unit_Building_CanBuildAt(citizen, buildingType, tile)) {
+  PVOID unitGhostBuilding = unit_Building_GhostUnit(citizen, buildingType);
+  if(unit_Building_CanBuildAtWOBuffer(unitGhostBuilding, citizen, buildingType, tile)) {
+    driver_Delete(unitGhostBuilding);
     return tile;
   }
-  PVOID unitGhostBuilding = unit_Building_GhostUnit(citizen, buildingType);
   int32_t xPos[] = {1, 0, -1, 0, 1, 1, -1, -1};
   int32_t yPos[] = {0, -1, 0, 1, 1, -1, 1, -1};
   int32_t index = 32, head = 0;
