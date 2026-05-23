@@ -2,6 +2,7 @@
 #include "Unit.h"
 #include "EETwa.h"
 #include <unordered_map>
+#include "Action.h"
 
 typedef struct DeletedUnit_t {
   TilePoint tile;
@@ -14,6 +15,10 @@ uint8_t needyBuilding(Unit unit) {
   return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_IsBuilding(unit) && unit_TotalHP(unit) > unit_CurrentHp(unit);
 }
 
+uint8_t canCitizenBeRequested(Unit unit) {
+  return unit_IsIdle(unit) || act_IsWaitingToGather(unit); 
+}
+
 void citizen_RepairBuildings(PVOID _) {
   vector<Unit> needyBuildings = unit_Filter(needyBuilding);
   if(!needyBuildings.size()) {
@@ -21,14 +26,14 @@ void citizen_RepairBuildings(PVOID _) {
   }
   vector<Unit> units = unit_Player_GetUnits(ply_Self());
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(unit_IsIdle(units[i]) && eeTypes_IsCitizen(unit_Type(units[i]))) {
+    if(canCitizenBeRequested(units[i]) && eeTypes_IsCitizen(unit_Type(units[i]))) {
       unit_Repair(units[i], needyBuildings[(rand() * rand()) % needyBuildings.size()]);
     }
   }
 }
 
 uint8_t isIdleCitizen(Unit unit) {
-  return unit_IsIdle(unit) && eeTypes_IsCitizen(unit_Type(unit)) && ply_Reference(ply_GetPlayer(unit)) == ply_Reference(ply_Self());
+  return eeTypes_IsCitizen(unit_Type(unit)) && canCitizenBeRequested(unit) && ply_Reference(ply_GetPlayer(unit)) == ply_Reference(ply_Self());
 }
 
 uint8_t citizen_BuildMissingBuilding(Unit citizen) {
