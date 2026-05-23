@@ -28,4 +28,4 @@ typedef struct Action_t {
 } Action;
 
 Action act_Get(Unit unit);
-uint8_t act_IsWaintingToGather(Unit unit);
+uint8_t act_IsWaitingToGather(Unit unit);

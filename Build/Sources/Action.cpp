@@ -200,7 +200,7 @@ void act_Print(Unit unit) {
   }
 }
 
-uint8_t act_IsWaintingToGather(Unit unit) {
+uint8_t act_IsWaitingToGather(Unit unit) {
   Action currentAction = act_Get(unit);
   if(currentAction.type != ACTION_GATHER) {
     return 0;
