@@ -1,8 +1,11 @@
 #pragma once
+#include "Unit.h"
+#include "Geometry.h"
+#include "Ability.h"
 
 enum ActionType {
-  ACTION_MOVE,
   ACTION_IDLE,
+  ACTION_MOVE,
   ACTION_REPAIR,
   ACTION_ATTACK_AREA,
   ACTION_ATTACK_TARGET,
@@ -14,5 +17,12 @@ enum ActionType {
 };
 
 typedef struct Action_t {
-
+  ActionType type;
+  Unit target;
+  TilePoint targetTile;
+  Point targetPoint;
+  PVOID loadStartTarget;
+  PVOID loadEndTarget;
 } Action;
+
+Action act_Get(Unit unit);

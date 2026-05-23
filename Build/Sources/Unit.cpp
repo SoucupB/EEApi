@@ -395,6 +395,14 @@ uint8_t unit_IsPresent(Unit unit) {
          simpleUnitPresence[ply_PlayerIndex(ply_Self())]->find(unit_Reference(unit)) != simpleUnitPresence[ply_PlayerIndex(ply_Self())]->end();
 }
 
+uint8_t unit_Exists(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  unordered_map<PVOID, uint8_t> **simpleUnitPresence = eeTwa->simpleUnitPresence;
+  return unitPresence[eeTwa->all_players]->find(unit_Reference(unit)) != unitPresence[eeTwa->all_players]->end() ||
+         simpleUnitPresence[eeTwa->all_players]->find(unit_Reference(unit)) != simpleUnitPresence[eeTwa->all_players]->end();
+}
+
 int8_t unit_IsDead(Unit unit) {
   return !unit_CurrentHp(unit);
 }
