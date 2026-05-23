@@ -24,6 +24,7 @@ typedef struct Action_t {
   Point targetPoint;
   PVOID loadStartTarget;
   PVOID loadEndTarget;
+  AbilityTypes ability;
 } Action;
 
 Action act_Get(Unit unit);

@@ -3,6 +3,8 @@
 #include "LibManager.h"
 #include "Game.h"
 #include "UnitPrivate.h"
+#include "SimpleUnitPrivate.h"
+#include "EETwa.h"
 
 Action act_GetAction(PVOID actionInstance);
 
@@ -100,12 +102,14 @@ Action act_GetAction(PVOID actionInstance)
 
     case ACTION_CAST_TARGET: {
       action.target = unit_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x24));
+      action.ability = (AbilityTypes)*(size_t *)((size_t)actionInstance + 0x30);
       break;
     }
 
     case ACTION_CAST_AREA: {
       action.targetTile.x = *(size_t *)((size_t)actionInstance + 0x28);
       action.targetTile.y = *(size_t *)((size_t)actionInstance + 0x2C);
+      action.ability = (AbilityTypes)*(size_t *)((size_t)actionInstance + 0x30);
       break;
     }
 
@@ -139,4 +143,47 @@ Action act_GetAction(PVOID actionInstance)
   }
 
   return action;
+}
+
+void act_Print(Unit unit) {
+  Action currentAction = act_Get(unit);
+  eeTa_FilePrintf("Unit %p ", unit_Reference(unit));
+  switch (currentAction.type)
+  {
+    case ACTION_IDLE:{
+      eeTa_FilePrintf("has action IDLE\n");
+      break;
+    }
+    case ACTION_ATTACK_AREA:{
+      eeTa_FilePrintf("is attacking area (%f %f)\n", currentAction.targetPoint.x, currentAction.targetPoint.y);
+      break;
+    }
+    case ACTION_MOVE:{
+      eeTa_FilePrintf("is moving (%f %f)\n", currentAction.targetPoint.x, currentAction.targetPoint.y);
+      break;
+    }
+    case ACTION_CAST_AREA:{
+      eeTa_FilePrintf("is casting spell %p at area (%f %f)\n", currentAction.ability, currentAction.targetPoint.x, currentAction.targetPoint.y);
+      break;
+    }
+    case ACTION_CAST_TARGET:{
+      eeTa_FilePrintf("is casting spell %p at area target %p\n", currentAction.ability, unit_Reference(currentAction.target));
+      break;
+    }
+    case ACTION_GATHER:{
+      eeTa_FilePrintf("is gathering target %p\n", su_Reference(currentAction.targetSimpleUnit));
+      break;
+    }
+    case ACTION_LOAD:{
+      eeTa_FilePrintf("is loading start %p, end %p\n", currentAction.loadStartTarget, currentAction.loadEndTarget);
+      break;
+    }
+    case ACTION_UNLOAD:{
+      eeTa_FilePrintf("is un-loading at (%d %d)\n", currentAction.targetTile.x, currentAction.targetTile.y);
+      break;
+    }
+    
+    default:
+      break;
+  }
 }
