@@ -11,12 +11,17 @@
 #include "Ability.h"
 #include "PlayerPrivate.h"
 #include "EETypesStructPrivate.h"
+#include "Action.h"
 
+
+void act_Print(Unit unit);
 void buildDock();
 // I think I find the water tile.
 void onLosingHealth(Unit unit) {
   eeTa_FilePrintf("Unit %p taking damage\n", unit_Reference(unit));
 }
+
+unordered_map<PVOID, Action> actionUnits;
 
 Unit getCitizen() {
   vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
@@ -211,8 +216,22 @@ void bt_OnUnitCreate(Unit unit) {
   eeTa_FilePrintf("Created unit %p and type %p\n", unit_Reference(unit), unit_Type(unit));
 }
 
+void bt_PrintActions() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0, c = units.size(); i < c; i++) {
+    PVOID unitRef = unit_Reference(units[i]);
+    Action lastAction = actionUnits[unitRef];
+    Action currentAction = act_Get(units[i]);
+    if(lastAction.type != currentAction.type) {
+      act_Print(units[i]);
+      actionUnits[unitRef] = currentAction;
+    }
+  }
+}
+
 void bt_OnFrame() {
   execDataPengus();
+  bt_PrintActions();
   // citizenOperate();
 }
 

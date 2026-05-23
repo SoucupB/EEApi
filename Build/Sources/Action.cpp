@@ -46,7 +46,7 @@ ActionType act_CastSpellAction(PVOID actionInstance) {
 ActionType act_GetActionType(PVOID actionInstance) {
   size_t actionClassInstance = *(size_t *)actionInstance;
   PVOID actionClassOffset = (PVOID)(actionClassInstance - (size_t)lib_BaseAddress());
-  switch ((size_t)actionClassInstance)
+  switch ((size_t)actionClassOffset)
   {
     case OFFSET_ACTION_GENERAL_POSITION:
       return act_GeneralGetAction(actionInstance);
@@ -84,7 +84,7 @@ Action act_GetAction(PVOID actionInstance)
   switch (type)
   {
     case ACTION_ATTACK_TARGET: {
-      action.target = unit_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x20));
+      action.target = unit_FromPayload((PVOID)*(size_t *)((size_t)actionInstance + 0x30));
       break;
     }
 
@@ -158,12 +158,16 @@ void act_Print(Unit unit) {
       eeTa_FilePrintf("is attacking area (%f %f)\n", currentAction.targetPoint.x, currentAction.targetPoint.y);
       break;
     }
+    case ACTION_ATTACK_TARGET:{
+      eeTa_FilePrintf("is attacking unit %p\n", unit_Reference(currentAction.target));
+      break;
+    }
     case ACTION_MOVE:{
       eeTa_FilePrintf("is moving (%f %f)\n", currentAction.targetPoint.x, currentAction.targetPoint.y);
       break;
     }
     case ACTION_CAST_AREA:{
-      eeTa_FilePrintf("is casting spell %p at area (%f %f)\n", currentAction.ability, currentAction.targetPoint.x, currentAction.targetPoint.y);
+      eeTa_FilePrintf("is casting spell %p at area (%d %d)\n", currentAction.ability, currentAction.targetTile.x, currentAction.targetTile.y);
       break;
     }
     case ACTION_CAST_TARGET:{
@@ -172,6 +176,10 @@ void act_Print(Unit unit) {
     }
     case ACTION_GATHER:{
       eeTa_FilePrintf("is gathering target %p\n", su_Reference(currentAction.targetSimpleUnit));
+      break;
+    }
+    case ACTION_REPAIR:{
+      eeTa_FilePrintf("is repairing target %p\n", unit_Reference(currentAction.target));
       break;
     }
     case ACTION_LOAD:{
