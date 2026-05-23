@@ -37,7 +37,9 @@ uint8_t citizen_BuildMissingBuilding(Unit citizen) {
     if(geom_Tile_IsInvalid(tile)) {
       continue;
     }
-    unit_Building_Build(citizen, tile, it.second.unitType);
+    if(unit_CanBuild(citizen, it.second.unitType)) {
+      unit_Building_Build(citizen, tile, it.second.unitType);
+    }
     buildings.erase(it.first);
     return 1;
   }
