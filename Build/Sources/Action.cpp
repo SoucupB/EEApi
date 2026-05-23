@@ -8,6 +8,10 @@
 
 Action act_GetAction(PVOID actionInstance);
 
+PVOID act_GetActionBuffer(Unit unit) {
+  return (PVOID)*(size_t *)((size_t)unit_Reference(unit) + UNIT_ACTION_POINTER_INSTANCE);
+}
+
 Action act_Get(Unit unit) {
   if(unit_IsIdle(unit)) {
     return (Action) {
@@ -15,7 +19,7 @@ Action act_Get(Unit unit) {
     };
   }
 
-  return act_GetAction((PVOID)*(size_t *)((size_t)unit_Reference(unit) + UNIT_ACTION_POINTER_INSTANCE));
+  return act_GetAction(act_GetActionBuffer(unit));
 }
 
 ActionType act_GeneralGetAction(PVOID actionInstance) {
@@ -194,4 +198,13 @@ void act_Print(Unit unit) {
     default:
       break;
   }
+}
+
+uint8_t act_IsWaintingToGather(Unit unit) {
+  Action currentAction = act_Get(unit);
+  if(currentAction.type != ACTION_GATHER) {
+    return 0;
+  }
+  PVOID actionBuffer = act_GetActionBuffer(unit);
+  return *(size_t *)((size_t)actionBuffer + 0x40) == 0x100;
 }
