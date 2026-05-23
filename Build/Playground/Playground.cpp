@@ -199,12 +199,12 @@ void buildDock() {
   if(!unit_Reference(citizen)) {
     return ;
   }
-  TilePoint currentTile = findDockPosition(citizen, unit_Tile_Position(unit));
+  TilePoint currentTile = unit_Building_FindBuildablePosition(citizen, B_DOCK, unit_Tile_Position(unit));
   if(geom_Tile_IsInvalid(currentTile)) {
     return ;
   }
   unit_Building_Build(citizen, currentTile, B_DOCK);
-  eeTa_FilePrintf("Cococcdadada\n");
+  eeTa_FilePrintf("Cococcdadada %d %d\n", currentTile.x, currentTile.y);
 }
 
 void bt_OnFrame() {

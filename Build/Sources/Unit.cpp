@@ -15,6 +15,8 @@
 #include <math.h>
 
 uint8_t unit_IsPresent(Unit unit);
+uint8_t unit_Building_CanBuildAtWOBuffer(PVOID buffer, Unit citizen, UnitType buildingType, TilePoint tile);
+TilePoint unit_Building_FindRandomBuildablePosition(PVOID unitGhostBuilding, Unit citizen, UnitType buildingType, TilePoint tile);
 
 vector<Unit> unit_GetBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
@@ -522,22 +524,60 @@ Point unit_GetNextPosition(Point currentPosition) {
   float distance = 15.0f;
   currentPosition.x += sinf(rand()) * distance;
   currentPosition.y += sinf(rand()) * distance;
-  int32_t index = 4;
-  while(index && map_Tile_GetPlaneID(geom_Tile_FromPoint(copyPosition)) != map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition))) {
-    currentPosition.x = copyPosition.x + sinf(rand()) * distance;
-    currentPosition.y = copyPosition.y + sinf(rand()) * distance;
-    index--;
-  }
-  if(!index) {
-    return geom_Point_Invalid();
-  }
   return currentPosition;
+}
+
+PVOID unit_Building_GhostUnit(Unit unit, UnitType buildingType) {
+  const Player currentPlayer = ply_GetPlayer(unit);
+  const PVOID playerRef = ply_Reference(currentPlayer);
+  const size_t buildingTypeID = eeTypes_UnitTypeIndex(buildingType);
+
+  return driver_BuildStruct(playerRef, buildingTypeID);
+}
+
+static inline uint32_t unit_Building_TileHash(const TilePoint tile) {
+  return tile.x * 512 + tile.y;
 }
 
 TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingType, TilePoint tile) {
   if(unit_Building_CanBuildAt(citizen, buildingType, tile)) {
     return tile;
   }
+  PVOID unitGhostBuilding = unit_Building_GhostUnit(citizen, buildingType);
+  int32_t xPos[] = {1, 0, -1, 0, 1, 1, -1, -1};
+  int32_t yPos[] = {0, -1, 0, 1, 1, -1, 1, -1};
+  int32_t index = 64, head = 0;
+  vector<TilePoint> vct;
+  unordered_map<uint32_t, uint8_t> valid;
+  vct.push_back(tile);
+  valid[unit_Building_TileHash(tile)] = 1;
+  while(index-- && head < vct.size()) {
+    TilePoint currentTile = vct[head];
+    if(unit_Building_CanBuildAtWOBuffer(unitGhostBuilding, citizen, buildingType, currentTile)) {
+      eeTa_FilePrintf("Print some shoit\n");
+      driver_Delete(unitGhostBuilding);
+      return currentTile;
+    }
+    for(size_t i = 0; i < sizeof(xPos) / sizeof(int32_t); i++) {
+      TilePoint nextPoint = (TilePoint) {
+        .x = xPos[i] + currentTile.x,
+        .y = yPos[i] + currentTile.y,
+      };
+      const uint32_t tileHash = unit_Building_TileHash(nextPoint);
+      if(valid.find(tileHash) != valid.end()) {
+        continue;
+      }
+      vct.push_back(nextPoint);
+      valid[tileHash] = 1;
+    }
+    head++;
+  }
+  TilePoint randomPos = unit_Building_FindRandomBuildablePosition(unitGhostBuilding, citizen, buildingType, tile);
+  driver_Delete(unitGhostBuilding);
+  return randomPos;
+}
+
+TilePoint unit_Building_FindRandomBuildablePosition(PVOID unitGhostBuilding, Unit citizen, UnitType buildingType, TilePoint tile) {
   int32_t index = 5;
   Point pointTile = geom_Point_FromTile(tile);
   while(index--) {
@@ -546,11 +586,23 @@ TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingTyp
       continue;
     }
     TilePoint tilePoint = geom_Tile_FromPoint(nextPoint);
-    if(unit_Building_CanBuildAt(citizen, buildingType, tilePoint)) {
+    if(unit_Building_CanBuildAtWOBuffer(unitGhostBuilding, citizen, buildingType, tilePoint)) {
       return tilePoint;
     }
   }
   return geom_Tile_Invalid();
+}
+
+uint8_t unit_Building_CanBuildAtWOBuffer(PVOID buffer, Unit citizen, UnitType buildingType, TilePoint tile) {
+  const Player currentPlayer = ply_GetPlayer(citizen);
+  const PVOID playerRef = ply_Reference(currentPlayer);
+  const size_t buildingTypeID = eeTypes_UnitTypeIndex(buildingType);
+  const int32_t typeSize = eeTypes_BuildingSize(buildingType) - 1;
+
+  return driver_CanBuild_WO_Buffer(playerRef, buffer, unit_Reference(citizen), (TilePoint) {
+    .x = tile.x + typeSize,
+    .y = tile.y + typeSize
+  }, buildingTypeID);
 }
 
 uint8_t unit_Building_CanBuildAt(Unit citizen, UnitType buildingType, TilePoint tile) {

@@ -453,9 +453,19 @@ size_t driver_CanBuildHere_603DD6(PVOID buffer, PVOID player, PVOID unit) {
   return canBuild;
 }
 
-size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, size_t buildingTypeID) {
+PVOID driver_BuildStruct(PVOID player, size_t buildingTypeID) {
   PVOID buffer = driver_New(0x334);
   driver_InstantiateClass_6042C7(buffer, player, buildingTypeID);
+  return buffer;
+}
+
+size_t driver_CanBuild_WO_Buffer(PVOID player, PVOID buffer, PVOID citizen, TilePoint tile, size_t buildingTypeID) {
+  driver_FillTileData(buffer, tile);
+  return driver_CanBuildHere_603DD6(buffer, player, citizen);
+}
+
+size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, size_t buildingTypeID) {
+  PVOID buffer = driver_BuildStruct(player, buildingTypeID);
   driver_FillTileData(buffer, tile);
   const size_t canBuildHere = driver_CanBuildHere_603DD6(buffer, player, citizen);
   driver_Delete(buffer);
