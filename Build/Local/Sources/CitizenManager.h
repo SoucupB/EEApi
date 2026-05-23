@@ -4,3 +4,5 @@
 
 void citizen_RepairBuildings(PVOID _);
 void citizen_RebuildBuilding(PVOID _);
+void citizen_RegisterBuilding(Unit unit);
+void citizen_DeleteBuilding(Unit unit);

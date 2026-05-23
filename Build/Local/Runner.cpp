@@ -254,7 +254,17 @@ void bt_AttackWithShipsEverywhere() {
   eeTa_AddFrameMethod(atom);
 }
 
+void bt_RebuildMissingBuildings() {
+  TimeAtom atom;
+  atom.method = (PVOID)citizen_RebuildBuilding;
+  atom.arguments = NULL;
+  atom.time = 1344;
+  eeTa_AddFrameMethod(atom);
+}
+
 void bt_OnUnitDestroy(Unit unit) {
+  eeTa_FilePrintf("Unit died %p!\n", unit_Reference(unit));
+  citizen_DeleteBuilding(unit);
 }
 
 void bt_InitAggresiveness() {
@@ -313,7 +323,6 @@ void initCapitolPositions() {
 }
 
 void bt_OnUnitCreate(Unit unit) {
-  
 }
 
 void bt_OnInit() {
@@ -329,6 +338,7 @@ void bt_OnInit() {
   bt_AttackWithBombers();
   bt_AttackWithShipsEverywhere();
   bt_InitHurricaneHunt();
+  bt_RebuildMissingBuildings();
   bt_LoadUnits();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();

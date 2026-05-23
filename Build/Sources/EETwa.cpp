@@ -48,6 +48,11 @@ uint8_t eeTa_NeutralPlayer() {
 // Money pointer is at ["EE-AOC.exe"+530DB8 + 0xAFC]
 
 void eeTa_OnUnitDestroy(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  if(unitPresence[eeTwa->all_players]->find(unit_Reference(unit)) == unitPresence[eeTwa->all_players]->end()) {
+    return ;
+  }
   pls_OnUnitDestory(unit);
   bt_OnUnitDestroy(unit);
 }

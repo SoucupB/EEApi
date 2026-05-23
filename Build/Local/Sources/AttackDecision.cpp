@@ -149,8 +149,9 @@ Point getNextPosition(Unit unit) {
   Point copyPosition = currentPosition;
   currentPosition.x += sinf(rand()) * 20.0f;
   currentPosition.y += sinf(rand()) * 20.0f;
+  uint16_t tilePoint = map_Tile_GetPlaneID(geom_Tile_FromPoint(copyPosition));
   int32_t index = 5;
-  while(index && map_Tile_GetPlaneID(geom_Tile_FromPoint(copyPosition)) != map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition))) {
+  while(index && tilePoint != INVALID_TILE_ID && tilePoint != map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition))) {
     currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
     currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
     index--;
@@ -204,6 +205,9 @@ void att_PatrolRandomPositions_t(vector<Unit> &selfUnits, uint8_t (*checker)(Uni
     return ;
   }
   Point randomPos = att_RandomMove(filteredUnits[0]);
+  if(geom_Point_IsInvalid(randomPos)) {
+    return ;
+  }
   for(size_t i = 0, c = filteredUnits.size(); i < c; i++) {
     maxCommands--;
     unit_Action(filteredUnits[i], randomPos, UNIT_ATTACK);
