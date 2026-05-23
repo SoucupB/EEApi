@@ -540,6 +540,10 @@ static inline uint32_t unit_Building_TileHash(const TilePoint tile) {
 }
 
 TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingType, TilePoint tile) {
+  const UnitType type = unit_Type(citizen);
+  if(!eeTypes_IsCitizen(type) || !eeTypes_IsBuilding(buildingType)) {
+    return geom_Tile_Invalid();
+  }
   if(unit_Building_CanBuildAt(citizen, buildingType, tile)) {
     return tile;
   }
@@ -554,7 +558,6 @@ TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingTyp
   while(index-- && head < vct.size()) {
     TilePoint currentTile = vct[head];
     if(unit_Building_CanBuildAtWOBuffer(unitGhostBuilding, citizen, buildingType, currentTile)) {
-      eeTa_FilePrintf("Print some shoit\n");
       driver_Delete(unitGhostBuilding);
       return currentTile;
     }
