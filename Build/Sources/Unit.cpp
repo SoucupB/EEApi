@@ -403,6 +403,12 @@ uint8_t unit_Exists(Unit unit) {
          simpleUnitPresence[eeTwa->all_players]->find(unit_Reference(unit)) != simpleUnitPresence[eeTwa->all_players]->end();
 }
 
+Unit unit_FromPayload(PVOID unit) {
+  return (Unit) {
+    ._payload = unit
+  };
+}
+
 int8_t unit_IsDead(Unit unit) {
   return !unit_CurrentHp(unit);
 }

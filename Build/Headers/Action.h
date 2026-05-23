@@ -19,6 +19,7 @@ enum ActionType {
 typedef struct Action_t {
   ActionType type;
   Unit target;
+  SimpleUnit targetSimpleUnit;
   TilePoint targetTile;
   Point targetPoint;
   PVOID loadStartTarget;
