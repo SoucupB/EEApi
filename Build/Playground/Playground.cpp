@@ -191,19 +191,20 @@ Unit findWaterUnit() {
 }
 
 void buildDock() {
-  // Unit unit = findWaterUnit();
-  // if(!unit_Reference(unit)) {
-  //   return ;
-  // }
+  Unit unit = findWaterUnit();
+  if(!unit_Reference(unit)) {
+    return ;
+  }
   Unit citizen = getCitizen();
   if(!unit_Reference(citizen)) {
     return ;
   }
-  TilePoint currentTile = unit_Building_FindBuildablePosition(citizen, B_AIRPORT, unit_Tile_Position(citizen));
+  TilePoint currentTile = unit_Building_FindBuildablePosition(citizen, B_DOCK, unit_Tile_Position(unit));
   if(geom_Tile_IsInvalid(currentTile)) {
     return ;
   }
-  unit_Building_Build(citizen, currentTile, B_AIRPORT);
+  unit_Building_Build(citizen, currentTile, B_DOCK);
+  eeTa_FilePrintf("Some crc (%d %d)\n", currentTile.x, currentTile.y);
 }
 
 void bt_OnFrame() {
