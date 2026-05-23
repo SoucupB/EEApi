@@ -207,6 +207,10 @@ void buildDock() {
   eeTa_FilePrintf("Some crc (%d %d)\n", currentTile.x, currentTile.y);
 }
 
+void bt_OnUnitCreate(Unit unit) {
+  eeTa_FilePrintf("Created unit %p and type %p\n", unit_Reference(unit), unit_Type(unit));
+}
+
 void bt_OnFrame() {
   execDataPengus();
   // citizenOperate();
