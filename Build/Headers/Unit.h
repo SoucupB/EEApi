@@ -48,6 +48,7 @@ char *unit_Name(Unit unit);
 vector<AbilityTypes> unit_Abilities(Unit unit);
 void unit_Object_CastAbility(Unit unit, Unit target, AbilityTypes ability);
 Unit unit_SimpleUnitToUnit(SimpleUnit su);
+void unit_AttackTarget(Unit attacker, Unit target);
 
 uint8_t unit_CanBuild(Unit building, UnitType type);
 vector<Unit> unit_Player_GetBuildings(Player ply);

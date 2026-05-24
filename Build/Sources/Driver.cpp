@@ -471,3 +471,17 @@ size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, s
   driver_Delete(buffer);
   return canBuildHere;
 }
+
+void driver_AttackUnit_Instantiate_61D337(PVOID buffer, PVOID attackerUnit, PVOID attackedUnit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_ATTACK_TARGET_INSTANTIATE);
+  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
+  (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  const size_t bufferFlag = (((size_t)buffer & 0xFFFFFF00) | 0x1);
+  method(buffer, attackerUnit, attackedUnit, (PVOID)bufferFlag, (PVOID)0x0);
+}
+
+void driver_AttackUnit(PVOID attackerUnit, PVOID attackedUnit) {
+  PVOID buffer = driver_New(0x44);
+  driver_AttackUnit_Instantiate_61D337(buffer, attackerUnit, attackedUnit);
+  driver_IssueCommand(attackerUnit, buffer, (PVOID)DRIVER_ATTACK_TARGET_SPECIAL_CONST);
+}

@@ -413,6 +413,31 @@ int8_t unit_IsDead(Unit unit) {
   return !unit_CurrentHp(unit);
 }
 
+uint8_t unit_IsSelfUnit(Unit unit) {
+  Player aPlayer = ply_GetPlayer(unit);
+  return ply_Reference(aPlayer) == ply_Reference(ply_Self());
+}
+
+uint8_t unit_IsNeutralUnit(Unit unit) {
+  Player aPlayer = ply_GetPlayer(unit);
+  return ply_Reference(aPlayer) == ply_Reference(ply_Neutral());
+}
+
+uint8_t unit_AreAlied(Unit a, Unit b) {
+  Player aPlayer = ply_GetPlayer(a);
+  Player bPlayer = ply_GetPlayer(b);
+  return ply_AreAllies(aPlayer, bPlayer);
+}
+
+void unit_AttackTarget(Unit attacker, Unit target) {
+  if(!unit_IsSelfUnit(attacker) || 
+     unit_AreAlied(attacker, target) ||
+     unit_IsNeutralUnit(target)) {
+    return ;
+  }
+  driver_AttackUnit(unit_Reference(attacker), unit_Reference(target));
+}
+
 uint8_t unit_IsComplexUnit(Unit unit) {
   UnitType type = unit_Type(unit);
   if(type != UNIT_UNDEFINED) {

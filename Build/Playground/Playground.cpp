@@ -16,6 +16,7 @@
 
 void act_Print(Unit unit);
 void buildDock();
+void attackTarget();
 // I think I find the water tile.
 void onLosingHealth(Unit unit) {
   eeTa_FilePrintf("Unit %p taking damage\n", unit_Reference(unit));
@@ -27,6 +28,16 @@ Unit getCitizen() {
   vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
   for(size_t i = 0; i < units.size(); i++) {
     if(eeTypes_IsCitizen(unit_Type(units[i]))) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
+Unit getAttackingUnit() {
+  vector<Unit> units = unit_GetUnits(eeTa_SelfPlayer());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(!eeTypes_IsCitizen(unit_Type(units[i])) && !eeTypes_IsWaterUnit(unit_Type(units[i]))) {
       return units[i];
     }
   }
@@ -100,7 +111,8 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {
-    printTileMethod();
+    // printTileMethod();
+    attackTarget();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
@@ -214,6 +226,28 @@ void buildDock() {
 
 void bt_OnUnitCreate(Unit unit) {
   eeTa_FilePrintf("Created unit %p and type %p\n", unit_Reference(unit), unit_Type(unit));
+}
+
+Unit getEnemyBuilding() {
+  vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
+  for(size_t i = 0; i < buildings.size(); i++) {
+    if(eeTa_Player(buildings[i]) != eeTa_SelfPlayer() && unit_Type(buildings[i]) != B_TEMPLE) {
+      return buildings[i];
+    }
+  }
+  return unit_Null();
+}
+
+void attackTarget() {
+  Unit attacker = getAttackingUnit();
+  if(!unit_Reference(attacker)) {
+    return ;
+  }
+  Unit enemyBuildings = getEnemyBuilding();
+  if(!unit_Reference(enemyBuildings)) {
+    return ;
+  }
+  unit_AttackTarget(attacker, enemyBuildings);
 }
 
 void bt_PrintActions() {
