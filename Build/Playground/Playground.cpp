@@ -78,9 +78,11 @@ void test_PrintUnits() {
   vector<Unit> units = unit_Player_GetUnits(ply_Null());
   for(int32_t i = 0; i < units.size(); i++) {
     Point currentPoint = unit_Point_Position(units[i]);
+    TilePoint tile = unit_Tile_Position(units[i]);
     eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d and range %f\n", units[i]._payload, 
                     unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, 
                     eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]));
+    eeTa_FilePrintf("Is space tile (%d %d) -> %d\n", tile.x, tile.y, map_Tile_IsSpace(tile));
   }
   vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
   for(int32_t i = 0; i < buildings.size(); i++) {
@@ -91,6 +93,7 @@ void test_PrintUnits() {
   }
   // printBuildingsOffset();
   printCanBuild(B_DOCK);
+  eeTa_FilePrintf("Is space %p\n", map_IsSpaceMap());
 }
 
 void printTileMethod() {

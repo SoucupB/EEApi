@@ -14,6 +14,8 @@ static const size_t mapPointer = MAPDATA_REMOTE_METHOD_MAP_POINTER;
 static const size_t mapTileCount = MAPDATA_TILE_COUNT;
 static const size_t tileStructPointer = MAPDATA_TILE_STRUCT_POINTER;
 static const size_t isWaterMethodOffset = MAPDATA_REMOTE_METHOD_IS_WATER_TILE;
+static const size_t isSpaceMethodOffset = MAPDATA_REMOTE_METHOD_IS_SPACE_TILE;
+static const size_t isSpaceMap = MAPDATA_REMOVE_METHOD_IS_SPACE;
 static const size_t mapPointerTileOffset = MAPDATA_MAP_POINTER_TILE_OFFSET;
 static const size_t isEdgeMethodOffset = MAPDATA_REMOTE_METHOD_IS_EDGE_TILE;
 static const size_t zTileMethodOffset = MAPDATA_REMOTE_METHOD_TILE_GET_Z;
@@ -258,6 +260,20 @@ void map_TileMap_FillPlaneIDs() {
       }
     }
   }
+}
+
+uint8_t map_IsSpaceMap() {
+  PVOID mapPointer = map_GetMapPointer();
+  size_t isSpaceMapPointer = (size_t)lib_LowLevelEngine() + isSpaceMap;
+  uint8_t __thiscall (*method)(PVOID) = (uint8_t __thiscall (*)(PVOID))isSpaceMapPointer;
+  return method((PVOID)((size_t)mapPointer + mapPointerTileOffset));
+}
+
+uint8_t map_Tile_IsSpace(TilePoint self) {
+  PVOID mapPointer = map_GetMapPointer();
+  size_t isSpaceTileMethodOffset = (size_t)lib_LowLevelEngine() + isSpaceMethodOffset;
+  uint8_t __thiscall (*method)(PVOID, PVOID, PVOID) = (uint8_t __thiscall (*)(PVOID, PVOID, PVOID))isSpaceTileMethodOffset;
+  return method((PVOID)((size_t)mapPointer + mapPointerTileOffset), (PVOID)self.x, (PVOID)self.y);
 }
 
 void map_ComputerConnexIslands() {
