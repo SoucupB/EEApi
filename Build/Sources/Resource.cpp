@@ -76,11 +76,10 @@ TilePoint res_Tile_Position(Resource self) {
 }
 
 Point res_Point_Position(Resource self) {
-  float *x = (float *)util_Pointer(res_Reference(self), RESOURCE_POINT_X, FLOAT_TYPE);
-  float *y = (float *)util_Pointer(res_Reference(self), RESOURCE_POINT_Y, FLOAT_TYPE);
+  TilePoint tilePoint = res_Tile_Position(self);
   return (Point) {
-    .x = *x,
-    .y = *y
+    .x = (float)tilePoint.x,
+    .y = (float)tilePoint.y,
   };
 }
 
