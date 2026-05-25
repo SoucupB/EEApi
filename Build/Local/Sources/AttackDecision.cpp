@@ -661,6 +661,18 @@ SimpleUnit getHurricane() {
   return hurricanes[rand() % hurricanes.size()];
 }
 
+uint8_t antimatterStormFilter(SimpleUnit unit) {
+  return su_Type(unit) == ANTI_MATTER_STORM;
+}
+
+SimpleUnit getAntimatterStorm() {
+  vector<SimpleUnit> storms = su_Filter(antimatterStormFilter);
+  if(!storms.size()) {
+    return su_Null();
+  }
+  return storms[rand() % storms.size()];
+}
+
 Unit getClosestEnemyShip(Unit hurricane) {
   vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
   float closest = 1000000.0f;
@@ -687,6 +699,38 @@ void att_HuntWithHurricane(PVOID _) {
   }
   Unit hurricaneUnit = unit_SimpleUnitToUnit(hurricane);
   Unit enemyShip = getClosestEnemyShip(hurricaneUnit);
+  if(!unit_Reference(enemyShip)) {
+    return ;
+  }
+  unit_Action(hurricaneUnit, unit_Point_Position(enemyShip), UNIT_MOVE);
+}
+
+Unit getClosestEnemyFlyier(Unit hurricane) {
+  vector<Unit> units = unit_GetUnits(eeTa_AllPlayers());
+  float closest = 1000000.0f;
+  Unit enemy = unit_Null();
+  for(size_t i = 0; i < units.size(); i++) {
+    UnitType type = unit_Type(units[i]);
+    if(eeTypes_IsAirUnit(type) && !ply_Index_AreAllies(unit_GetPlayerIndex(units[i]), eeTa_SelfPlayer()) && 
+       ply_Reference(ply_GetPlayer(units[i])) != ply_Reference(ply_Self()) && 
+       ply_Reference(ply_GetPlayer(units[i])) != ply_Reference(ply_Neutral())) {
+      float currentDist = unit_Distance(hurricane, units[i]);
+      if(closest > currentDist) {
+        closest = currentDist;
+        enemy = units[i];
+      }
+    }
+  }
+  return enemy;
+}
+
+void att_HuntWithAirplaneStorm(PVOID _) {
+  SimpleUnit hurricane = getAntimatterStorm();
+  if(!su_Reference(hurricane)) {
+    return ;
+  }
+  Unit hurricaneUnit = unit_SimpleUnitToUnit(hurricane);
+  Unit enemyShip = getClosestEnemyFlyier(hurricaneUnit);
   if(!unit_Reference(enemyShip)) {
     return ;
   }

@@ -226,6 +226,14 @@ void bt_InitHurricaneHunt() {
   eeTa_AddFrameMethod(atom);
 }
 
+void bt_InitPlaneHunterStorm() {
+  TimeAtom atom;
+  atom.method = (PVOID)att_HuntWithAirplaneStorm;
+  atom.arguments = NULL;
+  atom.time = 3678;
+  eeTa_AddFrameMethod(atom);
+}
+
 void startFishCommand(PVOID attr) {
   res_MoveResourceBoats();
 }
@@ -357,6 +365,7 @@ void bt_OnInit() {
   bt_LoadUnits();
   bt_InitAirplaneActions();
   bt_InitBomberHunters();
+  bt_InitPlaneHunterStorm();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();
 }
