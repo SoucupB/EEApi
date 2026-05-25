@@ -186,11 +186,27 @@ void bt_InitUnitMovement() {
   eeTa_AddFrameMethod(atom);
 }
 
+void bt_InitBomberHunters() {
+  TimeAtom atom;
+  atom.method = (PVOID)initBomberHunters;
+  atom.arguments = NULL;
+  atom.time = 5700;
+  eeTa_AddFrameMethod(atom);
+}
+
 void bt_InitWorkerCreators() {
   TimeAtom atom;
   atom.method = (PVOID)bt_BuildWorkers;
   atom.arguments = NULL;
   atom.time = 1928;
+  eeTa_AddFrameMethod(atom);
+}
+
+void bt_InitAirplaneActions() {
+  TimeAtom atom;
+  atom.method = (PVOID)replaceMoveCommandForFliers;
+  atom.arguments = NULL;
+  atom.time = 3214;
   eeTa_AddFrameMethod(atom);
 }
 
@@ -339,6 +355,8 @@ void bt_OnInit() {
   bt_InitHurricaneHunt();
   bt_RebuildMissingBuildings();
   bt_LoadUnits();
+  bt_InitAirplaneActions();
+  bt_InitBomberHunters();
   pls_OnInit((PVOID)att_AddDamagedUnits);
   // bt_InitPlaneHunters();
 }

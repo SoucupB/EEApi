@@ -8,6 +8,7 @@
 #include "Unit.h"
 #include "Player.h"
 #include "SimpleUnit.h"
+#include "Action.h"
 
 static map<pair<float, float>, uint8_t> attackedUnits;
 
@@ -242,6 +243,59 @@ uint8_t isFlyingBomber(Unit unit) {
   return 0;
 }
 
+uint8_t isEnemyFlyingBomber(Unit unit) {
+  return isFlyingBomber(unit) && unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !ply_Index_AreAllies(unit_GetPlayerIndex(unit), eeTa_SelfPlayer());
+}
+
+uint8_t isSelfFlyingCombustionUnit(Unit unit) {
+  const UnitType type = unit_Type(unit);
+  return isSelfUnit(unit) && eeTypes_IsFromClass(CLASS_AIR_COMBUSTION_FLYEIR, type);
+}
+
+void attackEnemyBombers(Unit bomber[], size_t bomberCount) {
+  if(!bomberCount) {
+    return ;
+  }
+  vector<Unit> airplanes = unit_Filter(isSelfFlyingCombustionUnit);
+  for(size_t i = 0, c = airplanes.size(); i < c; i++) {
+    const size_t bomberIndex = i / bomberCount;
+    if(bomberIndex >= bomberCount) {
+      break;
+    }
+    unit_Action(airplanes[i], unit_Point_Position(bomber[bomberIndex]), UNIT_ATTACK);
+  }
+}
+
+void processEnemyBomber(Unit bomber, Unit bombers[], size_t *count) {
+  Action currentAction = act_Get(bomber);
+  if(currentAction.type == ACTION_ATTACK_TARGET && isSelfUnit(currentAction.target)) {
+    bombers[(*count)++] = bomber;
+  }
+}
+
+void replaceMoveCommandForFliers(PVOID _) {
+  vector<Unit> airplanes = unit_Filter(isSelfFlyingCombustionUnit);
+  for(size_t i = 0, c = airplanes.size(); i < c; i++) {
+    Action currentAction = act_Get(airplanes[i]);
+    if(currentAction.type == ACTION_MOVE) {
+      unit_Action(airplanes[i], currentAction.targetPoint, UNIT_ATTACK);
+    }
+  }
+}
+
+void initBomberHunters(PVOID _) {
+  vector<Unit> airplanes = unit_Filter(isEnemyFlyingBomber);
+  Unit units[64];
+  size_t count = 0;
+  for(size_t i = 0, c = airplanes.size(); i < c; i++) {
+    if(count >= sizeof(units) / sizeof(units[0])) {
+      break;
+    }
+    processEnemyBomber(airplanes[i], units, &count);
+  }
+  attackEnemyBombers(units, count);
+}
+
 uint8_t isTower(Unit unit) {
   UnitType type = unit_Type(unit);
   switch (type)
@@ -293,16 +347,29 @@ uint8_t isHades(Unit unit) {
   return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer() && unit_Type(unit) == MECH_HADES;
 }
 
+uint8_t isTempest(Unit unit) {
+  return isSelfUnit(unit) && unit_Type(unit) == MECH_TEMPEST;
+}
+
 uint8_t isSelfUnit(Unit unit) {
   return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer();
 }
 
-uint8_t enemyUnit(Unit unit) {
-  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !ply_Index_AreAllies(unit_GetPlayerIndex(unit), eeTa_SelfPlayer()) && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer() && !unit_IsBuilding(unit) && !eeTypes_IsAirUnit(unit_Type(unit));
+uint8_t isEnemyUnit(Unit unit) {
+  return unit_GetPlayerIndex(unit) != eeTa_SelfPlayer() && !ply_Index_AreAllies(unit_GetPlayerIndex(unit), eeTa_SelfPlayer()) && unit_GetPlayerIndex(unit) != eeTa_NeutralPlayer();
+}
+
+uint8_t enemyNonFlyingUnit(Unit unit) {
+  return isEnemyUnit(unit) && !unit_IsBuilding(unit) && !eeTypes_IsAirUnit(unit_Type(unit));
 }
 
 uint8_t enemyUnitFilter(Unit unit) {
   return enemyUnits(unit) && !eeTypes_IsBuilding(unit_Type(unit));
+}
+
+uint8_t enemyFlyingUnits(Unit unit) {
+  UnitType type = unit_Type(unit);
+  return isEnemyUnit(unit) && eeTypes_IsAirUnit(type);
 }
 
 uint8_t enemyBuilding(Unit unit) {
@@ -400,7 +467,7 @@ void pickRandomUnits(vector<Unit> &units, int32_t count, uint32_t *index, size_t
 }
 
 void priest_ConvertIfPossible(Unit priest) {
-  vector<Unit> units = unit_Filter(enemyUnit);
+  vector<Unit> units = unit_Filter(enemyNonFlyingUnit);
   for(size_t i = 0, c = units.size(); i < c; i++) {
     if(unit_Distance(priest, units[i]) <= unit_Range(priest)) {
       unit_Convert(priest, units[i]);
@@ -461,7 +528,7 @@ void prophet_CastEarthquake(Unit prophet, uint8_t *casted) {
 }
 
 void prophet_CastAbilities(Unit prophet) {
-  vector<Unit> units = unit_Filter(enemyUnit);
+  vector<Unit> units = unit_Filter(enemyNonFlyingUnit);
   uint8_t casted = 0;
   prophet_CastTornado(prophet, units, &casted);
   prophet_CastMalaria(prophet, units, &casted);
@@ -551,10 +618,35 @@ void att_ProcessHades() {
   }
 }
 
+void tempest_CastAbilities(Unit tempest, vector<Unit> &enemies) {
+  if(!unit_CanCast(tempest, ABILITY_MECH_TEMPEST_MP_ANTIMATTERSTORM_)) {
+    return ;
+  }
+
+  for(size_t i = 0, c = enemies.size(); i < c; i++) {
+    if(unit_Range(tempest) * 4.0f <= unit_Distance(enemies[i], tempest)) {
+      unit_Point_CastAbility(tempest, unit_Point_Position(enemies[i]), ABILITY_MECH_TEMPEST_MP_ANTIMATTERSTORM_);
+      break;
+    }
+  }
+}
+
+void att_ProcessTempest() {
+  size_t total = 5;
+  vector<Unit> units = unit_Filter(isTempest);
+  vector<Unit> enemies = unit_Filter(enemyFlyingUnits);
+  uint32_t newIndexes[256];
+  pickRandomUnits(units, total, newIndexes, sizeof(newIndexes) / sizeof(newIndexes[0]));
+  for(size_t i = 0, c = min(total, units.size()); i < c; i++) {
+    tempest_CastAbilities(units[newIndexes[i]], enemies);
+  }
+}
+
 void att_ProcessSpecialAbilityUnits(PVOID _) {
   att_ProcessPriests();
   att_ProcessProphets();
   att_ProcessHades();
+  att_ProcessTempest();
 }
 
 uint8_t hurricaneFilter(SimpleUnit unit) {
