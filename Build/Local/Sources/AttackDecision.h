@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <vector>
 #include "EETwa.h"
+#include "MapData.h"
+#include "Player.h"
 
 using namespace std;
 

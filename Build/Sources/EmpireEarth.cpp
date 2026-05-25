@@ -12,6 +12,7 @@
 #include "EETwaPrivate.h"
 #include "Offset.h"
 #include "MethodsDefinitions.h"
+#include "Game.h"
 
 static size_t mapPolygons;
 void eeTa_RebuildExtraDataStructure();

@@ -1,6 +1,5 @@
 #pragma once
 #include <windows.h>
-#include "Game.h"
 #include "Geometry.h"
 #include "EETypes.h"
 
