@@ -24,17 +24,10 @@ Action act_Get(Unit unit) {
 
 ActionType act_GeneralGetAction(PVOID actionInstance) {
   size_t actInstance = *(size_t *)((size_t)actionInstance + 0x30);
-  switch (actInstance)
-  {
-    case OFFSET_ACTION_GENERAL_ATTACK:
-      return ACTION_ATTACK_AREA;
-    case OFFSET_ACTION_GENERAL_MOVE:
-      return ACTION_MOVE;
-    
-    default:
-      break;
+  if((actInstance & 1)) {
+    return ACTION_MOVE;
   }
-  return ACTION_IDLE;
+  return ACTION_ATTACK_AREA;
 }
 
 ActionType act_CastSpellAction(PVOID actionInstance) {
