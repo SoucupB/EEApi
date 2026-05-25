@@ -42,6 +42,7 @@ extern "C" {
       }
       eeTa_OnInit();
       hook->onInitFlag = 1;
+      return method(self);
     }
     eeTa_OnFrame();
     return method(self);
