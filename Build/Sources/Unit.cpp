@@ -17,6 +17,7 @@
 uint8_t unit_IsPresent(Unit unit);
 uint8_t unit_Building_CanBuildAtWOBuffer(PVOID buffer, Unit citizen, UnitType buildingType, TilePoint tile);
 TilePoint unit_Building_FindRandomBuildablePosition(PVOID unitGhostBuilding, Unit citizen, UnitType buildingType, TilePoint tile);
+uint8_t unit_CanCurrentUnitBeActionable(Unit unit);
 
 vector<Unit> unit_GetBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
@@ -307,7 +308,7 @@ uint16_t unit_GetPlaneID(Unit unit) {
 }
 
 void unit_Point_CastAbility(Unit unit, Point target, AbilityTypes ability) {
-  if(!unit_CanCast(unit, ability) || !unit_IsSelf(unit)) {
+  if(!unit_CanCast(unit, ability) || !unit_CanCurrentUnitBeActionable(unit)) {
     return ;
   }
   driver_CastAbility_Remade(unit_Reference(unit), target, ability);
@@ -442,8 +443,19 @@ uint8_t unit_AreAlied(Unit a, Unit b) {
   return ply_AreAllies(aPlayer, bPlayer);
 }
 
+uint8_t unit_CanCurrentUnitBeActionable(Unit unit) {
+  if(!unit_IsSelf(unit)) {
+    return 0;
+  }
+  const UnitType type = unit_Type(unit);
+  if(eeTypes_UnitClass(type) == CLASS_AIR_COMBUSTION_FLYEIR && unit_GetCurrentFuel(unit) <= 0) {
+    return 0;
+  }
+  return 1;
+}
+
 void unit_AttackTarget(Unit attacker, Unit target) {
-  if(!unit_IsSelf(attacker) || !unit_IsEnemy(target)) {
+  if(!unit_CanCurrentUnitBeActionable(attacker) || !unit_IsEnemy(target)) {
     return ;
   }
   driver_AttackUnit(unit_Reference(attacker), unit_Reference(target));
@@ -468,7 +480,7 @@ void unit_Convert(Unit src, Unit dst) {
 }
 
 void unit_Action(Unit unit, Point point, UnitAction action) {
-  if(!unit_IsPresent(unit) || !unit_IsSelf(unit)) {
+  if(!unit_IsPresent(unit) || !unit_CanCurrentUnitBeActionable(unit)) {
     return ;
   }
   driver_Unit_Command(unit_Reference(unit), point, action);
