@@ -15,8 +15,8 @@ void test_PrintUnits() {
   for(int32_t i = 0; i < units.size(); i++) {
     Point currentPoint = unit_Point_Position(units[i]);
     TilePoint tile = unit_Tile_Position(units[i]);
-    eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d and range %f, current fuel %d, max fuel %d\n", units[i]._payload, 
-                    unit_Type(units[i]), eeTa_Player(units[i]), currentPoint.x, currentPoint.y, 
+    eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, tile ID: %d, position: (%f, %f) class %p with hp %d and range %f, current fuel %d, max fuel %d\n", units[i]._payload, 
+                    unit_Type(units[i]), eeTa_Player(units[i]), unit_GetPlaneID(units[i]), currentPoint.x, currentPoint.y, 
                     eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]), unit_GetCurrentFuel(units[i]), unit_GetMaxFuel(units[i]));
     eeTa_FilePrintf("Action is %d\n", act_Get(units[i]).type);
   }
