@@ -379,13 +379,13 @@ void util_MessageBox(const char *title, const char *message) {
 DWORD util_GetLastErrorInTargetProcess(HANDLE hProcess) {
   LPVOID pGetLastError = (LPVOID)GetProcAddress(GetModuleHandleA("kernel32.dll"), "GetLastError");
   if (!pGetLastError) {
-      std::cerr << "Failed to get address of GetLastError." << std::endl;
+      printf("Failed to get address of GetLastError.\n");
       return -1;
   }
 
   HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pGetLastError, NULL, 0, NULL);
   if (!hRemoteThread) {
-      std::cerr << "Failed to create remote thread for GetLastError." << std::endl;
+      printf("Failed to create remote thread for GetLastError.\n");
       return -1;
   }
 
@@ -393,7 +393,7 @@ DWORD util_GetLastErrorInTargetProcess(HANDLE hProcess) {
 
   DWORD errorCode = 0;
   if (!GetExitCodeThread(hRemoteThread, &errorCode)) {
-      std::cerr << "Failed to get the exit code for GetLastError thread." << std::endl;
+      printf("Failed to get the exit code for GetLastError thread.\n");
       errorCode = -1;
   }
 
