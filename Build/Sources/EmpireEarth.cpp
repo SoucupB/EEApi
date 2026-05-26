@@ -97,6 +97,12 @@ extern "C" {
     int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)mapPolygons);
     return method(self, _a, _b);
   }
+
+  __declspec(dllexport) PVOID __thiscall onMapInitialization(PVOID self, PVOID _1) {
+    PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_MAP_INIT);
+    PVOID response = method(self, _1);
+    return response;
+  }
 }
 
 void rebuildDataStructures() {
@@ -118,6 +124,7 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)METHOD_HOOK_ON_UNIT_BUY, (PVOID)onUnitBuy);
   builder_Definition((PVOID)METHOD_HOOK_ON_RESOURCE_INIT, (PVOID)onResourceInit);
   builder_Definition((PVOID)METHOD_HOOK_ON_RESOURCE_RELEASE, (PVOID)onResourceRelease);
+  builder_Definition((PVOID)METHOD_HOOK_ON_MAP_INITIALIZATION, (PVOID)onMapInitialization);
   #if defined(REPLACE_MMU)
     builder_ReplaceMMUMethods();
   #endif

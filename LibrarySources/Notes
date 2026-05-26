@@ -1126,3 +1126,6 @@ For unit unloading is 008479A0.
 
 max combustibil [[unit + 0x34] + 0x130] / 100 is the combustil.
 [unit + 0x290] / 100 combustibil.
+
+Map data is at 0093A213.
+Map initialization is at 005397FA.
