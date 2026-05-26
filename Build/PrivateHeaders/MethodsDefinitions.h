@@ -13,3 +13,4 @@ void builder_ReplaceMMUMethods();
 void builder_AllowRules(PVOID handle, size_t sz);
 size_t builder_BufferSize(PVOID buffer, uint8_t *hasBeenAllocked);
 uint8_t builder_IsMemoryValid(PVOID addr);
+void builder_AddRules(PVOID address, size_t sz);

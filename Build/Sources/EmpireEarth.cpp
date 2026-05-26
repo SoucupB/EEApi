@@ -13,6 +13,7 @@
 #include "Offset.h"
 #include "MethodsDefinitions.h"
 #include "Game.h"
+#include "CheckSum.h"
 
 static size_t mapPolygons;
 void eeTa_RebuildExtraDataStructure();
@@ -118,6 +119,7 @@ void setMapStart() {
 }
 
 void addBotMethodsHooks() {
+  cs_CheckSum();
   builder_Definition((PVOID)METHOD_HOOK_ON_UNIT_ITERATION, (PVOID)onUnitIteration);
   builder_Definition((PVOID)METHOD_HOOK_ON_FRAME, (PVOID)onFrame);
   builder_Definition((PVOID)METHOD_HOOK_ON_UNIT_DELETE, (PVOID)onUnitDelete);

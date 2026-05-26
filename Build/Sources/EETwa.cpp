@@ -193,24 +193,6 @@ PVOID eeTa_SetPlayers(PVOID unit) {
   return selectedUnits;
 }
 
-// Needs refactoring.
-// Point eeTa_GetDestinationCommand(Unit unit) {
-//   PVOID commandPointer = util_Pointer(unit._payload, 0x1C8, POINTER_TYPE);
-//   if(!commandPointer) {
-//     return (Point) {
-//       .x = -1.0f,
-//       .y = -1.0f
-//     };
-//   }
-//   PVOID metaPointer = util_Pointer(commandPointer, 0x34, POINTER_TYPE);
-//   float *positionPointer = (float *)util_Pointer(metaPointer, 0x48, FLOAT_TYPE);
-
-//   return (Point) {
-//     .x = positionPointer[0],
-//     .y = positionPointer[1]
-//   };
-// }
-
 int64_t eeTa_CurrentFrame() {
   PEETwa eeTwa = game_EETwa();
   return eeTwa->frames;
