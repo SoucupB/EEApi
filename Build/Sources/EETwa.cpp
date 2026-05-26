@@ -168,8 +168,11 @@ void eeTa_RebuildDTs() {
   eeTypes_InitUnits();
 }
 
+void eeTa_OnMapInit() {
+  map_Init();
+}
+
 void eeTa_OnInit() {
-  eeTa_Map_Init();
   bt_OnInit();
 }
 

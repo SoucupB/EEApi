@@ -101,6 +101,7 @@ extern "C" {
   __declspec(dllexport) PVOID __thiscall onMapInitialization(PVOID self, PVOID _1) {
     PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_MAP_INIT);
     PVOID response = method(self, _1);
+    eeTa_OnMapInit();
     return response;
   }
 }
