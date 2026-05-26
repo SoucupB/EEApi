@@ -1121,3 +1121,8 @@ Transported.
 For unit unloading is 008479A0.
 [action + 0x34] is x tile
 [action + 0x38] is y tile.
+
+0066912B Might be interesiting.
+
+max combustibil [[unit + 0x34] + 0x130] / 100 is the combustil.
+[unit + 0x290] / 100 combustibil.

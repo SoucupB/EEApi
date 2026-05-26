@@ -585,6 +585,23 @@ Point unit_GetNextPosition(Point currentPosition) {
   return currentPosition;
 }
 
+int32_t unit_GetMaxFuel(Unit unit) {
+  const UnitType type = unit_Type(unit);
+  if(eeTypes_UnitClass(type) != CLASS_AIR_COMBUSTION_FLYEIR) {
+    return 0;
+  }
+  const PVOID unitCiv = util_Pointer(unit_Reference(unit), UNIT_CIV_ATTRIBUTE, POINTER_TYPE);
+  return *(int32_t *)util_Pointer(unitCiv, UNIT_CIV_ATTRIBUTE_MAX_FUEL, INT32_T_TYPE) / 1000;
+}
+
+int32_t unit_GetCurrentFuel(Unit unit) {
+  const UnitType type = unit_Type(unit);
+  if(eeTypes_UnitClass(type) != CLASS_AIR_COMBUSTION_FLYEIR) {
+    return 0;
+  }
+  return *(int32_t *)util_Pointer(unit_Reference(unit), UNIT_CURRENT_FUEL, INT32_T_TYPE) / 1000;
+}
+
 PVOID unit_Building_GhostUnit(Unit unit, UnitType buildingType) {
   const Player currentPlayer = ply_GetPlayer(unit);
   const PVOID playerRef = ply_Reference(currentPlayer);
