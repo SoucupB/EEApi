@@ -42,6 +42,8 @@ uint8_t unit_IsSelf(Unit unit);
 vector<Unit> unit_Player_GetBuildings(Player ply);
 vector<Unit> unit_Player_GetUnits(Player ply);
 uint8_t unit_IsEnemy(Unit unit);
+int32_t unit_GetMaxFuel(Unit unit);
+int32_t unit_GetCurrentFuel(Unit unit);
 
 void unit_Object_CastAbility(Unit unit, Unit target, AbilityTypes ability);
 uint8_t unit_CanBuild(Unit building, UnitType type);
