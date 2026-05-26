@@ -49,35 +49,39 @@ void execDataPengus() {
   }
 }
 
-void collectResourcesWithWorkers() {
-  vector<Unit> citizens = unit_Filter(isIdleCitizen);
-  vector<Resource> resources = res_All();
-  for(size_t i = 0; i < citizens.size(); i++) {
-    float maxDistance = 1000000.0f;
-    Resource currentResource = res_Null();
-    for(size_t j = 0; j < resources.size(); j++) {
-      NeutralUnitType resType = res_Type(resources[j]);
-      if(resType != RES_GOLD_MINE) {
-        continue;
-      }
-      const float currentDistF = distanceEuclidf(unit_Point_Position(citizens[i]), res_Point_Position(resources[j]));
-      if(maxDistance > currentDistF) {
-        maxDistance = currentDistF;
-        currentResource = resources[j];
-      }
-    }
-    if(res_Reference(currentResource)) {
-      unit_Farm(citizens[i], currentResource);
+uint8_t isSelfUnit(Unit unit) {
+  return unit_GetPlayerIndex(unit) == eeTa_SelfPlayer();
+}
+
+uint8_t isSelfFlyingCombustionUnit(Unit unit) {
+  const UnitType type = unit_Type(unit);
+  return isSelfUnit(unit) && eeTypes_IsFromClass(CLASS_AIR_COMBUSTION_FLYEIR, type);
+}
+
+void replaceMoveCommandForFliers(PVOID _) {
+  vector<Unit> airplanes = unit_Filter(isSelfFlyingCombustionUnit);
+  for(size_t i = 0, c = airplanes.size(); i < c; i++) {
+    Action currentAction = act_Get(airplanes[i]);
+    if(currentAction.type == ACTION_MOVE) {
+      unit_Action(airplanes[i], currentAction.targetPoint, UNIT_ATTACK);
     }
   }
 }
 
+void bt_InitAirplaneActions() {
+  TimeAtom atom;
+  atom.method = (PVOID)replaceMoveCommandForFliers;
+  atom.arguments = NULL;
+  atom.time = 3214;
+  eeTa_AddFrameMethod(atom);
+}
+
 void bt_OnFrame() {
   execDataPengus();
-  collectResourcesWithWorkers();
 }
 
 void bt_OnInit() {
+  // bt_InitAirplaneActions();
 }
 
 void bt_OnUnitDestroy(Unit unit) {
