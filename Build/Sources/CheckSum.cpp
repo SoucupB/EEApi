@@ -21,6 +21,12 @@ size_t cs_GetLibCheckSum(PVOID address, size_t size) {
   return cs_GetCheckSum((PVOID)((size_t)lib_BaseAddress() + (size_t)address), size);
 }
 
+void cs_PrintError(size_t offset, size_t checkSumExpected, size_t checkSumGot) {
+  FILE *fd = fopen("BotsError.txt", "w+");
+  fprintf(fd, "Game version mismatch, Expected checksum %p at %p, got %p instead\n", (size_t)lib_BaseAddress() + checkSumExpected, offset, checkSumGot);
+  fclose(fd);
+}
+
 void cs_CheckSum() {
   size_t checkSize = 64;
   size_t checkSums[][2] = {
@@ -34,7 +40,9 @@ void cs_CheckSum() {
     {METHOD_HOOK_ON_MAP_INITIALIZATION, 0xDDA01796},
   };
   for(size_t i = 0; i < sizeof(checkSums) / sizeof(checkSums[0]); i++) {
-    if(cs_GetLibCheckSum((PVOID)checkSums[i][0], checkSize) != checkSums[i][1]) {
+    size_t checkSum = cs_GetLibCheckSum((PVOID)checkSums[i][0], checkSize);
+    if(checkSum != checkSums[i][1]) {
+      cs_PrintError(checkSums[i][0], checkSums[i][1], checkSum);
       exit(2002);
     }
   }
