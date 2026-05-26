@@ -44,7 +44,7 @@ void util_ReadMethodAtAdress(void *address, SIZE_T methodSize) {
 uint8_t util_ModifyJumpAddress(DWORD targetProcessId, SIZE_T address, SIZE_T jumpAt) {
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, targetProcessId);
   if (hProcess == NULL) {
-    std::cerr << "Could not open process: " << GetLastError() << std::endl;
+    printf("Could not open process: %d\n", GetLastError());
     return 0;
   }
   BYTE remoteJumpByteCode[5];
@@ -60,7 +60,7 @@ uint8_t util_ModifyJumpAddress(DWORD targetProcessId, SIZE_T address, SIZE_T jum
   int32_t jumpAtBytesCode = (int32_t)jumpAt - ((int32_t)address + 5);
   BYTE *jreAddress = (BYTE *)&jumpAtBytesCode;
   if (!WriteProcessMemory(hProcess, (PVOID)(address + 1), jreAddress, sizeof(int32_t), NULL)) {
-    std::cerr << "Failed to write parameter to target process memory." << std::endl;
+    printf("Failed to write parameter to target process memory.\n");
     CloseHandle(hProcess);
     return 0;
   }
@@ -71,7 +71,7 @@ uint8_t util_ModifyJumpAddress(DWORD targetProcessId, SIZE_T address, SIZE_T jum
 PVOID util_ReadProcessMemory(DWORD targetProcessId, PVOID at, SIZE_T size) {
   HANDLE hProcess = OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, targetProcessId);
   if (hProcess == NULL) {
-    std::cerr << "Could not open process: " << GetLastError() << std::endl;
+    printf("Could not open process: %d\n", GetLastError());
     return NULL;
   }
   PVOID buffer = malloc(size);
@@ -108,14 +108,14 @@ LPVOID util_RemoteInjector(DWORD targetProcessId, unsigned char *injectedCode, S
   LPVOID paramAddress = VirtualAllocEx(hProcess, NULL, injectedSize, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
   if (paramAddress == NULL)
   {
-    std::cerr << "Failed to allocate memory in target process." << std::endl;
+    printf("Failed to allocate memory in target process.\n");
     CloseHandle(hProcess);
     return NULL;
   }
 
   if (!WriteProcessMemory(hProcess, paramAddress, injectedCode, injectedSize, NULL))
   {
-    std::cerr << "Failed to write parameter to target process memory." << std::endl;
+    printf("Failed to write parameter to target process memory.\n");
     VirtualFreeEx(hProcess, paramAddress, 0, MEM_RELEASE);
     CloseHandle(hProcess);
     return NULL;
@@ -169,14 +169,14 @@ PVOID util_AddMethod(DWORD targetProcessId, unsigned char *injectedCode, SIZE_T 
   LPVOID paramAddress = VirtualAllocEx(hProcess, NULL, injectedSize, (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
   if (paramAddress == NULL)
   {
-    std::cerr << "Failed to allocate memory in target process." << std::endl;
+    printf("Failed to allocate memory in target process.\n");
     CloseHandle(hProcess);
     return NULL;
   }
 
   if (!WriteProcessMemory(hProcess, paramAddress, injectedCode, injectedSize, NULL))
   {
-    std::cerr << "Failed to write parameter to target process memory." << std::endl;
+    printf("Failed to write parameter to target process memory.\n");
     VirtualFreeEx(hProcess, paramAddress, 0, MEM_RELEASE);
     CloseHandle(hProcess);
     return NULL;
@@ -189,7 +189,7 @@ PVOID util_AddMethod(DWORD targetProcessId, unsigned char *injectedCode, SIZE_T 
 void util_WriteProcessMemory(DWORD targetProcessId, PVOID localBuffer, PVOID remoteBuffer, SIZE_T size) {
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, targetProcessId);
   if (hProcess == NULL) {
-    std::cerr << "Could not open process: " << GetLastError() << std::endl;
+    printf("Could not open process: %d\n", GetLastError());
     return ;
   }
   if (!WriteProcessMemory(hProcess, remoteBuffer, localBuffer, size, NULL))
@@ -205,11 +205,11 @@ void util_ChangeProtectionWrite(DWORD targetProcessId, PVOID remoteBuffer, size_
   DWORD oldProtect;
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, targetProcessId);
   if (hProcess == NULL) {
-    std::cerr << "Could not open process: " << GetLastError() << std::endl;
+    printf("Could not open process: %d\n", GetLastError());
     return ;
   }
   if (!VirtualProtectEx(hProcess, remoteBuffer, size, PAGE_READWRITE, &oldProtect)) {
-    std::cerr << "Failed to change memory protection. Error: " << GetLastError() << std::endl;
+    printf("Failed to change memory protection. Error: %d\n", GetLastError());
     return;
   }
 }
@@ -217,7 +217,7 @@ void util_ChangeProtectionWrite(DWORD targetProcessId, PVOID remoteBuffer, size_
 void util_Method(DWORD processID, HANDLE method, PVOID params, size_t paramsSize) {
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processID);
   if (!hProcess) {
-    std::cerr << "Failed to open target process." << std::endl;
+    printf("Failed to open target process.\n");
     return ;
   }
   LPVOID pRemoteMemory = VirtualAllocEx(hProcess, NULL, paramsSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
@@ -232,7 +232,7 @@ void util_Method(DWORD processID, HANDLE method, PVOID params, size_t paramsSize
   }
   HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)method, pRemoteMemory, 0, NULL);
   if (!hRemoteThread) {
-    std::cerr << "Failed to create remote thread in target process." << std::endl;
+    printf("Failed to create remote thread in target process.\n");
     VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
     CloseHandle(hProcess);
     return ;
@@ -282,7 +282,7 @@ void util_StartMethodThread(HANDLE hProcess, HMODULE module) {
                                 (LPTHREAD_START_ROUTINE)module, 
                                 nullptr, 0, nullptr);
   if (!hThread) {
-    std::cerr << "Failed to create remote thread for function call. Error: " << GetLastError() << std::endl;
+    printf("Failed to create remote thread for function call. Error: %d\n", GetLastError());
     return ;
   }
   WaitForSingleObject(hThread, INFINITE);
@@ -292,18 +292,18 @@ void util_StartMethodThread(HANDLE hProcess, HMODULE module) {
 bool util_LoadDLL(DWORD processID, const std::string &dllName, const std::string& dllPath) {
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processID);
   if (!hProcess) {
-    std::cerr << "Failed to open target process." << std::endl;
+    printf("Failed to open target process.\n");
     return false;
   }
   LPVOID pRemoteMemory = VirtualAllocEx(hProcess, NULL, dllPath.size() + 1, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
   if (!pRemoteMemory) {
-    std::cerr << "Failed to allocate memory in target process." << std::endl;
+    printf("Failed to allocate memory in target process.\n");
     CloseHandle(hProcess);
     return false;
   }
   printf("Remote buffer at %p\n", pRemoteMemory);
   if (!WriteProcessMemory(hProcess, pRemoteMemory, dllPath.c_str(), dllPath.size() + 1, NULL)) {
-    std::cerr << "Failed to write DLL path to target process memory." << std::endl;
+    printf("Failed to write DLL path to target process memory.\n");
     VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
     CloseHandle(hProcess);
     return false;
@@ -311,7 +311,7 @@ bool util_LoadDLL(DWORD processID, const std::string &dllName, const std::string
 
   LPVOID pLoadLibrary = (LPVOID)GetProcAddress(GetModuleHandleA("kernel32.dll"), "LoadLibraryA");
   if (!pLoadLibrary) {
-    std::cerr << "Failed to get address of LoadLibraryA." << std::endl;
+    printf("Failed to get address of LoadLibraryA.\n");
     VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
     CloseHandle(hProcess);
     return false;
@@ -319,7 +319,7 @@ bool util_LoadDLL(DWORD processID, const std::string &dllName, const std::string
 
   HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, pRemoteMemory, 0, NULL);
   if (!hRemoteThread) {
-    std::cerr << "Failed to create remote thread in target process." << std::endl;
+    printf("Failed to create remote thread in target process.\n");
     VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
     CloseHandle(hProcess);
     return false;
@@ -327,16 +327,16 @@ bool util_LoadDLL(DWORD processID, const std::string &dllName, const std::string
   WaitForSingleObject(hRemoteThread, INFINITE);
   DWORD dllBaseAddress = 0;
   if (!GetExitCodeThread(hRemoteThread, &dllBaseAddress) || dllBaseAddress == 0) {
-    std::cerr << "DLL injection failed. Checking target process error..." << std::endl;
+    printf("DLL injection failed. Checking target process error...\n");
     DWORD errorCode = util_GetLastErrorInTargetProcess(hProcess);
     if (errorCode != -1) {
-      std::cerr << "Error code from target process: " << errorCode << std::endl;
+      printf("Error code from target process: %d\n", errorCode);
     } else {
-      std::cerr << "Failed to retrieve the error code from the target process." << std::endl;
+      printf("Failed to retrieve the error code from the target process.\n");
     }
     return false;
   } else {
-    std::cout << "DLL loaded at address: " << std::hex << dllBaseAddress << std::endl;
+    printf("DLL loaded at address: %p\n", dllBaseAddress);
   }
   HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, dllName, dllPath, "someDllMain");
   printf("%s method of someDllMain is loaded at %p\n", &dllName[0], dllMethodAddress);
