@@ -134,7 +134,7 @@ void addBotMethodsHooks() {
   setMapStart();
 }
 
-extern "C"  __declspec(dllexport) void __cdecl someDllMain() {
+extern "C"  __declspec(dllexport) void __cdecl DLLMain() {
   if(!lib_IsLoaded()) {
     exit(0xC0000135); // libs DLL not found
   }
