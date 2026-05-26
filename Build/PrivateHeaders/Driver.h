@@ -24,3 +24,8 @@ PVOID driver_TechNode(TechTree tree, AbilityTypes ability);
 PVOID driver_AbilityPointer(PVOID manager, size_t abilityIndex);
 int32_t driver_AbilityEnergy(PVOID reference);
 void driver_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, AbilityTypes ability);
+size_t driver_CanBuiltAt(PVOID player, TilePoint tile, size_t buildingTypeID);
+size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, size_t buildingTypeID);
+PVOID driver_BuildStruct(PVOID player, size_t buildingTypeID);
+size_t driver_CanBuild_WO_Buffer(PVOID player, PVOID buffer, PVOID citizen, TilePoint tile, size_t buildingTypeID);
+void driver_AttackUnit(PVOID attackerUnit, PVOID attackedUnit);

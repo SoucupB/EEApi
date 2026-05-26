@@ -56,3 +56,21 @@ TilePoint geom_Tile_FromPoint(Point target) {
     .y = (int32_t)target.y
   };
 }
+
+TilePoint geom_Tile_Invalid() {
+  return (TilePoint) {
+    .x = -1000,
+    .y = -1000
+  };
+}
+
+uint8_t geom_Tile_IsInvalid(TilePoint tile) {
+  return tile.x == -1000 || tile.y == -1000;
+}
+
+Point geom_Point_FromTile(TilePoint target) {
+  return (Point) {
+    .x = (float)target.x,
+    .y = (float)target.y
+  };
+}

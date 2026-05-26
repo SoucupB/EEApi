@@ -29,6 +29,12 @@ NeutralUnitType su_Type(SimpleUnit unit) {
   });
 }
 
+SimpleUnit su_FromPayload(PVOID unit) {
+  return (SimpleUnit) {
+    ._payload = unit
+  };
+}
+
 SimpleUnit su_Null() {
   return (SimpleUnit) {
     ._payload = NULL

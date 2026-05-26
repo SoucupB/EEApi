@@ -11,8 +11,13 @@
 #include "EETypesStructPrivate.h"
 #include "Offset.h"
 #include "SimpleUnit.h"
+#include "EETypesStructPrivate.h"
+#include <math.h>
 
 uint8_t unit_IsPresent(Unit unit);
+uint8_t unit_Building_CanBuildAtWOBuffer(PVOID buffer, Unit citizen, UnitType buildingType, TilePoint tile);
+TilePoint unit_Building_FindRandomBuildablePosition(PVOID unitGhostBuilding, Unit citizen, UnitType buildingType, TilePoint tile);
+uint8_t unit_CanCurrentUnitBeActionable(Unit unit);
 
 vector<Unit> unit_GetBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
@@ -28,6 +33,17 @@ vector<Unit> unit_GetBuildings(int8_t player) {
     }
   }
   return buildingsPointer;
+}
+
+uint8_t unit_IsSelf(Unit unit) {
+  const Player ply = ply_GetPlayer(unit);
+  return ply_Reference(ply) == ply_Reference(ply_Self());
+}
+
+uint8_t unit_IsEnemy(Unit unit) {
+  const Player ply = ply_GetPlayer(unit);
+  const Player self = ply_Self();
+  return !unit_IsSelf(unit) && !ply_AreAllies(ply, self) && !unit_IsNeutral(unit);
 }
 
 vector<Unit> unit_Player_GetBuildings(Player ply) {
@@ -80,6 +96,10 @@ PVOID unit_EpochStruct(PVOID building, PVOID unitType) {
 }
 
 uint8_t unit_CanBuild(Unit building, UnitType type) {
+  if(!unit_IsSelf(building)) {
+    return 0;
+  }
+
   size_t *epochStruct = (size_t *)unit_EpochStruct(unit_Reference(building), (PVOID)type);
   if(!epochStruct) {
     return 0;
@@ -115,6 +135,9 @@ char *unit_Name(Unit unit) {
 }
 
 void unit_Build(Unit building, UnitType type) {
+  if(!unit_IsSelf(building)) {
+    return ;
+  }
   Player currentPlayer = ply_GetPlayer(building);
   if(ply_CurrentPopulation(currentPlayer) >= ply_TotalPop(currentPlayer)) {
     return ;
@@ -285,7 +308,7 @@ uint16_t unit_GetPlaneID(Unit unit) {
 }
 
 void unit_Point_CastAbility(Unit unit, Point target, AbilityTypes ability) {
-  if(!unit_CanCast(unit, ability)) {
+  if(!unit_CanCast(unit, ability) || !unit_CanCurrentUnitBeActionable(unit)) {
     return ;
   }
   driver_CastAbility_Remade(unit_Reference(unit), target, ability);
@@ -336,7 +359,7 @@ void unit_Repair(Unit unit, Unit target) {
   if(unit_CurrentHp(target) >= unit_TotalHP(target)) {
     return ;
   }
-  if(unit_GetPlayerIndex(unit) != unit_GetPlayerIndex(target)) {
+  if(!unit_IsSelf(unit) || !unit_IsSelf(target)) {
     return ;
   }
   driver_RepairBuilding(unit_Reference(unit), unit_Reference(target));
@@ -361,7 +384,7 @@ void unit_Fishboat_Farm(Unit unit, Resource resource) {
 }
 
 void unit_Farm(Unit unit, Resource resource) {
-  if(!res_IsPresent(resource)) {
+  if(!res_IsPresent(resource) || !unit_IsSelf(unit)) {
     return ;
   }
   unit_Citizen_Farm(unit, resource);
@@ -391,12 +414,63 @@ uint8_t unit_IsPresent(Unit unit) {
          simpleUnitPresence[ply_PlayerIndex(ply_Self())]->find(unit_Reference(unit)) != simpleUnitPresence[ply_PlayerIndex(ply_Self())]->end();
 }
 
+uint8_t unit_Exists(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  unordered_map<PVOID, uint8_t> **simpleUnitPresence = eeTwa->simpleUnitPresence;
+  return unitPresence[eeTwa->all_players]->find(unit_Reference(unit)) != unitPresence[eeTwa->all_players]->end() ||
+         simpleUnitPresence[eeTwa->all_players]->find(unit_Reference(unit)) != simpleUnitPresence[eeTwa->all_players]->end();
+}
+
+Unit unit_FromPayload(PVOID unit) {
+  return (Unit) {
+    ._payload = unit
+  };
+}
+
 int8_t unit_IsDead(Unit unit) {
   return !unit_CurrentHp(unit);
 }
 
+uint8_t unit_IsNeutralUnit(Unit unit) {
+  Player aPlayer = ply_GetPlayer(unit);
+  return ply_Reference(aPlayer) == ply_Reference(ply_Neutral());
+}
+
+uint8_t unit_AreAlied(Unit a, Unit b) {
+  Player aPlayer = ply_GetPlayer(a);
+  Player bPlayer = ply_GetPlayer(b);
+  return ply_AreAllies(aPlayer, bPlayer);
+}
+
+uint8_t unit_CanCurrentUnitBeActionable(Unit unit) {
+  if(!unit_IsSelf(unit)) {
+    return 0;
+  }
+  const UnitType type = unit_Type(unit);
+  if(eeTypes_UnitClass(type) == CLASS_AIR_COMBUSTION_FLYEIR && unit_GetCurrentFuel(unit) <= 0) {
+    return 0;
+  }
+  return 1;
+}
+
+void unit_AttackTarget(Unit attacker, Unit target) {
+  if(!unit_CanCurrentUnitBeActionable(attacker) || !unit_IsEnemy(target)) {
+    return ;
+  }
+  driver_AttackUnit(unit_Reference(attacker), unit_Reference(target));
+}
+
+uint8_t unit_IsComplexUnit(Unit unit) {
+  UnitType type = unit_Type(unit);
+  if(type != UNIT_UNDEFINED) {
+    return 1;
+  }
+  return 0;
+}
+
 void unit_Convert(Unit src, Unit dst) {
-  if(!eeTypes_IsPriest(unit_Type(src))) {
+  if(!eeTypes_IsPriest(unit_Type(src)) || !unit_IsSelf(src) || !unit_IsEnemy(dst)) {
     return ;
   }
   if(unit_IsBuilding(dst) || unit_IsDead(dst)) {
@@ -406,7 +480,7 @@ void unit_Convert(Unit src, Unit dst) {
 }
 
 void unit_Action(Unit unit, Point point, UnitAction action) {
-  if(!unit_IsPresent(unit)) {
+  if(!unit_IsPresent(unit) || !unit_CanCurrentUnitBeActionable(unit)) {
     return ;
   }
   driver_Unit_Command(unit_Reference(unit), point, action);
@@ -417,7 +491,7 @@ uint8_t unit_IsTransport(Unit unit) {
 }
 
 void unit_Transport_Load(Unit transport, vector<Unit> &units) {
-  if(!unit_IsTransport(transport) || !units.size()) {
+  if(!unit_IsTransport(transport) || !units.size() || !unit_IsSelf(transport)) {
     return ;
   }
   vector<PVOID> bufferUnits;
@@ -464,7 +538,7 @@ size_t unit_Transport_Population(Unit transport) {
 }
 
 void unit_Transport_Unload(Unit transport, TilePoint tile) {
-  if(!unit_IsTransport(transport)) {
+  if(!unit_IsTransport(transport) || !unit_IsSelf(transport)) {
     return ;
   }
   driver_Transport_Unload(unit_Reference(transport), tile);
@@ -480,11 +554,11 @@ float unit_Distance(Unit first, Unit dst) {
 }
 
 void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
-  if(!eeTypes_IsCitizen(unit_Type(citizen)) || !eeTypes_IsBuilding(unitType)) {
+  if(!eeTypes_IsCitizen(unit_Type(citizen)) || !eeTypes_IsBuilding(unitType) || !unit_IsSelf(citizen)) {
     return ;
   }
   PVOID unitClass = eeTypes_GetTemplate(unitType);
-  if(!unitClass) {
+  if(!unitClass || !unit_Building_CanBuildAt(citizen, unitType, tile)) {
     return ;
   }
   driver_Building_Create(unit_Reference(citizen), tile, unitClass);
@@ -497,4 +571,135 @@ int32_t unit_Population(Unit unit) {
   int32_t __fastcall (*method)(PVOID) = (int32_t __fastcall (*)(PVOID)) ((uint8_t *)callee);
 
   return method(unitTypeStruct);
+}
+
+uint8_t unit_CanBuildAtPosition(Unit citizen, UnitType buildingType, TilePoint tile) {
+  const int32_t typeSize = eeTypes_BuildingSize(buildingType) - 1;
+  const Player currentPlayer = ply_GetPlayer(citizen);
+  const PVOID playerRef = ply_Reference(currentPlayer);
+  size_t buildingTypeID = eeTypes_UnitTypeIndex(buildingType);
+
+  if(!playerRef) {
+    return 0;
+  }
+  return driver_CanBuiltAt_Complete(playerRef, unit_Reference(citizen), (TilePoint) {
+    .x = tile.x + typeSize,
+    .y = tile.y + typeSize
+  }, buildingTypeID);
+}
+
+// will need to handle ports and airports
+Point unit_GetNextPosition(Point currentPosition) {
+  Point copyPosition = currentPosition;
+  float distance = 15.0f;
+  currentPosition.x += sinf(rand()) * distance;
+  currentPosition.y += sinf(rand()) * distance;
+  return currentPosition;
+}
+
+int32_t unit_GetMaxFuel(Unit unit) {
+  const UnitType type = unit_Type(unit);
+  if(eeTypes_UnitClass(type) != CLASS_AIR_COMBUSTION_FLYEIR) {
+    return 0;
+  }
+  const PVOID unitCiv = util_Pointer(unit_Reference(unit), UNIT_CIV_ATTRIBUTE, POINTER_TYPE);
+  return *(int32_t *)util_Pointer(unitCiv, UNIT_CIV_ATTRIBUTE_MAX_FUEL, INT32_T_TYPE) / 1000;
+}
+
+int32_t unit_GetCurrentFuel(Unit unit) {
+  const UnitType type = unit_Type(unit);
+  if(eeTypes_UnitClass(type) != CLASS_AIR_COMBUSTION_FLYEIR) {
+    return 0;
+  }
+  return *(int32_t *)util_Pointer(unit_Reference(unit), UNIT_CURRENT_FUEL, INT32_T_TYPE) / 1000;
+}
+
+PVOID unit_Building_GhostUnit(Unit unit, UnitType buildingType) {
+  const Player currentPlayer = ply_GetPlayer(unit);
+  const PVOID playerRef = ply_Reference(currentPlayer);
+  const size_t buildingTypeID = eeTypes_UnitTypeIndex(buildingType);
+
+  return driver_BuildStruct(playerRef, buildingTypeID);
+}
+
+static inline uint32_t unit_Building_TileHash(const TilePoint tile) {
+  return tile.x * 512 + tile.y;
+}
+
+TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingType, TilePoint tile) {
+  const UnitType type = unit_Type(citizen);
+  if(!eeTypes_IsCitizen(type) || !eeTypes_IsBuilding(buildingType) || !unit_IsSelf(citizen)) {
+    return geom_Tile_Invalid();
+  }
+  PVOID unitGhostBuilding = unit_Building_GhostUnit(citizen, buildingType);
+  if(unit_Building_CanBuildAtWOBuffer(unitGhostBuilding, citizen, buildingType, tile)) {
+    driver_Delete(unitGhostBuilding);
+    return tile;
+  }
+  int32_t xPos[] = {1, 0, -1, 0, 1, 1, -1, -1};
+  int32_t yPos[] = {0, -1, 0, 1, 1, -1, 1, -1};
+  int32_t index = 32, head = 0;
+  vector<TilePoint> vct;
+  unordered_map<uint32_t, uint8_t> valid;
+  vct.push_back(tile);
+  valid[unit_Building_TileHash(tile)] = 1;
+  while(index-- && head < vct.size()) {
+    TilePoint currentTile = vct[head];
+    if(unit_Building_CanBuildAtWOBuffer(unitGhostBuilding, citizen, buildingType, currentTile)) {
+      driver_Delete(unitGhostBuilding);
+      return currentTile;
+    }
+    for(size_t i = 0; i < sizeof(xPos) / sizeof(int32_t); i++) {
+      TilePoint nextPoint = (TilePoint) {
+        .x = xPos[i] + currentTile.x,
+        .y = yPos[i] + currentTile.y,
+      };
+      const uint32_t tileHash = unit_Building_TileHash(nextPoint);
+      if(valid.find(tileHash) != valid.end()) {
+        continue;
+      }
+      vct.push_back(nextPoint);
+      valid[tileHash] = 1;
+    }
+    head++;
+  }
+  TilePoint randomPos = unit_Building_FindRandomBuildablePosition(unitGhostBuilding, citizen, buildingType, tile);
+  driver_Delete(unitGhostBuilding);
+  return randomPos;
+}
+
+TilePoint unit_Building_FindRandomBuildablePosition(PVOID unitGhostBuilding, Unit citizen, UnitType buildingType, TilePoint tile) {
+  int32_t index = 5;
+  Point pointTile = geom_Point_FromTile(tile);
+  while(index--) {
+    Point nextPoint = unit_GetNextPosition(pointTile);
+    if(geom_Point_IsInvalid(nextPoint)) {
+      continue;
+    }
+    TilePoint tilePoint = geom_Tile_FromPoint(nextPoint);
+    if(unit_Building_CanBuildAtWOBuffer(unitGhostBuilding, citizen, buildingType, tilePoint)) {
+      return tilePoint;
+    }
+  }
+  return geom_Tile_Invalid();
+}
+
+uint8_t unit_Building_CanBuildAtWOBuffer(PVOID buffer, Unit citizen, UnitType buildingType, TilePoint tile) {
+  const Player currentPlayer = ply_GetPlayer(citizen);
+  const PVOID playerRef = ply_Reference(currentPlayer);
+  const size_t buildingTypeID = eeTypes_UnitTypeIndex(buildingType);
+  const int32_t typeSize = eeTypes_BuildingSize(buildingType) - 1;
+
+  return driver_CanBuild_WO_Buffer(playerRef, buffer, unit_Reference(citizen), (TilePoint) {
+    .x = tile.x + typeSize,
+    .y = tile.y + typeSize
+  }, buildingTypeID);
+}
+
+uint8_t unit_Building_CanBuildAt(Unit citizen, UnitType buildingType, TilePoint tile) {
+  const UnitType type = unit_Type(citizen);
+  if(!eeTypes_IsCitizen(type) || !eeTypes_IsBuilding(buildingType) || !unit_IsSelf(citizen)) {
+    return 0;
+  }
+  return unit_CanBuildAtPosition(citizen, buildingType, tile);
 }

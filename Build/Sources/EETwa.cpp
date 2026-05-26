@@ -3,7 +3,7 @@
 #include <vector>
 #include <stdarg.h>
 #include "PlayerState.h"
-#include "MapData.h"
+#include "MapDataPrivate.h"
 #include "LibManager.h"
 #include "Game.h"
 #include "Unit.h"
@@ -14,15 +14,27 @@
 #include "InjectUtilities.h"
 #include "Driver.h"
 #include "Offset.h"
+#include "UnitPrivate.h"
 
 void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
 void bt_OnFrame();
+void bt_OnUnitCreate(Unit unit);
 
 void eeta_FileClean();
 void eeTa_RebuildDTs();
 
 using namespace std;
+
+void eeTa_OnUnitCreate(PVOID unitBuffer) {
+  Unit unit = {
+    ._payload = unitBuffer
+  };
+  if(!unit_IsComplexUnit(unit)) {
+    return ;
+  }
+  bt_OnUnitCreate(unit);
+}
 
 void eeTa_RebuildExtraDataStructure() {
   eeTa_RebuildDTs();
@@ -36,6 +48,11 @@ uint8_t eeTa_NeutralPlayer() {
 // Money pointer is at ["EE-AOC.exe"+530DB8 + 0xAFC]
 
 void eeTa_OnUnitDestroy(Unit unit) {
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  if(unitPresence[eeTwa->all_players]->find(unit_Reference(unit)) == unitPresence[eeTwa->all_players]->end()) {
+    return ;
+  }
   pls_OnUnitDestory(unit);
   bt_OnUnitDestroy(unit);
 }

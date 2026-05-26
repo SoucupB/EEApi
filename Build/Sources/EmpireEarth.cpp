@@ -12,6 +12,7 @@
 #include "EETwaPrivate.h"
 #include "Offset.h"
 #include "MethodsDefinitions.h"
+#include "Game.h"
 
 static size_t mapPolygons;
 void eeTa_RebuildExtraDataStructure();
@@ -41,6 +42,7 @@ extern "C" {
       }
       eeTa_OnInit();
       hook->onInitFlag = 1;
+      return method(self);
     }
     eeTa_OnFrame();
     return method(self);
@@ -85,6 +87,7 @@ extern "C" {
 
   __declspec(dllexport) PVOID __thiscall onResourceInit(PVOID player, PVOID unit) {
     PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_RESOURCE_INIT);
+    eeTa_OnUnitCreate(unit);
     res_InitResource(unit);
     return method(player, unit);
   }

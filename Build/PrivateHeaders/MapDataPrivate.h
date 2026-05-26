@@ -1,5 +1,6 @@
 #pragma once
 #include "Driver.h"
+#include "MapData.h"
 
 #define INVALID_TILE_ID UINT16_MAX
 
@@ -20,7 +21,5 @@ typedef struct TilePlaneMap_t {
 } TilePlaneMap;
 
 void map_Init();
-uint8_t map_Tile_IsWater(TilePoint self);
 char **map_GetBitMap(size_t *tileCount);
 void map_BitMapDelete(char **map, size_t mapSizeInTiles);
-uint16_t map_Tile_GetPlaneID(TilePoint tile);

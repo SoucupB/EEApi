@@ -1050,3 +1050,79 @@ From 0066E906 to 0066E970.
 
 I have all the variables for this 0066E970.
 004BC75C for the ability spawner.
+
+##########################################
+Finding if the building position can be made.
+Starting at 0x00644CAB <- 004BBE04 <- 004B8F10 <- 005537BA.
+The pointer at 0064CBAB seems interesting.
+The method at 00643A12 is triggered when I want to build around it.
+00643A12 <- 0063E55D <- 0063E530
+I thing this method at 0063E530 is checking whether a buildinging can be built.
+#####################################################################
+The method at 0064F25A controls whether the building can be build here or not.
+It is _cdecl and returns into EAX 0 or 1 on the last 2 bytes.
+
+The method at 0064F25A does check the [citizen + 0x1C] - [citizen + 0x20] values
+[edi + 0x9AC] is the selected group.
+Here 0064F359 the units from the selected group are checked.
+
+This method 0064F350 might be interesting. (Also this sets a tile 0064F29B)
+I just don't know yet what tile.
+
+I think that in the parent method, the method at 0064F359 actually tells if tile
+A is reachable
+The method at 0064F3A1 seems like the method that checks if the tile 
+is reachable from the current tile.
+28C might be the size, it is.
+The method to check the DOCK (or other types) is here 00603E28.
+This method is more complet 00604DF7.
+The class is created at 006042AF and is instantiated here 006042C7.
+The points are set here 00604BA9.
+
+#########
+#Actions#
+#########
+
+Moving unit class is 008478A0.
+[action + 0x20] = x float
+[action + 0x24] = y float
+[action + 0x30] = action. (0x101 for move, 0x100 for attack).
+
+Attacking unit is 00847380
+[action + 0x20] = target.
+
+Casting spell is 0084748C.
+For non target
+[action + 0x28] = x int tile
+[action + 0x2C] = y int tile
+[action + 0x30] the spell index.
+For target
+[action + 0x24] = target enemy
+
+For gather is 008475A8.
+[action + 0x38] is the unit that is gathered.
+
+For building/repair with citizen is 0084740C.
+[action + 0x3C] is the target building. (It was created)
+
+For unit convertion is 00847380.
+[action + 0x30] is the target.
+
+For unit loading into transports is 008477F8.
+Transporter.
+[action + 0x28] Starting array.
+[action + 0x30] Ending array pointer.
+
+Transported.
+[action + 0x28] Starting array.
+[action + 0x30] Ending array pointer.
+(Their pointers are relatively identical but not the same).
+
+For unit unloading is 008479A0.
+[action + 0x34] is x tile
+[action + 0x38] is y tile.
+
+0066912B Might be interesiting.
+
+max combustibil [[unit + 0x34] + 0x130] / 100 is the combustil.
+[unit + 0x290] / 100 combustibil.

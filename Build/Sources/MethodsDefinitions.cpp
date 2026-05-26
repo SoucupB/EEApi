@@ -17,6 +17,7 @@ PVOID _cdecl builder_EnchantedFree(const PVOID buffer);
 typedef struct MMUHeader_t {
   uint8_t magicKey[0xC];
   size_t bufferSize;
+  size_t caller;
 } MMUHeader;
 
 void builder_Definition(PVOID remoteAddress, PVOID localAddress) {
@@ -97,12 +98,16 @@ void builder_ReplaceFree() {
 }
 
 PVOID _cdecl builder_EnchantedNew(const size_t memSize) {
+  uint32_t anchor = 0;
+  // This might work only for optimization -O2
+  size_t callerReturnAddress = ((size_t)&anchor + 0x10);
   PVOID _cdecl (*method)(size_t) = (PVOID _cdecl (*)(size_t))old_NewHandle;
   const size_t newSize = memSize + sizeof(MMUHeader);
   PVOID buffer = method(newSize);
   allocCount++;
   memcpy(buffer, magicKey, sizeof(magicKey));
   memcpy((PVOID)((size_t)buffer + sizeof(magicKey)), &memSize, sizeof(size_t));
+  memcpy((PVOID)((size_t)buffer + sizeof(magicKey) + sizeof(size_t)), (PVOID)callerReturnAddress, sizeof(size_t));
   PVOID responseRef = (PVOID)((size_t)buffer + sizeof(MMUHeader));
   memset(responseRef, 0, memSize);
   return responseRef;

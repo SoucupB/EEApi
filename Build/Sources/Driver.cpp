@@ -357,3 +357,131 @@ void driver_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, Abil
   driver_Command_Target_Method6209C9(buffer, unit, target, tile, ability);
   driver_IssueCommand(unit, buffer, (PVOID)DRIVER_DEFAULT_SPECIAL_CONST);
 }
+
+PVOID driver_CanBuildAt_GetSelectorRef(PVOID player) {
+  PVOID selectedGroupRef = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
+  return (PVOID)*(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_START);
+}
+
+void driver_CanBuildAt_SetSelectorRef(PVOID player, PVOID selectedGroup) {
+  PVOID selectedGroupRef = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
+  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_START) = (size_t)selectedGroup;
+}
+
+size_t driver_CanBuiltAt_64F264(PVOID player, TilePoint tile, size_t buildingTypeID) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD);
+  size_t __cdecl (*method)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID) = 
+       (size_t __cdecl (*)(PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  uint8_t fixStack = 0x0;
+  PVOID selectorRef = driver_CanBuildAt_GetSelectorRef(player);
+  driver_CanBuildAt_SetSelectorRef(player, (PVOID)0x0);
+  size_t canBuild = method(player,
+         (PVOID)0x0,
+         (PVOID)buildingTypeID,
+         (PVOID)tile.x,
+         (PVOID)tile.y,
+         (PVOID)0x0,
+         (PVOID)0x0,
+         (PVOID)&fixStack);
+  driver_CanBuildAt_SetSelectorRef(player, selectorRef);
+  return canBuild;
+}
+
+size_t driver_CanBuiltAt(PVOID player, TilePoint tile, size_t buildingTypeID) {
+  return driver_CanBuiltAt_64F264(player, tile, buildingTypeID);
+}
+
+size_t driver_CanBuiltAt_603DD6(PVOID player, TilePoint tile, size_t buildingTypeID) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD_SHADOW_UNIT);
+  size_t __thiscall (*method)(PVOID) = 
+       (size_t __thiscall (*)(PVOID)) ((uint8_t *)methodStruct);
+  PVOID shadowUnit = 0x0;
+  size_t canBuild = method(shadowUnit);
+  return canBuild;
+}
+
+void driver_InstantiateClass_6042C7(PVOID buffer, PVOID player, size_t buildingTypeID) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD_SHADOW_UNIT_INSTANTIATE);
+  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = 
+  (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  method(buffer, (PVOID)buildingTypeID, player, (PVOID)0x0);
+}
+
+void driver_FillTileData(PVOID buffer, TilePoint tile) {
+  float xPos = (float)tile.x;
+  float yPos = (float)tile.y;
+
+  *(size_t *)((size_t)buffer + DRIVER_BUILDABLE_POSITION_INT_32_POS_X) = tile.x;
+  *(size_t *)((size_t)buffer + DRIVER_BUILDABLE_POSITION_INT_32_POS_Y) = tile.y;
+  *(float *)((size_t)buffer + DRIVER_BUILDABLE_POSITION_FLOAT_POS_X) = xPos;
+  *(float *)((size_t)buffer + DRIVER_BUILDABLE_POSITION_FLOAT_POS_Y) = yPos;
+}
+
+typedef struct SelectedGroupArray_t {
+  PVOID _begin;
+  PVOID _end;
+} SelectedGroupArray;
+
+SelectedGroupArray driver_SelectedGroup_GetArray(PVOID player) {
+  SelectedGroupArray response = {0};
+  PVOID selectedGroupRef = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
+  response._begin = (PVOID)*(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_START);
+  response._end = (PVOID)*(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_END);
+  return response;
+}
+
+void driver_SelectedGroup_SetArray(SelectedGroupArray *arr, PVOID player) {
+  PVOID selectedGroupRef = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
+  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_START) = (size_t)arr->_begin;
+  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_END) = (size_t)arr->_end;
+}
+
+void driver_SelectedGroup_SetUnit(PVOID player, PVOID unit) {
+  PVOID selectedGroupRef = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
+  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_START) = (size_t)&unit;
+  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_END) = (size_t)&unit + sizeof(PVOID);
+}
+
+size_t driver_CanBuildHere_603DD6(PVOID buffer, PVOID player, PVOID unit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD_HERE);
+  size_t __thiscall (*method)(PVOID) = 
+  (size_t __thiscall (*)(PVOID)) ((uint8_t *)methodStruct);
+  SelectedGroupArray currentArr = driver_SelectedGroup_GetArray(player);
+  driver_SelectedGroup_SetUnit(player, unit);
+  size_t canBuild = method(buffer);
+  driver_SelectedGroup_SetArray(&currentArr, player);
+  return canBuild;
+}
+
+PVOID driver_BuildStruct(PVOID player, size_t buildingTypeID) {
+  PVOID buffer = driver_New(0x334);
+  driver_InstantiateClass_6042C7(buffer, player, buildingTypeID);
+  return buffer;
+}
+
+size_t driver_CanBuild_WO_Buffer(PVOID player, PVOID buffer, PVOID citizen, TilePoint tile, size_t buildingTypeID) {
+  driver_FillTileData(buffer, tile);
+  return driver_CanBuildHere_603DD6(buffer, player, citizen);
+}
+
+size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, size_t buildingTypeID) {
+  PVOID buffer = driver_BuildStruct(player, buildingTypeID);
+  driver_FillTileData(buffer, tile);
+  const size_t canBuildHere = driver_CanBuildHere_603DD6(buffer, player, citizen);
+  driver_Delete(buffer);
+  return canBuildHere;
+}
+
+void driver_AttackUnit_Instantiate_61D337(PVOID buffer, PVOID attackerUnit, PVOID attackedUnit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_ATTACK_TARGET_INSTANTIATE);
+  void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
+  (void __thiscall (*)(PVOID, PVOID, PVOID, PVOID, PVOID)) ((uint8_t *)methodStruct);
+  const size_t bufferFlag = (((size_t)buffer & 0xFFFFFF00) | 0x1);
+  method(buffer, attackerUnit, attackedUnit, (PVOID)bufferFlag, (PVOID)0x0);
+}
+
+void driver_AttackUnit(PVOID attackerUnit, PVOID attackedUnit) {
+  PVOID buffer = driver_New(0x44);
+  driver_AttackUnit_Instantiate_61D337(buffer, attackerUnit, attackedUnit);
+  driver_IssueCommand(attackerUnit, buffer, (PVOID)DRIVER_ATTACK_TARGET_SPECIAL_CONST);
+}
