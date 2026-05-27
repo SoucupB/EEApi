@@ -10,6 +10,10 @@ uint8_t isIdleCitizen(Unit unit) {
   return eeTypes_IsCitizen(type) && unit_IsIdle(unit) && ply_Reference(ply_GetPlayer(unit)) == ply_Reference(ply_Self());
 }
 
+void bt_OnGamePrepare() {
+  
+}
+
 void test_PrintUnits() {
   vector<Unit> units = unit_Player_GetUnits(ply_Null());
   for(int32_t i = 0; i < units.size(); i++) {

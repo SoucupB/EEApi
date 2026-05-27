@@ -20,6 +20,7 @@ void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
 void bt_OnFrame();
 void bt_OnUnitCreate(Unit unit);
+void bt_OnGamePrepare();
 
 void eeta_FileClean();
 void eeTa_RebuildDTs();
@@ -38,6 +39,7 @@ void eeTa_OnUnitCreate(PVOID unitBuffer) {
 
 void eeTa_RebuildExtraDataStructure() {
   eeTa_RebuildDTs();
+  bt_OnGamePrepare();
 }
 
 uint8_t eeTa_NeutralPlayer() {
