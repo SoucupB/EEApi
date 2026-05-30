@@ -31,6 +31,11 @@ void builder_Definition(PVOID remoteAddress, PVOID localAddress) {
   util_ModifyTargetProcessCaller((uint8_t *)methodsAddress, (size_t)localAddress);
 }
 
+void builder_AddRules(PVOID address, size_t sz) {
+  DWORD oldProt;
+  VirtualProtect(address, sz, PAGE_EXECUTE_READWRITE, &oldProt);
+}
+
 void builder_PrintMemoryLayout(PVOID ref, size_t sz) {
   uint8_t *bff = (uint8_t *)ref;
   eeTa_FilePrintf("-------\n");

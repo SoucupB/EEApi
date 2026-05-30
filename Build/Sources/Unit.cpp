@@ -703,3 +703,23 @@ uint8_t unit_Building_CanBuildAt(Unit citizen, UnitType buildingType, TilePoint 
   }
   return unit_CanBuildAtPosition(citizen, buildingType, tile);
 }
+
+uint8_t unit_IsValid(Unit unit) {
+  const PVOID ref = unit_Reference(unit);
+  if(!ref) {
+    return 0;
+  }
+  PEETwa eeTwa = game_EETwa();
+  unordered_map<PVOID, uint8_t> **unitPresence = eeTwa->unitPresence;
+  return unitPresence[eeTwa->all_players]->find(ref) != unitPresence[eeTwa->all_players]->end();
+}
+
+Unit unit_FromRerence(PVOID reference) {
+  if(!unit_IsValid) {
+    return unit_Null();
+  }
+
+  return (Unit) {
+    ._payload = reference
+  };
+}

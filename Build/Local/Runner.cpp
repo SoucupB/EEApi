@@ -348,6 +348,10 @@ void initCapitolPositions() {
 void bt_OnUnitCreate(Unit unit) {
 }
 
+void bt_OnGamePrepare() {
+  
+}
+
 void bt_OnInit() {
   initCapitolPositions();
   bt_InitUnitMovement();

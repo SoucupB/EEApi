@@ -16,3 +16,7 @@ void bt_OnUnitDestroy(Unit unit) {
 void bt_OnUnitCreate(Unit unit) {
   
 }
+
+void bt_OnGamePrepare() {
+  
+}

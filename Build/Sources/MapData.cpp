@@ -46,7 +46,7 @@ void map_FillTiles() {
   PVOID tileRef = map_TilePointer(mapPointer);
   for(size_t i = 0; i < count; i++) {
     for(size_t j = 0; j < count; j++) {
-      size_t currentTile = *(size_t *)((size_t)tileRef + (count * i + j) * 4);
+      size_t currentTile = *(size_t *)((size_t)tileRef + (count * i + j) * sizeof(int32_t));
       if(currentTile) {
         tiles->push_back((TileStruct) {
           .ref = (PVOID)currentTile,
@@ -276,7 +276,7 @@ uint8_t map_Tile_IsSpace(TilePoint self) {
   return method((PVOID)((size_t)mapPointer + mapPointerTileOffset), (PVOID)self.x, (PVOID)self.y);
 }
 
-void map_ComputerConnexIslands() {
+void map_ComputeConnexIslands() {
   map_TileMap_Init();
   map_TileMap_FillWithReffs();
   map_TileMap_FillPlaneIDs();
@@ -284,6 +284,6 @@ void map_ComputerConnexIslands() {
 
 void map_Init() {
   map_FillTiles();
-  map_ComputerConnexIslands();
+  map_ComputeConnexIslands();
 }
 

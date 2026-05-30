@@ -13,6 +13,7 @@
 #include "Offset.h"
 #include "MethodsDefinitions.h"
 #include "Game.h"
+#include "CheckSum.h"
 
 static size_t mapPolygons;
 void eeTa_RebuildExtraDataStructure();
@@ -97,6 +98,13 @@ extern "C" {
     int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)mapPolygons);
     return method(self, _a, _b);
   }
+
+  __declspec(dllexport) PVOID __thiscall onMapInitialization(PVOID self, PVOID _1) {
+    PVOID __thiscall (*method)(PVOID, PVOID) = (PVOID __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + REMOTE_METHOD_ON_MAP_INIT);
+    PVOID response = method(self, _1);
+    eeTa_OnMapInit();
+    return response;
+  }
 }
 
 void rebuildDataStructures() {
@@ -111,6 +119,7 @@ void setMapStart() {
 }
 
 void addBotMethodsHooks() {
+  cs_CheckSum();
   builder_Definition((PVOID)METHOD_HOOK_ON_UNIT_ITERATION, (PVOID)onUnitIteration);
   builder_Definition((PVOID)METHOD_HOOK_ON_FRAME, (PVOID)onFrame);
   builder_Definition((PVOID)METHOD_HOOK_ON_UNIT_DELETE, (PVOID)onUnitDelete);
@@ -118,13 +127,14 @@ void addBotMethodsHooks() {
   builder_Definition((PVOID)METHOD_HOOK_ON_UNIT_BUY, (PVOID)onUnitBuy);
   builder_Definition((PVOID)METHOD_HOOK_ON_RESOURCE_INIT, (PVOID)onResourceInit);
   builder_Definition((PVOID)METHOD_HOOK_ON_RESOURCE_RELEASE, (PVOID)onResourceRelease);
+  builder_Definition((PVOID)METHOD_HOOK_ON_MAP_INITIALIZATION, (PVOID)onMapInitialization);
   #if defined(REPLACE_MMU)
     builder_ReplaceMMUMethods();
   #endif
   setMapStart();
 }
 
-extern "C"  __declspec(dllexport) void __cdecl someDllMain() {
+extern "C"  __declspec(dllexport) void __cdecl DLLMain() {
   if(!lib_IsLoaded()) {
     exit(0xC0000135); // libs DLL not found
   }

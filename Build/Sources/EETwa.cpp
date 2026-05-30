@@ -20,6 +20,7 @@ void bt_OnUnitDestroy(Unit unit);
 void bt_OnInit();
 void bt_OnFrame();
 void bt_OnUnitCreate(Unit unit);
+void bt_OnGamePrepare();
 
 void eeta_FileClean();
 void eeTa_RebuildDTs();
@@ -38,6 +39,7 @@ void eeTa_OnUnitCreate(PVOID unitBuffer) {
 
 void eeTa_RebuildExtraDataStructure() {
   eeTa_RebuildDTs();
+  bt_OnGamePrepare();
 }
 
 uint8_t eeTa_NeutralPlayer() {
@@ -168,8 +170,11 @@ void eeTa_RebuildDTs() {
   eeTypes_InitUnits();
 }
 
+void eeTa_OnMapInit() {
+  map_Init();
+}
+
 void eeTa_OnInit() {
-  eeTa_Map_Init();
   bt_OnInit();
 }
 
@@ -189,24 +194,6 @@ PVOID eeTa_SetPlayers(PVOID unit) {
   memcpy(selectedUnits, &unit, sizeof(PVOID));
   return selectedUnits;
 }
-
-// Needs refactoring.
-// Point eeTa_GetDestinationCommand(Unit unit) {
-//   PVOID commandPointer = util_Pointer(unit._payload, 0x1C8, POINTER_TYPE);
-//   if(!commandPointer) {
-//     return (Point) {
-//       .x = -1.0f,
-//       .y = -1.0f
-//     };
-//   }
-//   PVOID metaPointer = util_Pointer(commandPointer, 0x34, POINTER_TYPE);
-//   float *positionPointer = (float *)util_Pointer(metaPointer, 0x48, FLOAT_TYPE);
-
-//   return (Point) {
-//     .x = positionPointer[0],
-//     .y = positionPointer[1]
-//   };
-// }
 
 int64_t eeTa_CurrentFrame() {
   PEETwa eeTwa = game_EETwa();
