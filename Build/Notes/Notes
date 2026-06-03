@@ -1129,3 +1129,10 @@ max combustibil [[unit + 0x34] + 0x130] / 100 is the combustil.
 
 Map data is at 0093A213.
 Map initialization is at 005397FA.
+
+
+0069D330 is the position for exit.
+0069D2FC for checking if the instance is supposed to be running I guess.
+0069D327 is the main game, if it returns it exits the process.
+
+I thing the method 00540D9C checks if the game exits or not.
