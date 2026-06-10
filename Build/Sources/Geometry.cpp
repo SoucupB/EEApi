@@ -26,16 +26,13 @@ uint8_t geom_Point_IsInvalid(Point point) {
   return point.x == -10000.0f && point.y == -10000.0f;
 }
 
-Unit geom_GetClosestUnitFrom(Unit unit, Player ply, uint8_t (*filter)(Unit)) {
-  vector<Unit> units = unit_Player_GetUnits(ply);
+Unit geom_GetClosestUnitFrom(Unit unit, uint8_t (*filter)(Unit)) {
+  vector<Unit> units = unit_Filter(filter);
   float minDist = FLT_MAX;
   Unit selectedUnit;
   selectedUnit._payload = NULL;
   Point unitPos = unit_Point_Position(unit);
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(!filter(units[i])) {
-      continue;
-    }
     Point currentPosition = unit_Point_Position(units[i]);
     float distance = distancef(currentPosition, unitPos);
     if(minDist > distance) {
