@@ -11,7 +11,6 @@
 #include "EETypesStructPrivate.h"
 #include "Offset.h"
 #include "SimpleUnit.h"
-#include "EETypesStructPrivate.h"
 #include <math.h>
 
 uint8_t unit_IsPresent(Unit unit);

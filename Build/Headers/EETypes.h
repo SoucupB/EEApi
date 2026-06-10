@@ -46,7 +46,6 @@ uint8_t eeTypes_IsAirUnit(UnitType unitType);
  * Checks if a unit type is either a capitol or town center.
  */
 uint8_t eeTypes_CanProduceWorkers(UnitType type);
-PVOID eeTypes_GetTemplate(UnitType typeIndex);
 char *eeTypes_Name(UnitType type);
 vector<AbilityTypes> eeTypes_Abilities(UnitType type);
 size_t eeTypes_BuildingSize(UnitType type);
