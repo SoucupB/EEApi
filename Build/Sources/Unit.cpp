@@ -549,7 +549,7 @@ float unit_Range(Unit unit) {
 }
 
 float unit_Distance(Unit first, Unit dst) {
-  return distanceEuclidf(unit_Point_Position(first), unit_Point_Position(dst));
+  return geom_DistanceEuclidf(unit_Point_Position(first), unit_Point_Position(dst));
 }
 
 void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {

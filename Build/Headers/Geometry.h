@@ -21,7 +21,7 @@ uint8_t geom_IsPointInCircle(Point p, Circle c);
 TilePoint geom_Tile_FromPoint(Point target);
 Point geom_Point_Invalid();
 uint8_t geom_Point_IsInvalid(Point point);
-float distanceEuclidf(Point a, Point b);
+float geom_DistanceEuclidf(Point a, Point b);
 Point geom_Point_FromTile(TilePoint target);
 TilePoint geom_Tile_Invalid();
 uint8_t geom_Tile_IsInvalid(TilePoint tile);
