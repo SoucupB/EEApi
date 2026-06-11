@@ -35,6 +35,9 @@ void eeTa_AddFrameMethod(TimeAtom atom);
  * Neutral player which has the resources and neutral units such as farm animals.
  */
 uint8_t eeTa_NeutralPlayer();
+/*
+ * Gets the current player count.
+ */
 int8_t eeTa_PlayerCount();
 /*
  * Method to print to a file data, works similar to printf.
