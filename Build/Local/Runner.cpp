@@ -370,6 +370,6 @@ void bt_OnInit() {
   bt_InitAirplaneActions();
   bt_InitBomberHunters();
   bt_InitPlaneHunterStorm();
-  pls_OnInit((PVOID)att_AddDamagedUnits);
+  pls_OnInit(att_AddDamagedUnits);
   // bt_InitPlaneHunters();
 }

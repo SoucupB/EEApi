@@ -44,7 +44,7 @@ void pls_OnUnitDestory(Unit unit) {
   (*ps->unitsHealth).erase(unit._payload);
 }
 
-void pls_OnInit(PVOID remoteMethod) {
+void pls_OnInit(void (*remoteMethod)(Unit)) {
   PPlayerState ps = game_GetPlayerState();
-  ps->method = remoteMethod;
+  ps->method = (PVOID)remoteMethod;
 }
