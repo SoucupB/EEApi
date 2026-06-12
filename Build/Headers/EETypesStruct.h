@@ -11,6 +11,14 @@ enum DefaultType {
   IDLE = 0x186A0
 };
 
+enum ResourceCost {
+  COST_FOOD = 0x2,
+  COST_WOOD = 0x3,
+  COST_ORE = 0x4,
+  COST_GOLD = 0x5,
+  COST_IRON = 0x6,
+};
+
 enum AbilityTypes {
   ABILITY_PROPHET_PLAGUE_ = 0x000003FB,
   ABILITY_PROPHET_VOLCANO_ = 0x000003F9,

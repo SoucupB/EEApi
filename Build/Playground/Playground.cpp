@@ -14,6 +14,25 @@ void bt_OnGamePrepare() {
   
 }
 
+void printPlayersResources() {
+  vector<Player> plys = ply_All();
+  ResourceCost resources[] = {
+    COST_FOOD,
+    COST_WOOD,
+    COST_ORE,
+    COST_GOLD,
+    COST_IRON
+  };
+  for(size_t i = 0; i < plys.size(); i++) {
+    uint8_t plyIndex = ply_PlayerIndex(plys[i]);
+    eeTa_FilePrintf("Player index is %d ", plyIndex);
+    for(size_t j = 0; j < sizeof(resources) / sizeof(ResourceCost); j++) {
+      eeTa_FilePrintf("%d ", ply_GetResources(plys[i], resources[j]));
+    }
+    eeTa_FilePrintf("\n");
+  }
+}
+
 void test_PrintUnits() {
   vector<Unit> units = unit_Player_GetUnits(ply_Null());
   for(int32_t i = 0; i < units.size(); i++) {
@@ -35,6 +54,7 @@ void test_PrintUnits() {
   for(int32_t i = 0; i < resources.size(); i++) {
     eeTa_FilePrintf("Resource pointer: %p, unit type: %p pos (%f %f)\n", resources[i]._payload, res_Type(resources[i]), res_Point_Position(resources[i]).x, res_Point_Position(resources[i]).y);
   }
+  printPlayersResources();
 }
 
 void execDataPengus() {
@@ -85,6 +105,7 @@ void bt_OnFrame() {
 }
 
 void bt_OnInit() {
+  eeTa_AddCheat(CHEAT_COST_REDUCTION);
   // bt_InitAirplaneActions();
 }
 

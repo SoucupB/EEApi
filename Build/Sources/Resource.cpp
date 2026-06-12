@@ -92,3 +92,7 @@ void res_OnRelease(Resource resource) {
   PResourceManager manager = game_GetResourcesManager();
   manager->resourcesRefs->erase(res_Reference(resource));
 }
+
+int32_t res_GetResource(Player ply, ResourceCost res) {
+  return *(int32_t *)((size_t)ply_Reference(ply) + RESOURCE_PLAYER_RES_OFFSET + res * sizeof(int32_t));
+}

@@ -730,3 +730,7 @@ Unit unit_FromRerence(PVOID reference) {
     ._payload = reference
   };
 }
+
+void unit_Costs(Unit unit, ResourceCost *costs) {
+  
+}

@@ -1129,3 +1129,7 @@ max combustibil [[unit + 0x34] + 0x130] / 100 is the combustil.
 
 Map data is at 0093A213.
 Map initialization is at 005397FA.
+
+P->1D158E98 is the pointer of the player in this case.
+
+1D158E98 + AF4 + index * 4

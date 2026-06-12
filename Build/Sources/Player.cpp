@@ -167,3 +167,7 @@ int32_t ply_TotalPop(Player player) {
   size_t mapPop = *(size_t *)((size_t)lib_BaseAddress() + PLAYER_MAP_TOTAL_POP);
   return additionPop + skillsPop + mapPop;
 }
+
+int32_t ply_GetResources(Player player, ResourceCost resource) {
+  return res_GetResource(player, resource);
+}

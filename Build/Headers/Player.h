@@ -59,3 +59,7 @@ int32_t ply_TotalPop(Player player);
  * Gets the player tech tree object.
  */
 TechTree ply_TechTree(Player player);
+/*
+ * Gets the resources of a player.
+ */
+int32_t ply_GetResources(Player player, ResourceCost resource);
