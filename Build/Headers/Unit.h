@@ -34,9 +34,12 @@ TilePoint unit_Tile_Position(Unit unit);
  */
 uint16_t unit_GetPlaneID(Unit unit);
 /*
- * Cast an ability to a point, such as earthquake, volcanoes or hurricanes.
+ * Cast an ability to a point, such as earthquake, volcano or hurricane.
  */
 void unit_Point_CastAbility(Unit unit, Point target, AbilityTypes ability);
+/*
+ * Gets the unit type of the unit param.
+ */
 UnitType unit_Type(Unit unit);
 int32_t unit_CurrentHp(Unit unit);
 int32_t unit_TotalHP(Unit unit);
