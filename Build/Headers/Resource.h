@@ -38,4 +38,4 @@ uint8_t res_IsPresent(Resource resource);
 /*
  * Gets the resource count from param for this specific player.
  */
-int32_t res_GetResource(Player ply, ResourceCost res);
+int32_t res_GetResource(Player ply, ResourceIndex res);

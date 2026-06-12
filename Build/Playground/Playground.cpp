@@ -4,6 +4,7 @@
 #include <vector>
 #include "Action.h"
 #include "Ability.h"
+#include "Driver.h"
 
 uint8_t isIdleCitizen(Unit unit) {
   const UnitType type = unit_Type(unit);
@@ -14,9 +15,18 @@ void bt_OnGamePrepare() {
   
 }
 
+PVOID getTechNode(Unit unit) {
+  TechTree tree = ply_TechTree(ply_GetPlayer(unit));
+  PVOID cTechNode = driver_TechNode(tree, (AbilityTypes)unit_Type(unit));
+  if(!cTechNode) {
+    return 0;
+  }
+  return cTechNode;
+}
+
 void printPlayersResources() {
   vector<Player> plys = ply_All();
-  ResourceCost resources[] = {
+  ResourceIndex resources[] = {
     COST_FOOD,
     COST_WOOD,
     COST_ORE,
@@ -26,7 +36,7 @@ void printPlayersResources() {
   for(size_t i = 0; i < plys.size(); i++) {
     uint8_t plyIndex = ply_PlayerIndex(plys[i]);
     eeTa_FilePrintf("Player index is %d ", plyIndex);
-    for(size_t j = 0; j < sizeof(resources) / sizeof(ResourceCost); j++) {
+    for(size_t j = 0; j < sizeof(resources) / sizeof(ResourceIndex); j++) {
       eeTa_FilePrintf("%d ", ply_GetResources(plys[i], resources[j]));
     }
     eeTa_FilePrintf("\n");
@@ -38,17 +48,20 @@ void test_PrintUnits() {
   for(int32_t i = 0; i < units.size(); i++) {
     Point currentPoint = unit_Point_Position(units[i]);
     TilePoint tile = unit_Tile_Position(units[i]);
-    eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, tile ID: %d, position: (%f, %f) class %p with hp %d and range %f, current fuel %d, max fuel %d\n", units[i]._payload, 
+    eeTa_FilePrintf("Unit pointer: %p, unit type: %p unit team %d, tile ID: %d, position: (%f, %f) class %p with hp %d and range %f, current fuel %d, max fuel %d Civ Node %p\n", 
+                    units[i]._payload, 
                     unit_Type(units[i]), eeTa_Player(units[i]), unit_GetPlaneID(units[i]), currentPoint.x, currentPoint.y, 
-                    eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]), unit_GetCurrentFuel(units[i]), unit_GetMaxFuel(units[i]));
+                    eeTypes_UnitClass(unit_Type(units[i])), unit_TotalHP(units[i]), unit_Range(units[i]), unit_GetCurrentFuel(units[i]), unit_GetMaxFuel(units[i]),
+                    getTechNode(units[i]));
     eeTa_FilePrintf("Action is %d\n", act_Get(units[i]).type);
   }
   vector<Unit> buildings = unit_Player_GetBuildings(ply_Null());
   for(int32_t i = 0; i < buildings.size(); i++) {
     Point currentPoint = unit_Point_Position(buildings[i]);
-    eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d\n", 
+    eeTa_FilePrintf("Building pointer: %p, unit type: %p unit team %d, position: (%f, %f) class %p with hp %d Civ Node %p\n", 
                     buildings[i]._payload, unit_Type(buildings[i]), 
-                    eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]));
+                    eeTa_Player(buildings[i]), currentPoint.x, currentPoint.y, eeTypes_UnitClass(unit_Type(buildings[i])), unit_TotalHP(buildings[i]),
+                    getTechNode(buildings[i]));
   }
   vector<Resource> resources = res_All();
   for(int32_t i = 0; i < resources.size(); i++) {

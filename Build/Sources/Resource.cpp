@@ -93,6 +93,6 @@ void res_OnRelease(Resource resource) {
   manager->resourcesRefs->erase(res_Reference(resource));
 }
 
-int32_t res_GetResource(Player ply, ResourceCost res) {
+int32_t res_GetResource(Player ply, ResourceIndex res) {
   return *(int32_t *)((size_t)ply_Reference(ply) + RESOURCE_PLAYER_RES_OFFSET + res * sizeof(int32_t));
 }

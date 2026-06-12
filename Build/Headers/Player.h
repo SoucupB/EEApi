@@ -62,4 +62,4 @@ TechTree ply_TechTree(Player player);
 /*
  * Gets the resources of a player.
  */
-int32_t ply_GetResources(Player player, ResourceCost resource);
+int32_t ply_GetResources(Player player, ResourceIndex resource);

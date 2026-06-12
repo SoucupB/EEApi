@@ -1133,3 +1133,7 @@ Map initialization is at 005397FA.
 P->1D158E98 is the pointer of the player in this case.
 
 1D158E98 + AF4 + index * 4
+
+0056B08A is method at which the resources are consumed.
+0056B3DD is the caller.
+Tech tree is at [[techTree + 0x8] + 0x24] -> [[techTree + 0x8] + 0x34]

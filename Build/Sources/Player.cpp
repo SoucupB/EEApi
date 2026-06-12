@@ -168,6 +168,6 @@ int32_t ply_TotalPop(Player player) {
   return additionPop + skillsPop + mapPop;
 }
 
-int32_t ply_GetResources(Player player, ResourceCost resource) {
+int32_t ply_GetResources(Player player, ResourceIndex resource) {
   return res_GetResource(player, resource);
 }
