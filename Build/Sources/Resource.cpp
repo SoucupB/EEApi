@@ -96,3 +96,7 @@ void res_OnRelease(Resource resource) {
 int32_t res_GetResource(Player ply, ResourceIndex res) {
   return *(int32_t *)((size_t)ply_Reference(ply) + RESOURCE_PLAYER_RES_OFFSET + res * sizeof(int32_t));
 }
+
+void res_SetResource(Player ply, ResourceIndex res, int32_t value) {
+  *(int32_t *)((size_t)ply_Reference(ply) + RESOURCE_PLAYER_RES_OFFSET + res * sizeof(int32_t)) = value;
+}

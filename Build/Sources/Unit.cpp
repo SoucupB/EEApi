@@ -18,6 +18,7 @@ uint8_t unit_Building_CanBuildAtWOBuffer(PVOID buffer, Unit citizen, UnitType bu
 TilePoint unit_Building_FindRandomBuildablePosition(PVOID unitGhostBuilding, Unit citizen, UnitType buildingType, TilePoint tile);
 uint8_t unit_CanCurrentUnitBeActionable(Unit unit);
 uint8_t unit_IsCheatActive(Cheat cheat);
+static inline uint8_t unit_Resource_CanBuild(Unit builder, UnitType type);
 
 vector<Unit> unit_GetBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
@@ -560,8 +561,35 @@ float unit_Distance(Unit first, Unit dst) {
   return geom_DistanceEuclidf(unit_Point_Position(first), unit_Point_Position(dst));
 }
 
+static inline uint8_t unit_Resource_CanBuild(Unit builder, UnitType type) {
+  Player ply = ply_GetPlayer(builder);
+  ResourceCost costs[6];
+  uint8_t costsCount = 0;
+  eeTypes_Costs(ply, type, costs, &costsCount);
+  for(size_t i = 0; i < costsCount; i++) {
+    if(ply_GetResources(ply, costs[i].resIndex) <= costs[i].cost) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+static inline void unit_Resource_Set(Unit builder, UnitType type) {
+  Player ply = ply_GetPlayer(builder);
+  ResourceCost costs[6];
+  uint8_t costsCount = 0;
+  eeTypes_Costs(ply, type, costs, &costsCount);
+  for(size_t i = 0; i < costsCount; i++) {
+    int32_t currentRes = ply_GetResources(ply, costs[i].resIndex);
+    ply_SetResources(ply, costs[i].resIndex, currentRes - costs[i].cost);
+  }
+}
+
 void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
   if(!eeTypes_IsCitizen(unit_Type(citizen)) || !eeTypes_IsBuilding(unitType) || !unit_IsSelf(citizen)) {
+    return ;
+  }
+  if(!unit_Resource_CanBuild(citizen, unitType)) {
     return ;
   }
   PVOID unitClass = eeTypes_GetTemplate(unitType);
@@ -569,6 +597,7 @@ void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
     return ;
   }
   driver_Building_Create(unit_Reference(citizen), tile, unitClass);
+  unit_Resource_Set(citizen, unitType);
 }
 
 int32_t unit_Population(Unit unit) {

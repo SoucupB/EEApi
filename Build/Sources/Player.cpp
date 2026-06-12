@@ -171,3 +171,7 @@ int32_t ply_TotalPop(Player player) {
 int32_t ply_GetResources(Player player, ResourceIndex resource) {
   return res_GetResource(player, resource);
 }
+
+int32_t ply_SetResources(Player player, ResourceIndex resource, int32_t value) {
+  res_SetResource(player, resource, value);
+}

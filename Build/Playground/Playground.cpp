@@ -90,6 +90,27 @@ void test_PrintUnits() {
   }
 }
 
+Unit getCitizen() {
+  vector<Unit> units = unit_Player_GetUnits(ply_Self());
+  for(size_t i = 0; i < units.size(); i++) {
+    if(eeTypes_IsCitizen(unit_Type(units[i]))) {
+      return units[i];
+    }
+  }
+  return unit_Null();
+}
+
+void buildSomeShit() {
+  Unit citizen = getCitizen();
+  if(!unit_Reference(citizen)) {
+    return ;
+  }
+  unit_Building_Build(citizen, (TilePoint) {
+    .x = 50,
+    .y = 65
+  }, B_BARRACKS);
+}
+
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
     test_PrintUnits();
@@ -102,6 +123,7 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('T') & 0x8000) {
+    buildSomeShit();
     Beep (300, 250);
   }
 }

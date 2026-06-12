@@ -86,5 +86,4 @@ void unit_Repair(Unit unit, Unit target);
 void unit_Farm(Unit unit, Resource resource);
 Unit unit_FromRerence(PVOID reference);
 uint8_t unit_IsValid(Unit unit);
-
 void unit_Costs(Unit unit, ResourceCost *costs, uint8_t *resCount);
