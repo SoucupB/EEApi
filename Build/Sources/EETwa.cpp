@@ -129,7 +129,7 @@ void __cdecl eeTa_OnUnitDeath(Unit unit) {
 int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double)) {
   PEETwa eeTwa = game_EETwa();
   if(eeTwa->shouldCostBeReduced) {
-    return (int32_t)(method(resources) * 0.05f);
+    return (int32_t)(method(resources) * COST_REDUCTION_TO);
   }
   return method(resources);
 }

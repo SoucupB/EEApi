@@ -579,9 +579,14 @@ static inline void unit_Resource_Set(Unit builder, UnitType type) {
   ResourceCost costs[6];
   uint8_t costsCount = 0;
   eeTypes_Costs(ply, type, costs, &costsCount);
+  uint8_t costReductionFlag = unit_IsCheatActive(CHEAT_COST_REDUCTION);
   for(size_t i = 0; i < costsCount; i++) {
     int32_t currentRes = ply_GetResources(ply, costs[i].resIndex);
-    ply_SetResources(ply, costs[i].resIndex, currentRes - costs[i].cost);
+    int32_t cost = costs[i].cost;
+    if(costReductionFlag) {
+      cost = (int32_t)((float)cost * COST_REDUCTION_TO);
+    }
+    ply_SetResources(ply, costs[i].resIndex, currentRes - cost);
   }
 }
 
