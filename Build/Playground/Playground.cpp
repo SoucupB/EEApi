@@ -5,6 +5,7 @@
 #include "Action.h"
 #include "Ability.h"
 #include "Driver.h"
+#include "EETypesStructPrivate.h"
 
 uint8_t isIdleCitizen(Unit unit) {
   const UnitType type = unit_Type(unit);
@@ -47,7 +48,9 @@ void test_PrintUnitResCosts(Unit unit) {
   ResourceCost costs[6];
   uint8_t costsCount = 0;
   unit_Costs(unit, costs, &costsCount);
-  eeTa_FilePrintf("Unit %p with type %p\n", unit_Reference(unit), unit_Type(unit));
+  eeTa_FilePrintf("Unit %p with type %p with node type %p\n", unit_Reference(unit), 
+                  unit_Type(unit), 
+                  eeTypes_GetTemplate(unit_Type(unit)));
   for(size_t i = 0; i < costsCount; i++) {
     eeTa_FilePrintf("Cost %d with value %d\n", costs[i].resIndex, costs[i].cost);
   }
