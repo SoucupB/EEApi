@@ -269,3 +269,30 @@ uint8_t eeTypes_IsBuilding(UnitType unitType) {
          eeTypes_IsFromClass(CLASS_SPECIAL_BUILDING, unitType) ||
          eeTypes_IsFromClass(CLASS_GATES, unitType);
 }
+
+void eeTypes_Costs(Player ply, UnitType type, ResourceCost *costs, uint8_t *resCount) {
+  *resCount = 0;
+  ResourceIndex resources[] = {
+    COST_FOOD,
+    COST_WOOD,
+    COST_ORE,
+    COST_GOLD,
+    COST_IRON
+  };
+  TechTree tree = ply_TechTree(ply);
+  PVOID unitTechTree = driver_TechNode(tree, (AbilityTypes)type);
+  if(!unitTechTree) {
+    return ;
+  }
+  size_t resStructOffset = *(size_t *)((size_t)unitTechTree + UNIT_TECH_TREE_ATTRIBUTE);
+  int32_t *resOffset = (int32_t *)((resStructOffset + UNIT_TECH_TREE_ATTRIBUTE_RESOURCE));
+  for(size_t i = 0; i < sizeof(resources) / sizeof(ResourceIndex); i++) {
+    if(resOffset[i]) {
+      ResourceCost resCost = (ResourceCost) {
+        .resIndex = resources[i],
+        .cost = resOffset[i]
+      };
+      costs[(*resCount)++] = resCost;
+    }
+  }
+}

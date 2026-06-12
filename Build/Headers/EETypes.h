@@ -74,3 +74,7 @@ NeutralClassType eeTypes_Neutral_Type(NeutralUnitType unitType);
  * Checks if the neutral unit type is a resource.
  */
 uint8_t eeTypes_Neutral_IsResource(NeutralUnitType unitType);
+/*
+ * Gets the costs of a unit type.
+ */
+void eeTypes_Costs(Player ply, UnitType type, ResourceCost *costs, uint8_t *resCount);
