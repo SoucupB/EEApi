@@ -753,8 +753,8 @@ void unit_Costs(Unit unit, ResourceCost *costs, uint8_t *resCount) {
   if(!unitTechTree) {
     return ;
   }
-  size_t resStructOffset = *(size_t *)(size_t)unitTechTree + UNIT_TECH_TREE_ATTRIBUTE;
-  int32_t *resOffset = (int32_t *)(resStructOffset + UNIT_TECH_TREE_ATTRIBUTE_RESOURCE);
+  size_t resStructOffset = *(size_t *)((size_t)unitTechTree + UNIT_TECH_TREE_ATTRIBUTE);
+  int32_t *resOffset = (int32_t *)((resStructOffset + UNIT_TECH_TREE_ATTRIBUTE_RESOURCE));
   for(size_t i = 0; i < sizeof(resources) / sizeof(ResourceIndex); i++) {
     if(resOffset[i]) {
       ResourceCost resCost = (ResourceCost) {

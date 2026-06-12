@@ -43,6 +43,17 @@ void printPlayersResources() {
   }
 }
 
+void test_PrintUnitResCosts(Unit unit) {
+  ResourceCost costs[6];
+  uint8_t costsCount = 0;
+  unit_Costs(unit, costs, &costsCount);
+  eeTa_FilePrintf("Unit %p with type %p\n", unit_Reference(unit), unit_Type(unit));
+  for(size_t i = 0; i < costsCount; i++) {
+    eeTa_FilePrintf("Cost %d with value %d\n", costs[i].resIndex, costs[i].cost);
+  }
+  eeTa_FilePrintf("\n");
+}
+
 void test_PrintUnits() {
   vector<Unit> units = unit_Player_GetUnits(ply_Null());
   for(int32_t i = 0; i < units.size(); i++) {
@@ -68,6 +79,12 @@ void test_PrintUnits() {
     eeTa_FilePrintf("Resource pointer: %p, unit type: %p pos (%f %f)\n", resources[i]._payload, res_Type(resources[i]), res_Point_Position(resources[i]).x, res_Point_Position(resources[i]).y);
   }
   printPlayersResources();
+  for(int32_t i = 0; i < units.size(); i++) {
+    test_PrintUnitResCosts(units[i]);
+  }
+  for(int32_t i = 0; i < buildings.size(); i++) {
+    test_PrintUnitResCosts(buildings[i]);
+  }
 }
 
 void execDataPengus() {
