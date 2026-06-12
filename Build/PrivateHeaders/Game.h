@@ -46,6 +46,7 @@ typedef struct EETwa_t {
   int8_t neutralPlayer;
   int8_t shouldCostBeReduced;
   int8_t playersCount;
+  int8_t cheats;
   PTimerHelper timers;
 } EETwa;
 

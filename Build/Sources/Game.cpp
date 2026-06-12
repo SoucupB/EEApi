@@ -62,6 +62,7 @@ void game_EETwa_Init(PGame game) {
   game->eeTwa->playerIndex = 1;
   game->eeTwa->neutralPlayer = 0;
   game->eeTwa->shouldCostBeReduced = 0;
+  game->eeTwa->cheats = 0;
   game->eeTwa->timers = tmr_Init();
 }
 

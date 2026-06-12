@@ -37,6 +37,11 @@ void eeTa_OnUnitCreate(PVOID unitBuffer) {
   bt_OnUnitCreate(unit);
 }
 
+void eeTa_AddCheat(Cheat cheat) {
+  PEETwa eeTwa = game_EETwa();
+  eeTwa->cheats |= cheat;
+}
+
 void eeTa_RebuildExtraDataStructure() {
   eeTa_RebuildDTs();
   bt_OnGamePrepare();

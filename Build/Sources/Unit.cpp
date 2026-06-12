@@ -17,6 +17,7 @@ uint8_t unit_IsPresent(Unit unit);
 uint8_t unit_Building_CanBuildAtWOBuffer(PVOID buffer, Unit citizen, UnitType buildingType, TilePoint tile);
 TilePoint unit_Building_FindRandomBuildablePosition(PVOID unitGhostBuilding, Unit citizen, UnitType buildingType, TilePoint tile);
 uint8_t unit_CanCurrentUnitBeActionable(Unit unit);
+uint8_t unit_IsCheatActive(Cheat cheat);
 
 vector<Unit> unit_GetBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
@@ -143,9 +144,16 @@ void unit_Build(Unit building, UnitType type) {
   }
   int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + UNIT_METHOD_BUILD);
   PEETwa eeTwa = game_EETwa();
-  eeTwa->shouldCostBeReduced = 1;
+  if(unit_IsCheatActive(CHEAT_COST_REDUCTION)) {
+    eeTwa->shouldCostBeReduced = 1;
+  }
   method(building._payload, (PVOID)type, 0);
   eeTwa->shouldCostBeReduced = 0;
+}
+
+uint8_t unit_IsCheatActive(Cheat cheat) {
+  PEETwa eeTwa = game_EETwa();
+  return (eeTwa->cheats & cheat) != 0;
 }
 
 vector<Unit> unit_GetUnits(int8_t player) {

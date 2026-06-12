@@ -353,6 +353,7 @@ void bt_OnGamePrepare() {
 }
 
 void bt_OnInit() {
+  eeTa_AddCheat(CHEAT_COST_REDUCTION);
   initCapitolPositions();
   bt_InitUnitMovement();
   bt_InitBuildingCreation();
