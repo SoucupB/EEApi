@@ -765,6 +765,10 @@ Unit unit_FromRerence(PVOID reference) {
   };
 }
 
+void unit_Stop(Unit unit) {
+  driver_StopCommand(unit_Reference(unit));
+}
+
 PVOID unit_GetTechNode(Unit unit) {
   TechTree tree = ply_TechTree(ply_GetPlayer(unit));
   PVOID cTechNode = driver_TechNode(tree, (AbilityTypes)unit_Type(unit));

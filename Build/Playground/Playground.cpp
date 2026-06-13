@@ -111,12 +111,20 @@ void buildSomeShit() {
   }, B_BARRACKS);
 }
 
+void stopUnit() {
+  vector<Unit> units = unit_Player_GetUnits(ply_Null());
+  for(int32_t i = 0; i < units.size(); i++) {
+    unit_Stop(units[i]);
+  }
+}
+
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
     test_PrintUnits();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('P') & 0x8000) {
+    stopUnit();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {

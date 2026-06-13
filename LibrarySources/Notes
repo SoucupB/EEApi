@@ -1137,3 +1137,10 @@ P->1D158E98 is the pointer of the player in this case.
 0056B08A is method at which the resources are consumed.
 0056B3DD is the caller.
 Tech tree is at [[techTree + 0x8] + 0x24] -> [[techTree + 0x8] + 0x34]
+
+0062DF88 is executed when unit stops.
+005FDF31 is for when 1F0 is set.
+
+This method 005F708A seems important.
+Also this method 005FEF9C.
+This method 005FEF9C is called for stop.
