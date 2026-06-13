@@ -12,7 +12,7 @@ typedef struct TileStruct_t {
 typedef struct TileConnexStruct_t {
   TileStruct tileStruct;
   uint16_t planeID;
-  uint8_t isWater;
+  uint8_t isSpecialTerrain;
 } TileConnexStruct;
 
 typedef struct TilePlaneMap_t {

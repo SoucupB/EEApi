@@ -72,6 +72,7 @@ void driver_Repair_PushCommandToUnit(PVOID buffer, PVOID unit) {
 }
 
 void driver_RepairBuilding(PVOID unit, PVOID building) {
+  driver_StopCommand(unit);
   PVOID pntTarget = driver_New(0x5C);
   (void)driver_Repair_ClassInit(pntTarget, unit, building);
   (void)driver_Repair_PushCommandToUnit(pntTarget, unit);
@@ -134,6 +135,7 @@ void driver_Register(PVOID unit) {
 }
 
 void driver_Citizen_Gather(PVOID unit, PVOID resource) {
+  driver_StopCommand(unit);
   PVOID buffer = driver_New(0x44);
   driver_Gather_ClassInit(buffer, resource);
   driver_Gather_Citizen_QueueCommand(unit, buffer);
@@ -162,6 +164,7 @@ void driver_IssueCommand(PVOID unit, PVOID buffer, PVOID command) {
 }
 
 void driver_Unit_Command(PVOID unit, Point position, UnitAction action) {
+  driver_StopCommand(unit);
   PVOID buffer = driver_New(0x38);
   switch (action)
   {
@@ -196,6 +199,7 @@ void driver_Command_Method6209C9(PVOID self, PVOID unit, TilePoint tile, Ability
 }
 
 void driver_CastAbility_Remade(PVOID unit, Point target, AbilityTypes ability) {
+  driver_StopCommand(unit);
   PVOID buffer = driver_New(0x34);
   TilePoint tile = geom_Tile_FromPoint(target);
   driver_Command_Method6209C9(buffer, unit, tile, ability);
@@ -214,6 +218,7 @@ void driver_Command_Method61D337(PVOID self, PVOID unit, PVOID target) {
 }
 
 void driver_Convert_Remade(PVOID unit, PVOID target) {
+  driver_StopCommand(unit);
   PVOID buffer = driver_New(0x44);
   driver_Command_Method61D337(buffer, unit, target);
   driver_IssueCommand(unit, buffer, (PVOID)DRIVER_CONVERT_SPECIAL_CONST);
@@ -242,6 +247,7 @@ void driver_Command_Method627286(PVOID self, vector<PVOID> &units, PVOID transpo
 }
 
 void driver_Transport_Load(vector<PVOID> &units, PVOID transport) {
+  driver_StopCommand(transport);
   size_t bufferSize = 0x68;
   PVOID buffer = driver_New(bufferSize);
   driver_Command_Method627286(buffer, units, transport);
@@ -293,6 +299,7 @@ void driver_Command_Method6283FF(PVOID self, PVOID transport, TilePoint tile) {
 }
 
 void driver_Transport_Unload(PVOID transport, TilePoint tile) {
+  driver_StopCommand(transport);
   PVOID buffer = driver_New(0x40);
   driver_Command_Method6283FF(buffer, transport, tile);
   driver_IssueCommand(transport, buffer, (PVOID)DRIVER_DEFAULT_SPECIAL_CONST);
@@ -331,6 +338,7 @@ PVOID driver_Building_CreateBuilding(PVOID buildingTemplate, TilePoint position)
 }
 
 void driver_Building_Create(PVOID citizen, TilePoint position, PVOID type) {
+  driver_StopCommand(citizen);
   PVOID building = driver_Building_CreateBuilding(type, position);
   if(!citizen || !building) {
     return ;
@@ -352,6 +360,7 @@ void driver_Command_Target_Method6209C9(PVOID self, PVOID unit, PVOID target, Ti
 }
 
 void driver_CastAbility_Target(PVOID unit, PVOID target, Point targetPoint, AbilityTypes ability) {
+  driver_StopCommand(unit);
   PVOID buffer = driver_New(0x34);
   TilePoint tile = geom_Tile_FromPoint(targetPoint);
   driver_Command_Target_Method6209C9(buffer, unit, target, tile, ability);
@@ -472,6 +481,13 @@ size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, s
   return canBuildHere;
 }
 
+void driver_StopCommand(PVOID unit) {
+  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_STOP);
+  size_t __thiscall (*method)(PVOID) = 
+  (size_t __thiscall (*)(PVOID)) ((uint8_t *)methodStruct);
+  (void)!method(unit);
+}
+
 void driver_AttackUnit_Instantiate_61D337(PVOID buffer, PVOID attackerUnit, PVOID attackedUnit) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_ATTACK_TARGET_INSTANTIATE);
   void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID, PVOID) = 
@@ -481,6 +497,7 @@ void driver_AttackUnit_Instantiate_61D337(PVOID buffer, PVOID attackerUnit, PVOI
 }
 
 void driver_AttackUnit(PVOID attackerUnit, PVOID attackedUnit) {
+  driver_StopCommand(attackerUnit);
   PVOID buffer = driver_New(0x44);
   driver_AttackUnit_Instantiate_61D337(buffer, attackerUnit, attackedUnit);
   driver_IssueCommand(attackerUnit, buffer, (PVOID)DRIVER_ATTACK_TARGET_SPECIAL_CONST);

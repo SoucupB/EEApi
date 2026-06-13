@@ -26,6 +26,7 @@ typedef struct PlayerState_t {
 typedef struct MapData_t {
   vector<TileStruct> *tiles;
   TilePlaneMap *planeMap;
+  int8_t isSpaceMap;
 } MapData;
 
 typedef struct EETypes_t {
@@ -46,6 +47,7 @@ typedef struct EETwa_t {
   int8_t neutralPlayer;
   int8_t shouldCostBeReduced;
   int8_t playersCount;
+  int8_t cheats;
   PTimerHelper timers;
 } EETwa;
 
