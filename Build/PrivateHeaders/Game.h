@@ -26,6 +26,7 @@ typedef struct PlayerState_t {
 typedef struct MapData_t {
   vector<TileStruct> *tiles;
   TilePlaneMap *planeMap;
+  int8_t isSpaceMap;
 } MapData;
 
 typedef struct EETypes_t {

@@ -98,10 +98,6 @@ int8_t eeTa_AllPlayers() {
   return eeTwa->all_players;
 }
 
-void eeTa_Map_Init() {
-  map_Init();
-}
-
 void eeTa_Map_PrintBitMap() {
   size_t mapSizeInTiles;
   char **map = map_GetBitMap(&mapSizeInTiles);

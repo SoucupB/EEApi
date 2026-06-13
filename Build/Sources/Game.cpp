@@ -63,6 +63,7 @@ void game_EETwa_Init(PGame game) {
   game->eeTwa->neutralPlayer = 0;
   game->eeTwa->shouldCostBeReduced = 0;
   game->eeTwa->cheats = 0;
+  // game->eeTwa->isSpaceMap = map_IsSpaceMap();
   game->eeTwa->timers = tmr_Init();
 }
 
