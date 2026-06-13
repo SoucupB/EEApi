@@ -5,7 +5,6 @@
 #include "Geometry.h"
 
 PVOID __cdecl driver_New(size_t size);
-void __cdecl help_ConvertTarget(PVOID unit, PVOID target);
 void __cdecl driver_Delete(PVOID pointer);
 void driver_RepairBuilding(PVOID unit, PVOID building);
 void driver_Citizen_Gather(PVOID unit, PVOID resource);
