@@ -6,6 +6,7 @@
 #include "Ability.h"
 #include "Driver.h"
 #include "EETypesStructPrivate.h"
+#include "MapData.h"
 
 uint8_t isIdleCitizen(Unit unit) {
   const UnitType type = unit_Type(unit);
@@ -118,13 +119,17 @@ void stopUnit() {
   }
 }
 
+void printSpaceStuff() {
+  eeTa_FilePrintf("Is space %d\n", map_IsSpaceMap());
+}
+
 void execDataPengus() {
   if(GetAsyncKeyState('J') & 0x8000) {
     test_PrintUnits();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('P') & 0x8000) {
-    stopUnit();
+    printSpaceStuff();
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {

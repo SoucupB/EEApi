@@ -85,6 +85,11 @@ uint8_t idleAttackingWaterUnits(Unit unit) {
   return unit_IsIdle(unit) && (eeTypes_IsFromClass(CLASS_WATER_BOATS, def) || eeTypes_IsFromClass(CLASS_SUBMARINES, def));
 }
 
+uint8_t idleAttackingSpaceUnits(Unit unit) {
+  UnitType def = unit_Type(unit);
+  return unit_IsIdle(unit) && (eeTypes_IsFromClass(CLASS_SPACE_FIGHTER, def) || eeTypes_IsFromClass(CLASS_SPACE_SHIP_FIGHTERS, def));
+}
+
 uint8_t attackingWaterUnits(Unit unit) {
   UnitType def = unit_Type(unit);
   return eeTypes_IsFromClass(CLASS_WATER_BOATS, def) || eeTypes_IsFromClass(CLASS_SUBMARINES, def);
@@ -125,13 +130,27 @@ void att_AttackTransportWithNavals(vector<Unit> &units) {
   }
 }
 
+uint8_t isAirPositionValid(Unit unit, TilePoint tile) {
+  const UnitType type = unit_Type(unit);
+  if(map_Tile_GetPlaneID(tile) == INVALID_TILE_ID) {
+    return 0;
+  }
+  if(map_IsSpaceMap()) {
+    if(eeTypes_IsFromClass(CLASS_SPACE_FIGHTER, type) || type == A_FIGHTER15_PLANETARY_FIGHTER) {
+      return 1;
+    }
+    return !map_Tile_IsSpace(tile);
+  }
+  return 1;
+}
+
 Point airNextPosition(Unit unit) {
   Point currentPosition = unit_Point_Position(unit);
   Point copyPosition = currentPosition;
   currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
   currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
   int32_t index = 5;
-  while(index && map_Tile_GetPlaneID(geom_Tile_FromPoint(currentPosition)) == INVALID_TILE_ID) {
+  while(index && !isAirPositionValid(unit, geom_Tile_FromPoint(currentPosition))) {
     currentPosition.x = copyPosition.x + sinf(rand()) * 20.0f;
     currentPosition.y = copyPosition.y + sinf(rand()) * 20.0f;
     index--;
@@ -249,7 +268,7 @@ uint8_t isEnemyFlyingBomber(Unit unit) {
 
 uint8_t isSelfFlyingCombustionUnit(Unit unit) {
   const UnitType type = unit_Type(unit);
-  return isSelfUnit(unit) && eeTypes_IsFromClass(CLASS_AIR_COMBUSTION_FLYEIR, type);
+  return isSelfUnit(unit) && (eeTypes_IsFromClass(CLASS_AIR_COMBUSTION_FLYEIR, type) || eeTypes_IsFromClass(CLASS_SPACE_FIGHTER, type));
 }
 
 void attackEnemyBombers(Unit bomber[], size_t bomberCount) {
@@ -320,6 +339,8 @@ uint8_t isTower(Unit unit) {
       return 1;
     case B_GUARD_TOWER_WW1:
       return 1;
+    case B_SPACE_TURRET:
+      return 1;
     
     default:
       break;
@@ -332,7 +353,7 @@ uint8_t isEnemyTower(Unit unit) {
 }
 
 uint8_t att_IsUnitCarrier(Unit unit) {
-  return eeTypes_IsFromClass(CLASS_WATER_CARRIERS, unit_Type(unit));
+  return eeTypes_IsFromClass(CLASS_WATER_CARRIERS, unit_Type(unit)) || eeTypes_IsFromClass(CLASS_SPACE_CARRIER, unit_Type(unit));
 }
 
 uint8_t isPriest(Unit unit) {
@@ -741,6 +762,9 @@ void att_PatrolRandomPositions(vector<Unit> &selfUnits) {
   att_PatrolRandomPositions_t(selfUnits, idleAttackingAirUnits, 6);
   att_PatrolRandomPositions_t(selfUnits, idleAttackingGroundUnits, 7);
   att_PatrolRandomPositions_t(selfUnits, idleAttackingWaterUnits, 3);
+  if(map_IsSpaceMap()) {
+    att_PatrolRandomPositions_t(selfUnits, idleAttackingSpaceUnits, 5);
+  }
 }
 
 void att_OnFrame() {

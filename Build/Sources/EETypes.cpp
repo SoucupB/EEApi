@@ -256,7 +256,8 @@ uint8_t eeTypes_IsPriest(UnitType type) {
 uint8_t eeTypes_IsAirUnit(UnitType unitType) {
   return eeTypes_IsFromClass(CLASS_AIR_COMBUSTION_FLYEIR, unitType) ||
          eeTypes_IsFromClass(CLASS_AIR_TRANSPORT, unitType) ||
-         eeTypes_IsFromClass(CLASS_AIR_NON_COMBUSTION_FLYER, unitType);
+         eeTypes_IsFromClass(CLASS_AIR_NON_COMBUSTION_FLYER, unitType) ||
+         eeTypes_IsFromClass(CLASS_SPACE_FIGHTER, unitType);
 }
 
 uint8_t eeTypes_CanProduceWorkers(UnitType unitType) {
