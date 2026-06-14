@@ -6,6 +6,10 @@
 #include "TimerHelper.h"
 #include "EETypes.h"
 
+enum Cheat {
+  CHEAT_COST_REDUCTION = (1<<0)
+};
+
 /*
  * Returns the current frame from the start of the game
  */
@@ -43,3 +47,7 @@ int8_t eeTa_PlayerCount();
  * Method to print to a file data, works similar to printf.
  */
 void eeTa_FilePrintf(const char *format, ...);
+/*
+ * Add a cheat for the self bot.
+ */
+void eeTa_AddCheat(Cheat cheat);

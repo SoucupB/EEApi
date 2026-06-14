@@ -29,3 +29,7 @@ uint8_t map_IsSpaceMap();
  * Same functionality like map_Tile_IsWater but in space.
  */
 uint8_t map_Tile_IsSpace(TilePoint self);
+/*
+ * This is a functionality whic either calls "map_Tile_IsSpace" or "map_Tile_IsWater" depending on the type of map.
+ */
+uint8_t map_Tile_IsSpecialTerrain(TilePoint self);

@@ -35,3 +35,11 @@ Point res_Point_Position(Resource self);
  * Checks if a resource still exists. Usually this is used for fishes, trees and spawning farm vegetables since they can get mined out quickly.
  */
 uint8_t res_IsPresent(Resource resource);
+/*
+ * Gets the resource count from param for this specific player.
+ */
+int32_t res_GetResource(Player ply, ResourceIndex res);
+/*
+ * Sets the resource count from param for this specific player.
+ */
+void res_SetResource(Player ply, ResourceIndex res, int32_t value);
