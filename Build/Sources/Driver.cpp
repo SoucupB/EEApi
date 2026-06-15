@@ -103,7 +103,7 @@ void driver_Gather_Method5FDFA5(PVOID self) {
         (PVOID)DRIVER_GATHER_SPECIAL_CONST);
 }
 
-PVOID driver_Gather_ClassInit(PVOID buffer, PVOID targetResource) {
+void driver_Gather_ClassInit(PVOID buffer, PVOID targetResource) {
   driver_Gather_Method621E95(buffer, targetResource);
 }
 

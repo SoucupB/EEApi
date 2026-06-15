@@ -159,8 +159,6 @@ void map_TileMap_Init() {
 void map_TileMap_FillWithReffs() {
   PMapData md = game_GetMapData();
   TilePlaneMap *planeMap = md->planeMap;
-
-  const size_t count = planeMap->rowTileCount;
   TileConnexStruct **map = planeMap->map;
   vector<TileStruct> *tiles = md->tiles;
 

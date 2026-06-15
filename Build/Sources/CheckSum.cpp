@@ -23,7 +23,7 @@ size_t cs_GetLibCheckSum(PVOID address, size_t size) {
 
 void cs_PrintError(size_t offset, size_t checkSumExpected, size_t checkSumGot) {
   FILE *fd = fopen("BotsError.txt", "w+");
-  fprintf(fd, "Game version mismatch, Expected checksum %p at %p, got %p instead\n", (size_t)lib_BaseAddress() + checkSumExpected, offset, checkSumGot);
+  fprintf(fd, "Game version mismatch, Expected checksum %p at %p, got %p instead\n", (PVOID)((size_t)lib_BaseAddress() + checkSumExpected), (PVOID)offset, (PVOID)checkSumGot);
   fclose(fd);
 }
 

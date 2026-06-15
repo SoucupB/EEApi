@@ -631,7 +631,6 @@ uint8_t unit_CanBuildAtPosition(Unit citizen, UnitType buildingType, TilePoint t
 
 // will need to handle ports and airports
 Point unit_GetNextPosition(Point currentPosition) {
-  Point copyPosition = currentPosition;
   float distance = 15.0f;
   currentPosition.x += sinf(rand()) * distance;
   currentPosition.y += sinf(rand()) * distance;
@@ -679,7 +678,8 @@ TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingTyp
   }
   int32_t xPos[] = {1, 0, -1, 0, 1, 1, -1, -1};
   int32_t yPos[] = {0, -1, 0, 1, 1, -1, 1, -1};
-  int32_t index = 32, head = 0;
+  int32_t index = 32;
+  size_t head = 0;
   vector<TilePoint> vct;
   unordered_map<uint32_t, uint8_t> valid;
   vct.push_back(tile);
@@ -756,13 +756,13 @@ uint8_t unit_IsValid(Unit unit) {
 }
 
 Unit unit_FromRerence(PVOID reference) {
-  if(!unit_IsValid) {
-    return unit_Null();
-  }
-
-  return (Unit) {
+  Unit unit = (Unit) {
     ._payload = reference
   };
+  if(!unit_IsValid(unit)) {
+    return unit_Null();
+  }
+  return unit;
 }
 
 void unit_Stop(Unit unit) {

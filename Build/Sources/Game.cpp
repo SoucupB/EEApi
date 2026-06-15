@@ -35,8 +35,7 @@ void game_Player_Init(PGame game) {
   game->players->playerData = new unordered_map<PVOID, uint8_t>();
 }
 
-
-PEmpireEarthHook game_EmpHook_Init(PGame game) {
+void game_EmpHook_Init(PGame game) {
   game->empHook = (PEmpireEarthHook)malloc(sizeof(EmpireEarthHook));
   game->empHook->onInitFlag = 0;
   game->empHook->hasIterationBeenExecuted = 0;
@@ -63,7 +62,6 @@ void game_EETwa_Init(PGame game) {
   game->eeTwa->neutralPlayer = 0;
   game->eeTwa->shouldCostBeReduced = 0;
   game->eeTwa->cheats = 0;
-  // game->eeTwa->isSpaceMap = map_IsSpaceMap();
   game->eeTwa->timers = tmr_Init();
 }
 

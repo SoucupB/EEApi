@@ -44,7 +44,7 @@ void util_ReadMethodAtAdress(void *address, SIZE_T methodSize) {
 uint8_t util_ModifyJumpAddress(DWORD targetProcessId, SIZE_T address, SIZE_T jumpAt) {
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, targetProcessId);
   if (hProcess == NULL) {
-    printf("Could not open process: %d\n", GetLastError());
+    printf("Could not open process: %d\n", (int32_t)GetLastError());
     return 0;
   }
   BYTE remoteJumpByteCode[5];
@@ -71,7 +71,7 @@ uint8_t util_ModifyJumpAddress(DWORD targetProcessId, SIZE_T address, SIZE_T jum
 PVOID util_ReadProcessMemory(DWORD targetProcessId, PVOID at, SIZE_T size) {
   HANDLE hProcess = OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, targetProcessId);
   if (hProcess == NULL) {
-    printf("Could not open process: %d\n", GetLastError());
+    printf("Could not open process: %d\n", (int32_t)GetLastError());
     return NULL;
   }
   PVOID buffer = malloc(size);
@@ -189,12 +189,12 @@ PVOID util_AddMethod(DWORD targetProcessId, unsigned char *injectedCode, SIZE_T 
 void util_WriteProcessMemory(DWORD targetProcessId, PVOID localBuffer, PVOID remoteBuffer, SIZE_T size) {
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, targetProcessId);
   if (hProcess == NULL) {
-    printf("Could not open process: %d\n", GetLastError());
+    printf("Could not open process: %d\n", (int32_t)GetLastError());
     return ;
   }
   if (!WriteProcessMemory(hProcess, remoteBuffer, localBuffer, size, NULL))
   {
-    printf("Failed to write parameter to target process memory at address %x %d\n", remoteBuffer, GetLastError());
+    printf("Failed to write parameter to target process memory at address %x %d\n", (uint32_t)remoteBuffer, (int32_t)GetLastError());
     CloseHandle(hProcess);
     return ;
   }
@@ -205,11 +205,11 @@ void util_ChangeProtectionWrite(DWORD targetProcessId, PVOID remoteBuffer, size_
   DWORD oldProtect;
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, targetProcessId);
   if (hProcess == NULL) {
-    printf("Could not open process: %d\n", GetLastError());
+    printf("Could not open process: %d\n", (int32_t)GetLastError());
     return ;
   }
   if (!VirtualProtectEx(hProcess, remoteBuffer, size, PAGE_READWRITE, &oldProtect)) {
-    printf("Failed to change memory protection. Error: %d\n", GetLastError());
+    printf("Failed to change memory protection. Error: %d\n", (int32_t)GetLastError());
     return;
   }
 }
@@ -250,7 +250,7 @@ HANDLE util_MethodAddresOffset(const char *method, const string &dllPath) {
   }
   HMODULE methodsAddress = (HMODULE)GetProcAddress(dllBase, (LPCSTR)method);
   if (!methodsAddress) {
-    printf("Failed to load method %s at base %p\n", method, dllBase);
+    printf("Failed to load method %s at base %p\n", method, (PVOID)dllBase);
     return NULL;
   }
   return (HANDLE)((size_t)methodsAddress - (size_t)dllBase);
@@ -282,7 +282,7 @@ void util_StartMethodThread(HANDLE hProcess, HMODULE module) {
                                 (LPTHREAD_START_ROUTINE)module, 
                                 nullptr, 0, nullptr);
   if (!hThread) {
-    printf("Failed to create remote thread for function call. Error: %d\n", GetLastError());
+    printf("Failed to create remote thread for function call. Error: %d\n", (int32_t)GetLastError());
     return ;
   }
   WaitForSingleObject(hThread, INFINITE);
@@ -328,18 +328,18 @@ bool util_LoadDLL(DWORD processID, const std::string &dllName, const std::string
   DWORD dllBaseAddress = 0;
   if (!GetExitCodeThread(hRemoteThread, &dllBaseAddress) || dllBaseAddress == 0) {
     printf("DLL injection failed. Checking target process error...\n");
-    DWORD errorCode = util_GetLastErrorInTargetProcess(hProcess);
+    int32_t errorCode = util_GetLastErrorInTargetProcess(hProcess);
     if (errorCode != -1) {
-      printf("Error code from target process: %d\n", errorCode);
+      printf("Error code from target process: %d\n", (int32_t)errorCode);
     } else {
       printf("Failed to retrieve the error code from the target process.\n");
     }
     return false;
   } else {
-    printf("DLL loaded at address: %p\n", dllBaseAddress);
+    printf("DLL loaded at address: %p\n", (PVOID)dllBaseAddress);
   }
   HANDLE dllMethodAddress = util_RunRemoteThreadMethod(hProcess, dllName, dllPath, "DLLMain");
-  printf("%s method of DLLMain is loaded at %p\n", &dllName[0], dllMethodAddress);
+  printf("%s method of DLLMain is loaded at %p\n", &dllName[0], (PVOID)dllMethodAddress);
   if(!dllMethodAddress) {
     printf("Main method not found!\n");
   }
@@ -376,7 +376,7 @@ void util_MessageBox(const char *title, const char *message) {
   );
 }
 
-DWORD util_GetLastErrorInTargetProcess(HANDLE hProcess) {
+int32_t util_GetLastErrorInTargetProcess(HANDLE hProcess) {
   LPVOID pGetLastError = (LPVOID)GetProcAddress(GetModuleHandleA("kernel32.dll"), "GetLastError");
   if (!pGetLastError) {
       printf("Failed to get address of GetLastError.\n");
@@ -414,7 +414,7 @@ void _util_FindAddresses(PVOID localBuffer, DWORD bufferSize) {
 
   for(SIZE_T i = 0, c = bufferSize - 1; i < c; i++) {
     if(addressesHolders[i] && !addressesHolders[i + 1]) {
-      printf("At index 0x%p with size %d\n", i + (SIZE_T)windows_BasePointer - (SIZE_T)addressesHolders[i] + 1, addressesHolders[i]);
+      printf("At index 0x%p with size %d\n", (PVOID)(i + (SIZE_T)windows_BasePointer - (SIZE_T)addressesHolders[i] + 1), addressesHolders[i]);
     }
   }
 }
