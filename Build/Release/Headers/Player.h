@@ -66,4 +66,4 @@ int32_t ply_GetResources(Player player, ResourceIndex resource);
 /*
  * Sets the resources of a player.
  */
-int32_t ply_SetResources(Player player, ResourceIndex resource, int32_t value);
+void ply_SetResources(Player player, ResourceIndex resource, int32_t value);
