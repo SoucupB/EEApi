@@ -5,7 +5,6 @@
 #include "Geometry.h"
 
 PVOID __cdecl driver_New(size_t size);
-void __cdecl help_ConvertTarget(PVOID unit, PVOID target);
 void __cdecl driver_Delete(PVOID pointer);
 void driver_RepairBuilding(PVOID unit, PVOID building);
 void driver_Citizen_Gather(PVOID unit, PVOID resource);
@@ -29,3 +28,4 @@ size_t driver_CanBuiltAt_Complete(PVOID player, PVOID citizen, TilePoint tile, s
 PVOID driver_BuildStruct(PVOID player, size_t buildingTypeID);
 size_t driver_CanBuild_WO_Buffer(PVOID player, PVOID buffer, PVOID citizen, TilePoint tile, size_t buildingTypeID);
 void driver_AttackUnit(PVOID attackerUnit, PVOID attackedUnit);
+void driver_StopCommand(PVOID unit);

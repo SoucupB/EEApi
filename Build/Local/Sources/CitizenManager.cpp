@@ -60,10 +60,12 @@ void citizen_RebuildBuilding(PVOID _) {
   }
 }
 
-uint8_t citizen_IsTower(const UnitType type) {
+uint8_t citizen_IsNeededBuilding(const UnitType type) {
   switch (type)
   {
     case B_DOCK:
+    case B_SPACE_DOCK:
+    case B_SPACE_TURRET:
     case B_NAVY_YARD:
     case B_GUARD_TOWER_BAMBOO:
     case B_GUARD_TOWER_BRONZE:
@@ -75,6 +77,9 @@ uint8_t citizen_IsTower(const UnitType type) {
     case B_GUARD_TOWER_PALISADES:
     case B_GUARD_TOWER_SPACE:
     case B_GUARD_TOWER_WW1:
+    case B_AA10_GUN_88MM:
+    case B_AA13_MISSILE_TOWER:
+    case B_AA15_MISSILE_TOWER:
       return 1;
     
     default:
@@ -86,7 +91,7 @@ uint8_t citizen_IsTower(const UnitType type) {
 
 uint8_t citizen_IsRebuilable(Unit unit) {
   const UnitType type = unit_Type(unit);
-  if(citizen_IsTower(type) && ply_Reference(ply_GetPlayer(unit)) == ply_Reference(ply_Self())) {
+  if(citizen_IsNeededBuilding(type) && ply_Reference(ply_GetPlayer(unit)) == ply_Reference(ply_Self())) {
     return 1;
   }
   return 0;

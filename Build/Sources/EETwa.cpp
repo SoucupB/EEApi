@@ -37,6 +37,11 @@ void eeTa_OnUnitCreate(PVOID unitBuffer) {
   bt_OnUnitCreate(unit);
 }
 
+void eeTa_AddCheat(Cheat cheat) {
+  PEETwa eeTwa = game_EETwa();
+  eeTwa->cheats |= cheat;
+}
+
 void eeTa_RebuildExtraDataStructure() {
   eeTa_RebuildDTs();
   bt_OnGamePrepare();
@@ -93,10 +98,6 @@ int8_t eeTa_AllPlayers() {
   return eeTwa->all_players;
 }
 
-void eeTa_Map_Init() {
-  map_Init();
-}
-
 void eeTa_Map_PrintBitMap() {
   size_t mapSizeInTiles;
   char **map = map_GetBitMap(&mapSizeInTiles);
@@ -124,7 +125,7 @@ void __cdecl eeTa_OnUnitDeath(Unit unit) {
 int32_t eeTa_OnUnitBuy(long double resources, int32_t (*method)(long double)) {
   PEETwa eeTwa = game_EETwa();
   if(eeTwa->shouldCostBeReduced) {
-    return (int32_t)(method(resources) * 0.05f);
+    return (int32_t)(method(resources) * COST_REDUCTION_TO);
   }
   return method(resources);
 }

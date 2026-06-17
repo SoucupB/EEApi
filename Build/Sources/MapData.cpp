@@ -159,8 +159,6 @@ void map_TileMap_Init() {
 void map_TileMap_FillWithReffs() {
   PMapData md = game_GetMapData();
   TilePlaneMap *planeMap = md->planeMap;
-
-  const size_t count = planeMap->rowTileCount;
   TileConnexStruct **map = planeMap->map;
   vector<TileStruct> *tiles = md->tiles;
 
@@ -169,7 +167,7 @@ void map_TileMap_FillWithReffs() {
     map[tileStruct.tile.x][tileStruct.tile.y] = (TileConnexStruct) {
       .tileStruct = tileStruct,
       .planeID = 0,
-      .isWater = map_Tile_IsWater(tileStruct.tile)
+      .isSpecialTerrain = map_Tile_IsSpecialTerrain(tileStruct.tile)
     };
   }
 }
@@ -216,7 +214,7 @@ uint8_t map_TileMap_Fill(size_t i, size_t j, uint16_t currentPlaneID) {
         continue;
       }
       TileConnexStruct *nextTile = &tileMap[nextTileX][nextTileY];
-      if(nextTile->planeID == INVALID_TILE_ID || map_TileConnex_IsMarked(*nextTile) || nextTile->isWater != initialConnexTile->isWater) {
+      if(nextTile->planeID == INVALID_TILE_ID || map_TileConnex_IsMarked(*nextTile) || nextTile->isSpecialTerrain != initialConnexTile->isSpecialTerrain) {
         continue;
       }
       queue.push_back(nextTile);
@@ -276,6 +274,14 @@ uint8_t map_Tile_IsSpace(TilePoint self) {
   return method((PVOID)((size_t)mapPointer + mapPointerTileOffset), (PVOID)self.x, (PVOID)self.y);
 }
 
+uint8_t map_Tile_IsSpecialTerrain(TilePoint self) {
+  PMapData mapData = game_GetMapData();
+  if(mapData->isSpaceMap) {
+    return map_Tile_IsSpace(self);
+  }
+  return map_Tile_IsWater(self);
+}
+
 void map_ComputeConnexIslands() {
   map_TileMap_Init();
   map_TileMap_FillWithReffs();
@@ -283,7 +289,9 @@ void map_ComputeConnexIslands() {
 }
 
 void map_Init() {
+  PMapData mapData = game_GetMapData();
   map_FillTiles();
   map_ComputeConnexIslands();
+  mapData->isSpaceMap = map_IsSpaceMap();
 }
 

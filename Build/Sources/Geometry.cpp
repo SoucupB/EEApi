@@ -11,7 +11,7 @@ float distancef(Point a, Point b) {
   return fabs(a.x - b.x) + fabs(a.y - b.y);
 }
 
-float distanceEuclidf(Point a, Point b) {
+float geom_DistanceEuclidf(Point a, Point b) {
   return sqrtf((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
@@ -26,16 +26,13 @@ uint8_t geom_Point_IsInvalid(Point point) {
   return point.x == -10000.0f && point.y == -10000.0f;
 }
 
-Unit geom_GetClosestUnitFrom(Unit unit, Player ply, uint8_t (*filter)(Unit)) {
-  vector<Unit> units = unit_Player_GetUnits(ply);
+Unit geom_GetClosestUnitFrom(Unit unit, uint8_t (*filter)(Unit)) {
+  vector<Unit> units = unit_Filter(filter);
   float minDist = FLT_MAX;
   Unit selectedUnit;
   selectedUnit._payload = NULL;
   Point unitPos = unit_Point_Position(unit);
   for(size_t i = 0, c = units.size(); i < c; i++) {
-    if(!filter(units[i])) {
-      continue;
-    }
     Point currentPosition = unit_Point_Position(units[i]);
     float distance = distancef(currentPosition, unitPos);
     if(minDist > distance) {
@@ -47,7 +44,7 @@ Unit geom_GetClosestUnitFrom(Unit unit, Player ply, uint8_t (*filter)(Unit)) {
 }
 
 uint8_t geom_IsPointInCircle(Point p, Circle c) {
-  return distanceEuclidf(p, c.p) <= c.radius;
+  return geom_DistanceEuclidf(p, c.p) <= c.radius;
 }
 
 TilePoint geom_Tile_FromPoint(Point target) {

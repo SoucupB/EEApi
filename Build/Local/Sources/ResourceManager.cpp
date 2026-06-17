@@ -20,7 +20,7 @@ void fishTheFishes(Unit fishBoat) {
     if(res_Type(fishes[i]) != RES_FISH) {
       continue;
     }
-    float currentPositionDist = distanceEuclidf(res_Point_Position(fishes[i]), unit_Point_Position(fishBoat));
+    float currentPositionDist = geom_DistanceEuclidf(res_Point_Position(fishes[i]), unit_Point_Position(fishBoat));
     if(currentDist >= currentPositionDist) {
       currentDist = currentPositionDist;
       currentFish = fishes[i];

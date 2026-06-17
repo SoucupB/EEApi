@@ -11,13 +11,14 @@
 #include "EETypesStructPrivate.h"
 #include "Offset.h"
 #include "SimpleUnit.h"
-#include "EETypesStructPrivate.h"
 #include <math.h>
 
 uint8_t unit_IsPresent(Unit unit);
 uint8_t unit_Building_CanBuildAtWOBuffer(PVOID buffer, Unit citizen, UnitType buildingType, TilePoint tile);
 TilePoint unit_Building_FindRandomBuildablePosition(PVOID unitGhostBuilding, Unit citizen, UnitType buildingType, TilePoint tile);
 uint8_t unit_CanCurrentUnitBeActionable(Unit unit);
+uint8_t unit_IsCheatActive(Cheat cheat);
+static inline uint8_t unit_Resource_CanBuild(Unit builder, UnitType type);
 
 vector<Unit> unit_GetBuildings(int8_t player) {
   vector<Unit> buildingsPointer;
@@ -144,9 +145,16 @@ void unit_Build(Unit building, UnitType type) {
   }
   int32_t __thiscall (*method)(PVOID, PVOID, PVOID) = (int32_t __thiscall (*)(PVOID, PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + UNIT_METHOD_BUILD);
   PEETwa eeTwa = game_EETwa();
-  eeTwa->shouldCostBeReduced = 1;
+  if(unit_IsCheatActive(CHEAT_COST_REDUCTION)) {
+    eeTwa->shouldCostBeReduced = 1;
+  }
   method(building._payload, (PVOID)type, 0);
   eeTwa->shouldCostBeReduced = 0;
+}
+
+uint8_t unit_IsCheatActive(Cheat cheat) {
+  PEETwa eeTwa = game_EETwa();
+  return (eeTwa->cheats & cheat) != 0;
 }
 
 vector<Unit> unit_GetUnits(int8_t player) {
@@ -550,11 +558,43 @@ float unit_Range(Unit unit) {
 }
 
 float unit_Distance(Unit first, Unit dst) {
-  return distanceEuclidf(unit_Point_Position(first), unit_Point_Position(dst));
+  return geom_DistanceEuclidf(unit_Point_Position(first), unit_Point_Position(dst));
+}
+
+static inline uint8_t unit_Resource_CanBuild(Unit builder, UnitType type) {
+  Player ply = ply_GetPlayer(builder);
+  ResourceCost costs[6];
+  uint8_t costsCount = 0;
+  eeTypes_Costs(ply, type, costs, &costsCount);
+  for(size_t i = 0; i < costsCount; i++) {
+    if(ply_GetResources(ply, costs[i].resIndex) <= costs[i].cost) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+static inline void unit_Resource_Set(Unit builder, UnitType type) {
+  Player ply = ply_GetPlayer(builder);
+  ResourceCost costs[6];
+  uint8_t costsCount = 0;
+  eeTypes_Costs(ply, type, costs, &costsCount);
+  uint8_t costReductionFlag = unit_IsCheatActive(CHEAT_COST_REDUCTION);
+  for(size_t i = 0; i < costsCount; i++) {
+    int32_t currentRes = ply_GetResources(ply, costs[i].resIndex);
+    int32_t cost = costs[i].cost;
+    if(costReductionFlag) {
+      cost = (int32_t)((float)cost * COST_REDUCTION_TO);
+    }
+    ply_SetResources(ply, costs[i].resIndex, currentRes - cost);
+  }
 }
 
 void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
   if(!eeTypes_IsCitizen(unit_Type(citizen)) || !eeTypes_IsBuilding(unitType) || !unit_IsSelf(citizen)) {
+    return ;
+  }
+  if(!unit_Resource_CanBuild(citizen, unitType)) {
     return ;
   }
   PVOID unitClass = eeTypes_GetTemplate(unitType);
@@ -562,6 +602,7 @@ void unit_Building_Build(Unit citizen, TilePoint tile, UnitType unitType) {
     return ;
   }
   driver_Building_Create(unit_Reference(citizen), tile, unitClass);
+  unit_Resource_Set(citizen, unitType);
 }
 
 int32_t unit_Population(Unit unit) {
@@ -590,7 +631,6 @@ uint8_t unit_CanBuildAtPosition(Unit citizen, UnitType buildingType, TilePoint t
 
 // will need to handle ports and airports
 Point unit_GetNextPosition(Point currentPosition) {
-  Point copyPosition = currentPosition;
   float distance = 15.0f;
   currentPosition.x += sinf(rand()) * distance;
   currentPosition.y += sinf(rand()) * distance;
@@ -638,7 +678,8 @@ TilePoint unit_Building_FindBuildablePosition(Unit citizen, UnitType buildingTyp
   }
   int32_t xPos[] = {1, 0, -1, 0, 1, 1, -1, -1};
   int32_t yPos[] = {0, -1, 0, 1, 1, -1, 1, -1};
-  int32_t index = 32, head = 0;
+  int32_t index = 32;
+  size_t head = 0;
   vector<TilePoint> vct;
   unordered_map<uint32_t, uint8_t> valid;
   vct.push_back(tile);
@@ -715,11 +756,28 @@ uint8_t unit_IsValid(Unit unit) {
 }
 
 Unit unit_FromRerence(PVOID reference) {
-  if(!unit_IsValid) {
-    return unit_Null();
-  }
-
-  return (Unit) {
+  Unit unit = (Unit) {
     ._payload = reference
   };
+  if(!unit_IsValid(unit)) {
+    return unit_Null();
+  }
+  return unit;
+}
+
+void unit_Stop(Unit unit) {
+  driver_StopCommand(unit_Reference(unit));
+}
+
+PVOID unit_GetTechNode(Unit unit) {
+  TechTree tree = ply_TechTree(ply_GetPlayer(unit));
+  PVOID cTechNode = driver_TechNode(tree, (AbilityTypes)unit_Type(unit));
+  if(!cTechNode) {
+    return 0;
+  }
+  return cTechNode;
+}
+
+void unit_Costs(Unit unit, ResourceCost *costs, uint8_t *resCount) {
+  eeTypes_Costs(ply_GetPlayer(unit), unit_Type(unit), costs, resCount);
 }
