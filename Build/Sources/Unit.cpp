@@ -477,8 +477,13 @@ uint8_t unit_IsComplexUnit(Unit unit) {
   return 0;
 }
 
+uint8_t unit_CanConvert(Unit unit) {
+  const UnitType type = unit_Type(unit);
+  return eeTypes_IsPriest(type) || type == MECH_POSEIDON;
+}
+
 void unit_Convert(Unit src, Unit dst) {
-  if(!eeTypes_IsPriest(unit_Type(src)) || !unit_IsSelf(src) || !unit_IsEnemy(dst)) {
+  if(!unit_CanConvert(src) || !unit_IsSelf(src) || !unit_IsEnemy(dst)) {
     return ;
   }
   if(unit_IsBuilding(dst) || unit_IsDead(dst)) {
