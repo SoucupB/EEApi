@@ -6,6 +6,7 @@
 #include "EETwa.h"
 #include "EETypesStructPrivate.h"
 #include "Offset.h"
+#include "ResourcePrivate.h"
 
 void ply_RegisterSelf(PPlayers playerData, Player self);
 void ply_RegisterNeutral(PPlayers playerData, Player self);
