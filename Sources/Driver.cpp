@@ -504,7 +504,7 @@ void driver_AttackUnit(PVOID attackerUnit, PVOID attackedUnit) {
 }
 
 PVOID driver_WideStringMethod() {
-  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + 0x4372C0);
+  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_WIDE_STRING);
 }
 
 void driver_CreateWideString(PVOID buffer, char *input) {
