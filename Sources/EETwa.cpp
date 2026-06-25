@@ -139,6 +139,15 @@ void eeTa_SetCvCAggression(uint8_t botIndex, float aggression) {
   *_2 = aggression;
 }
 
+void eeTa_PrintfLine(const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  static char logBuffer[128] = {0};
+  vsnprintf(logBuffer, sizeof(logBuffer), format, args);
+  driver_Write(logBuffer);
+  va_end(args);
+}
+
 void eeta_FileClean() {
   FILE* f = fopen("EETWa.log", "w");
   fclose(f);
@@ -176,6 +185,7 @@ void eeTa_OnMapInit() {
 }
 
 void eeTa_OnInit() {
+  eeTa_PrintfLine("DLL injector loaded succesfully\n");
   bt_OnInit();
 }
 
