@@ -514,17 +514,17 @@ void driver_CreateWideString(PVOID buffer, char *input) {
 }
 
 void driver_MessageConstrucor(PVOID eeMessage, PVOID wideString) {
-  void __thiscall (*method)(PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + 0x1D3196);
+  void __thiscall (*method)(PVOID, PVOID) = (void __thiscall (*)(PVOID, PVOID)) ((uint8_t *)lib_BaseAddress() + DRIVER_REMOTE_METHOD_MESSAGE_CONSTRUCTOR);
   method(eeMessage, wideString);
 }
 
 PVOID driver_Server_Get() {
-  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + 0x5319C8);
+  return (PVOID)*(size_t *)((size_t)lib_BaseAddress() + DRIVER_SERVER_REFERENCE);
 }
 
 PVOID driver_Server_MessageMethodRef() {
   PVOID server = driver_Server_Get();
-  return (PVOID)*(size_t *)(*(size_t *)server + 0x18);
+  return (PVOID)*(size_t *)(*(size_t *)server + DRIVER_SERVER_CLASS_INSTANCE_MESSAGE_REFENCE);
 }
 
 void driver_Server_PushMessage(PVOID eeMessage) {
@@ -534,7 +534,7 @@ void driver_Server_PushMessage(PVOID eeMessage) {
   method(server, eeMessage, (PVOID)0xFF);
 }
 
-__declspec(dllexport) void driver_Write(char *input) {
+void driver_Write(char *input) {
   uint32_t buffer[24];
   driver_CreateWideString((PVOID)buffer, input);
   PVOID eeMessage = driver_New(0x24);
