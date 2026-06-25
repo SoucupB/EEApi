@@ -16,4 +16,4 @@ $(TARGET): $(OBJECTS)
 	$(AR) $(OBJ_DIR)/$(TARGET) $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS_MMU) -c $< -o $@

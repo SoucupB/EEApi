@@ -129,7 +129,8 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('P') & 0x8000) {
-    printSpaceStuff();
+    // printSpaceStuff();
+    driver_Write((char *)"NIGGA");
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {
