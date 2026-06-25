@@ -185,7 +185,7 @@ void eeTa_OnMapInit() {
 }
 
 void eeTa_OnInit() {
-  eeTa_PrintfLine("DLL injector loaded succesfully\n");
+  eeTa_PrintfLine("DLL injector loaded succesfully");
   bt_OnInit();
 }
 
