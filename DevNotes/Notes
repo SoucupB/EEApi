@@ -1144,3 +1144,22 @@ Tech tree is at [[techTree + 0x8] + 0x24] -> [[techTree + 0x8] + 0x34]
 This method 005F708A seems important.
 Also this method 005FEF9C.
 This method 005FEF9C is called for stop.
+
+When I write something to chat code at 755E6823 is executed.
+Also this methon only once 02B13CBE.
+Also an important var in at [player + 0x28]
+
+There is an object called UserInterface at 009318F8 (+ base pointer)
+This also might be important. 006794F3
+006794F3 <- 006794C6 <- 004BFF6F <- 004BFDD2 Happends when I write something to the chat.
+
+Also this 004B8F10.
+At 005D3113 the client message is created.
+At 005D3123 is client is populated. (2 params).
+
+at 009318C4 is the player INDEX.
+
+
+UWideString can be created here 02BE3BFE.
+Constructor wide string at 005D30AD.
+Server pointer is held at 009319C8.

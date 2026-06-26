@@ -129,7 +129,7 @@ void execDataPengus() {
     Beep (300, 250);
   }
   if(GetAsyncKeyState('P') & 0x8000) {
-    printSpaceStuff();
+    eeTa_PrintfLine("Test string sender (%d %d)", 6, 7);
     Beep (300, 250);
   }
   if(GetAsyncKeyState('F') & 0x8000) {
