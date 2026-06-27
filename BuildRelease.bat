@@ -11,4 +11,4 @@ copy .\Injector\DllInjector32BitsExec.exe .\Release\GameInjector.exe
 if errorlevel 1 exit /b 1
 copy .\Injector\Config.txt .\Release\Config.txt
 if errorlevel 1 exit /b 1
-copy .\Headers\*.h .\Release\Headers\
+copy .\Headers\*.h .\Release\EngineHeaders\
