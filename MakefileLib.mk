@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=gnu++11 -IHeaders/ -IPrivateHeaders/ -O2 -lPsapi -lgdi32 -luser32 -Wall -Werror
-CXXFLAGS_MMU = -std=gnu++11 -IHeaders/ -IPrivateHeaders/ -O2 -lPsapi -lgdi32 -luser32
+CXXFLAGS_MMU = -std=gnu++11 -IHeaders/ -IPrivateHeaders/ -O2 -lPsapi -lgdi32 -luser32 -DREPLACE_MMU
 AR = ar rcs
 
 SRC_DIR = Sources
@@ -16,4 +16,4 @@ $(TARGET): $(OBJECTS)
 	$(AR) $(OBJ_DIR)/$(TARGET) $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS_MMU) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@

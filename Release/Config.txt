@@ -1,4 +1,4 @@
-game_path=D:\xx\ddd\zzz
-dll_path=D:\xx\ddd\pp
+game_path=D:\Games\SavedGames\Empire Earth Gold Edition\Empire Earth - The Art of Conquest
+dll_path=D:\Programs\EEApi\lib
 game_name=EE-AOC.exe
-dll_name=Bots.dll
+dll_name=PlaygroundBots.dll

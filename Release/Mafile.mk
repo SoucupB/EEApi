@@ -1,19 +1,19 @@
+TARGET_DLL = Bots.dll
+TARGET_ENGINE = Engine.a
 CXX = g++
-CXXFLAGS = -std=gnu++11 -IHeaders/ -IPrivateHeaders/ -O2 -lPsapi -lgdi32 -luser32 -Wall -Werror
-CXXFLAGS_MMU = -std=gnu++11 -IHeaders/ -IPrivateHeaders/ -O2 -lPsapi -lgdi32 -luser32
-AR = ar rcs
+CXXFLAGS = -std=gnu++11 -IHeaders/ -IEngineHeaders/ -O2 -lPsapi -lgdi32 -luser32
+DLL_BUILDER = -Wl,--whole-archive lib/$(TARGET_ENGINE) -Wl,--no-whole-archive -shared
 
 SRC_DIR = Sources
 OBJ_DIR = lib
-TARGET = Engine.a
 
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
 
-all: $(TARGET)
+all: $(TARGET_DLL)
 
-$(TARGET): $(OBJECTS)
-	$(AR) $(OBJ_DIR)/$(TARGET) $^
+$(TARGET_DLL): $(OBJECTS)
+	$(CXX) $^ $(DLL_BUILDER) -o $(OBJ_DIR)/$(TARGET_DLL) $(CXXFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS_MMU) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
