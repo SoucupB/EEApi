@@ -16,15 +16,10 @@ Read nearly every aspect of the current game state:
 * Buildings
 * Players
 * Resources
-* Technologies
 * Terrain
 * Diplomacy
-* Fog of war
-* Selection
-* Camera
-* Map information
 
-All information is exposed through a clean C++ interface.
+All information is exposed through a relatively clean C++ interface.
 
 ---
 
@@ -41,11 +36,16 @@ Examples include:
 * Construct buildings
 * Train units
 * Research technologies
-* Formations
 * Stop
-* Hold position
 
 Commands are synchronized with the game simulation to preserve deterministic behavior.
+
+---
+
+## Versions
+
+The engine is compatible with version v1.00.2xxx (Probably most of the GOG versions) of Empire Earth Art of the conquest. Since its main state source code
+did not receive any significant updates over the years, it is unlikely that the AI engine will break the game.
 
 ---
 
@@ -55,18 +55,9 @@ Receive callbacks whenever something interesting happens.
 
 Examples:
 
-* Match start
-* Match end
-* Game update
 * Unit created
 * Unit destroyed
-* Unit discovered
-* Unit completed
 * Building finished
-* Technology researched
-* Resource exhausted
-* Player defeated
-* Chat received
 
 Plugins only need to implement the events they care about.
 
@@ -77,47 +68,28 @@ Plugins only need to implement the events they care about.
 Create bots by implementing a small interface.
 
 ```cpp
-class MyBot : public AIPlugin
-{
-public:
-    void onStart() override;
-    void onFrame() override;
-    void onUnitCreate(Unit* unit) override;
-    void onUnitDestroy(Unit* unit) override;
-};
+void bt_OnFrame() {
+  
+}
+
+void bt_OnInit() {
+
+}
+
+void bt_OnUnitDestroy(Unit unit) {
+
+}
+
+void bt_OnUnitCreate(Unit unit) {
+  
+}
+
+void bt_OnGamePrepare() {
+  
+}
 ```
 
 The engine handles initialization, synchronization, and communication with the game.
-
----
-
-## Replay Support
-
-The engine is intended to support replay analysis, allowing tools to:
-
-* inspect historical game state
-* analyze player decisions
-* visualize AI behavior
-* collect datasets
-* benchmark algorithms
-
----
-
-## Debug Drawing
-
-Draw information directly inside the game.
-
-Examples:
-
-* text
-* lines
-* circles
-* rectangles
-* paths
-* influence maps
-* unit labels
-
-Useful for debugging AI and visualization.
 
 ---
 
@@ -128,10 +100,7 @@ Useful for debugging AI and visualization.
 * Reinforcement learning
 * Strategy analysis
 * Build-order optimization
-* Replay analysis
-* Tournament bots
 * Educational projects
-* Custom overlays
 * External tools
 
 ---
@@ -146,7 +115,6 @@ Useful for debugging AI and visualization.
 * Minimal overhead
 * Extensive documentation
 * Versioned interfaces
-* Cross-version compatibility where possible
 
 ---
 
@@ -198,9 +166,9 @@ The engine abstracts away the low-level details of communicating with the game p
 
 This project aims to do for **Empire Earth** what BWAPI did for StarCraft: provide a clean, documented, and extensible interface between the game engine and external programs.
 
-Instead of reverse-engineering game memory for every new project, developers can build against a stable API focused on gameplay concepts rather than implementation details.
+Instead of reverse-engineering game memory for every new project, developers can build against an API focused on gameplay concepts rather than implementation details.
 
-Whether you're building a competitive RTS bot, a replay analyzer, or experimenting with machine learning, the engine provides a common foundation for interacting with Empire Earth.
+Whether you're building a competitive RTS bot or an experimenting with machine learning, the engine provides a common foundation for interacting with Empire Earth.
 
 ---
 
