@@ -290,8 +290,8 @@ void map_ComputeConnexIslands() {
 
 void map_Init() {
   PMapData mapData = game_GetMapData();
+  mapData->isSpaceMap = map_IsSpaceMap();
   map_FillTiles();
   map_ComputeConnexIslands();
-  mapData->isSpaceMap = map_IsSpaceMap();
 }
 
