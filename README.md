@@ -181,7 +181,11 @@ The engine abstracts away the low-level details of communicating with the game p
 
 ## Philosophy
 
-This project aims to do for **Empire Earth** what BWAPI did for StarCraft: provide a clean, documented, and extensible interface between the game engine and external programs.
+This engine is still in its infancy and will probably be that way for awhile and the design might not be very consistent everywhere.
+
+The main language is C style C++. I used C++ for it for the only reason that I needed the STL containers in order to implement and test the ideas fast.
+
+This project aims to do for **Empire Earth** what BWAPI did for StarCraft that will interface between the game engine and external programs.
 
 Instead of reverse-engineering game memory for every new project, developers can build against an API focused on gameplay concepts rather than implementation details.
 
