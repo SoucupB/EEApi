@@ -129,7 +129,6 @@ The engine handles initialization, synchronization, and communication with the g
 
 ## Design Goals
 
-* Modern C++ interface
 * Deterministic behavior
 * High performance
 * Stable API
