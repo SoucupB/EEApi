@@ -167,20 +167,15 @@ The engine abstracts away the low-level details of communicating with the game p
 
 ---
 
-## Planned Modules
+## Future Plans
 
-* Core API
-* Memory access
-* Event dispatcher
-* Command queue
+* Command queues
 * Rendering hooks
 * Replay parser
-* Map parser
-* Pathfinding utilities
 * AI helper library
 * Debug renderer
 * Logging
-* Configuration system
+* Unit/Integration tests
 
 ---
 
