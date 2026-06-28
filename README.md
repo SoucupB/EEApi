@@ -199,3 +199,7 @@ Whether you're building a competitive RTS bot or an experimenting with machine l
 The API is under active design and subject to change as additional game systems are reverse-engineered and documented.
 
 Contributions, testing, and feedback are welcome.
+
+## Youtube
+
+There is a youtube miniseries with the capabilities of this API https://www.youtube.com/playlist?list=PLB_e_mDo4DZg.
