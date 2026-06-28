@@ -180,7 +180,7 @@ The engine abstracts away the low-level details of communicating with the game p
 
 ## Philosophy
 
-This engine is still in its infancy and will probably be that way for awhile and the design might not be very consistent everywhere.
+This engine is still in its infancy and the design might not be very consistent everywhere yet.
 
 The main language is C style C++. I used C++ for it for the only reason that I needed the STL containers in order to implement and test the ideas fast.
 
