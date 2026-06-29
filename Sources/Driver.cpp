@@ -400,15 +400,6 @@ size_t driver_CanBuiltAt(PVOID player, TilePoint tile, size_t buildingTypeID) {
   return driver_CanBuiltAt_64F264(player, tile, buildingTypeID);
 }
 
-size_t driver_CanBuiltAt_603DD6(PVOID player, TilePoint tile, size_t buildingTypeID) {
-  PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD_SHADOW_UNIT);
-  size_t __thiscall (*method)(PVOID) = 
-       (size_t __thiscall (*)(PVOID)) ((uint8_t *)methodStruct);
-  PVOID shadowUnit = 0x0;
-  size_t canBuild = method(shadowUnit);
-  return canBuild;
-}
-
 void driver_InstantiateClass_6042C7(PVOID buffer, PVOID player, size_t buildingTypeID) {
   PVOID methodStruct = (PVOID)((size_t)lib_BaseAddress() + DRIVER_REMOTE_METHOD_CAN_BUILD_SHADOW_UNIT_INSTANTIATE);
   void __thiscall (*method)(PVOID, PVOID, PVOID, PVOID) = 
@@ -445,10 +436,10 @@ void driver_SelectedGroup_SetArray(SelectedGroupArray *arr, PVOID player) {
   *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_END) = (size_t)arr->_end;
 }
 
-void driver_SelectedGroup_SetUnit(PVOID player, PVOID unit) {
+void driver_SelectedGroup_SetUnit(PVOID player, PVOID *unit) {
   PVOID selectedGroupRef = (PVOID)*(size_t *)((size_t)player + DRIVER_SELECTED_GROUP_OFFSET);
-  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_START) = (size_t)&unit;
-  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_END) = (size_t)&unit + sizeof(PVOID);
+  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_START) = (size_t)unit;
+  *(size_t *)((size_t)selectedGroupRef + DRIVER_SELECTED_GROUP_OFFSET_LIST_END) = (size_t)unit + sizeof(PVOID);
 }
 
 size_t driver_CanBuildHere_603DD6(PVOID buffer, PVOID player, PVOID unit) {
@@ -456,7 +447,7 @@ size_t driver_CanBuildHere_603DD6(PVOID buffer, PVOID player, PVOID unit) {
   size_t __thiscall (*method)(PVOID) = 
   (size_t __thiscall (*)(PVOID)) ((uint8_t *)methodStruct);
   SelectedGroupArray currentArr = driver_SelectedGroup_GetArray(player);
-  driver_SelectedGroup_SetUnit(player, unit);
+  driver_SelectedGroup_SetUnit(player, &unit);
   size_t canBuild = method(buffer);
   driver_SelectedGroup_SetArray(&currentArr, player);
   return canBuild;

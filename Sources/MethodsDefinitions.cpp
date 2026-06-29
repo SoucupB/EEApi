@@ -105,7 +105,8 @@ void builder_ReplaceFree() {
 PVOID _cdecl builder_EnchantedNew(const size_t memSize) {
   uint32_t anchor = 0;
   // This might work only for optimization -O2
-  size_t callerReturnAddress = ((size_t)&anchor + 0x10);
+  // Also, this works only with gcc16.1 reliably since it doesn't change the stack position once this value gets called.
+  size_t callerReturnAddress = ((size_t)&anchor + 0xC);
   PVOID _cdecl (*method)(size_t) = (PVOID _cdecl (*)(size_t))old_NewHandle;
   const size_t newSize = memSize + sizeof(MMUHeader);
   PVOID buffer = method(newSize);

@@ -1163,3 +1163,51 @@ at 009318C4 is the player INDEX.
 UWideString can be created here 02BE3BFE.
 Constructor wide string at 005D30AD.
 Server pointer is held at 009319C8.
+
+
+The game crashes at 00422716.
+for GCC 16.1.0
+Bots.dll+13FAB is the method that crashes.
+
+#0 0x00422716 in ?? ()
+#1 0x0064f35e in ?? ()
+#2 0x0064f25f in ?? ()
+#3 0x00603f43 in ?? ()
+#4 0x679b8482 in driver_CanBuildHere_603DD6(void*, void*, void*) () from D:\Programs\EEAPITutorials\PlayerHelper\lib\Bots.dll
+#5 0x679c3f4b in unit_Building_CanBuildAtWOBuffer(void*, Unit_t, UnitType, TilePoint_t) () from D:\Programs\EEAPITutorials\PlayerHelper\lib\Bots.dll
+#6 0x679c4fae in unit_Building_FindBuildablePosition(Unit_t, UnitType, TilePoint_t) () from D:\Programs\EEAPITutorials\PlayerHelper\lib\Bots.dll
+#7 0x679b4f3e in citizen_BuildMissingBuilding(Unit_t) () from D:\Programs\EEAPITutorials\PlayerHelper\lib\Bots.dll
+#8 0x679b517a in citizen_RebuildBuilding(void*) () from D:\Programs\EEAPITutorials\PlayerHelper\lib\Bots.dll
+#9 0x679c23f5 in tmr_OnFrame(Timerdriver_t*) () from D:\Programs\EEAPITutorials\PlayerHelper\lib\Bots.dll
+#10 0x679b926e in eeTa_OnFrame() () from D:\Programs\EEAPITutorials\PlayerHelper\lib\Bots.dll
+#11 0x679bbf45 in onFrame () from D:\Programs\EEAPITutorials\PlayerHelper\lib\Bots.dll
+#12 0x00553224 in ?? ()
+#13 0x00561590 in ?? ()
+
+eax 0x162 354
+ecx 0x930bf0 9636848
+edx 0x1c82fd5c 478346588
+ebx 0x1 1
+esp 0x1c82fc44 0x1c82fc44
+ebp 0x1c82fc90 0x1c82fc90
+esi 0x930bf0 9636848
+edi 0x255ab310 626701072
+eip 0x422716 0x422716
+eflags 0x10202 [ IF RF ]
+cs 0x23 35
+ss 0x2b 43
+ds 0x2b 43
+es 0x2b 43
+fs 0x53 83
+gs 0x2b 43
+
+Some notes. For checking where the building can be built
+006042B4 is the creation of the ghost unit.
+
+Also needs a call to this 0060430C. (I don't know what this does).
+At 00604DD4 the games sets the Ghost Unit position.
+00604ABA
+
+Tha game crashes at 00603F3E <- 0064F25A.
+The problem might be that the citizen is not set correctly
+at selected units.
