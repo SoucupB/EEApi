@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <cstring>
+#include <cstdint>
 
 using namespace std;
 

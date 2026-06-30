@@ -136,7 +136,7 @@ char *unit_Name(Unit unit) {
   return (char *)((size_t *)(*(size_t *)ref + UNIT_CLASS) + UNIT_CLASS_NAME);
 }
 
-void unit_Build(Unit building, UnitType type) {
+void unit_Building_Train(Unit building, UnitType type) {
   if(!unit_IsSelf(building)) {
     return ;
   }

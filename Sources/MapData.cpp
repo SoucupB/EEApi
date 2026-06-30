@@ -37,6 +37,11 @@ PVOID map_GetMapPointer() {
   return (PVOID)*(size_t *)basePointer;
 }
 
+vector<TileStruct> map_GetTiles() {
+  PMapData gameMap = game_GetMapData();
+  return *gameMap->tiles;
+}
+
 void map_FillTiles() {
   PMapData md = game_GetMapData();
   vector<TileStruct> *tiles = md->tiles;
